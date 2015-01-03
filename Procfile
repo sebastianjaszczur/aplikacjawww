@@ -1,1 +1,1 @@
-web: (cd wwwapp; gunicorn wwwapp.wsgi --log-file -)
+web: (cd wwwapp/wwwapp; gunicorn wwwapp.wsgi --log-file -)
