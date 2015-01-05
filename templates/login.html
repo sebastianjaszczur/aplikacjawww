@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+        {% if user.is_authenticated %}
+            <h2 class="heading">You are now signed in!</h2>
+            <div class="user-info">
+                <p>Your profile info is given below.</p>
+                <p><a href="{% url 'logout' %}">Logout</a></p>
+                <pre>
+                    {{ info|pprint }}
+                </pre>
+            </div>
+        {% else %}
+            <h2 class="heading">Aplikacja WWW</h2>
+            <p>Demo aplikacji WWW. Działa logowanie, zawsze coś.</p>
+            <div class="form-signin">
+            {% for provider in allaccess_providers %}
+                <a class="button zocial {{ provider.name|lower }}" href="{% url 'allaccess-login' provider.name %}">
+                    Sign in with {{ provider.name|title }}
+                </a>
+            {% endfor %}
+            </div>
+        {% endif %}
+</div>
+{% endblock %}

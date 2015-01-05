@@ -1,8 +1,6 @@
 from django.shortcuts import render
 
-
-def home(request):
-    "Simple homepage view."
+def login(request):
     context = {}
     if request.user.is_authenticated():
         try:
@@ -12,4 +10,7 @@ def home(request):
         else:
             client = access.api_client
             context['info'] = client.get_profile_info(raw_token=access.access_token)
-    return render(request, 'home.html', context)
+    return render(request, 'login.html', context)
+
+def index(request):
+    return render(request, "home.html")
