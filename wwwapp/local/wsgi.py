@@ -1,1 +1,0 @@
-/home/jaszczur/WWWAPP/wwwapp/wsgi.py
