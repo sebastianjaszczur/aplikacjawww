@@ -22,8 +22,8 @@
                 </pre>
             </div>
         {% else %}
-            <h2 class="heading">django-all-access Demo</h2>
-            <p>This is a simple demo application for <a href="https://github.com/mlavin/django-all-access">django-all-access</a>. Use the buttons below to sign in with your favorite OAuth provider.</p>
+            <h2 class="heading">Aplikacja WWW</h2>
+            <p>Demo aplikacji WWW. Działa logowanie, zawsze coś.</p>
             <div class="form-signin">
             {% for provider in allaccess_providers %}
                 <a class="button zocial {{ provider.name|lower }}" href="{% url 'allaccess-login' provider.name %}">
@@ -33,6 +33,5 @@
             </div>
         {% endif %}
     </div>
-    <a href="https://github.com/mlavin/django-all-access"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
 </body>
 </html>
