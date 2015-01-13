@@ -52,6 +52,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'allaccess',
+    'sanitizer',
+    'wwwapp',
 )
 
 MIDDLEWARE_CLASSES = (
