@@ -31,5 +31,5 @@ def article(request, name):
     else:
         form = ArticleForm(instance=art)
 
-    return render(request, 'article.html', {'form': form})
+    return render(request, 'article.html', {'form': form, 'article': art})
 
