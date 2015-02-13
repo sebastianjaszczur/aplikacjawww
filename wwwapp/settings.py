@@ -143,6 +143,7 @@ TEMPLATE_DIRS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.request',
     'django.core.context_processors.debug',
     'django.core.context_processors.media',
     'django.core.context_processors.i18n',

@@ -6,18 +6,20 @@
         <header class="page-header">
             <h1 class="page-title">Aplikacja WWW</h1>
         </header>
-        <h3>{{ article.name|title }}</h3>
         {{ article.content|safe }}
-        <form action="" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <script>
-                // Replace the <textarea id="editor1"> with a CKEditor
-                // instance, using default configuration.
-                CKEDITOR.replace( 'content' );
-            </script>
-            <button class="button">Save</button>
-        </form>
+        {% if request.user.is_superuser %}
+            <hr>
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <script>
+                    // Replace the <textarea id="editor1"> with a CKEditor
+                    // instance, using default configuration.
+                    CKEDITOR.replace( 'content' );
+                </script>
+                <button class="button">Save</button>
+            </form>
+        {% endif %}
     </article>
 </div>
 {% endblock %}

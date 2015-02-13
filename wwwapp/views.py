@@ -23,13 +23,16 @@ def index(request):
 def article(request, name):
     art = Article.objects.get(name=name)
     
-    if request.method == 'POST':
-        form = ArticleForm(request.POST, instance=art)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('article', args=(form.instance.name,)))
+    if request.user.is_superuser:
+        if request.method == 'POST':
+            form = ArticleForm(request.POST, instance=art)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('article', args=(form.instance.name,)))
+        else:
+            form = ArticleForm(instance=art)
     else:
-        form = ArticleForm(instance=art)
+        form = None
 
     return render(request, 'article.html', {'form': form, 'article': art})
 

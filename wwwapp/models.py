@@ -14,7 +14,7 @@ class AlphaNumericField(models.CharField):
 
 class Article(models.Model):
     name = AlphaNumericField(max_length=40, null=False)
-    content = TextField(max_length=100000)
+    content = TextField(max_length=100000, blank=True)
 
 
 class ArticleForm(ModelForm):
