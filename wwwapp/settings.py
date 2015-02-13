@@ -103,10 +103,14 @@ LOGIN_URL = '/'
 
 LOGIN_REDIRECT_URL = '/'
 
+AUTH_USER_MODEL = 'wwwapp.CustomUser'
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allaccess.backends.AuthorizedServiceBackend',
 )
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/

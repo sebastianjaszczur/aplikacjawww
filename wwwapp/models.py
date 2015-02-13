@@ -2,7 +2,10 @@ from django.db import models
 from django.db.models import TextField, BooleanField
 from django.forms import ModelForm
 import re
+from django.contrib.auth.models import AbstractUser
 
+class CustomUser(AbstractUser):
+    new = BooleanField(default=True)
 
 class AlphaNumericField(models.CharField):
     def clean(self, value, model_instance):
