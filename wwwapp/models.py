@@ -19,7 +19,7 @@ class Article(models.Model):
     name = AlphaNumericField(max_length=40, null=False)
     content = TextField(max_length=100000, blank=True)
     
-    on_menubar = BooleanField()
+    on_menubar = BooleanField(default=False)
     
     def __unicode__(self):
         return self.name
