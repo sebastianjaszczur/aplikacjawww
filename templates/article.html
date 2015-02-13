@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <article class="col-sm-8 maincontent">
+    <article class="col-sm-12 maincontent">
         <header class="page-header">
             <h1 class="page-title">Aplikacja WWW</h1>
         </header>
@@ -13,8 +13,6 @@
                 {% csrf_token %}
                 {{ form.as_p }}
                 <script>
-                    // Replace the <textarea id="editor1"> with a CKEditor
-                    // instance, using default configuration.
                     CKEDITOR.replace( 'content' );
                 </script>
                 <button class="button">Save</button>
