@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from wwwapp.models import Article, ArticleForm
+from wwwapp.models import Article, ArticleForm, UserProfile
 
 def get_context(request):
     context = {}
@@ -25,13 +25,15 @@ def login(request):
             context['info'] = user_info
             
             user = request.user
-            user_profile = UserProfile.objects.get_or_create(user=user)
-            user_profile.save()
+            user_profile, just_created = UserProfile.objects.get_or_create(user=user)
             
-            if request.user.user_profile.just_registered:
-                user.first_name = user_info.first_name
-                user.second_name = user_info.second_name
-                user_profile.gender = user_info.gender
+            if just_created:
+                if 'first_name' in user_info:
+                    user.first_name = user_info['first_name']
+                if 'last_name' in user_info:
+                    user.last_name = user_info['last_name']
+                if 'gender' in user_info:
+                    user_profile.gender = user_info['gender']
                 user.save()
                 user_profile.save()
     return render(request, 'login.html', context)
@@ -45,7 +47,9 @@ def article(request, name):
         if request.method == 'POST':
             form = ArticleForm(request.POST, instance=art)
             if form.is_valid():
-                form.save()
+                article = form.save(commit=False)
+                article.modified_by = request.user
+                article.save()
                 return HttpResponseRedirect(reverse('article', args=(form.instance.name,)))
         else:
             form = ArticleForm(instance=art)
