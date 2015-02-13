@@ -21,7 +21,19 @@ def login(request):
             access = None
         else:
             client = access.api_client
-            context['info'] = client.get_profile_info(raw_token=access.access_token)
+            user_info = client.get_profile_info(raw_token=access.access_token)        
+            context['info'] = user_info
+            
+            user = request.user
+            user_profile = UserProfile.objects.get_or_create(user=user)
+            user_profile.save()
+            
+            if request.user.user_profile.just_registered:
+                user.first_name = user_info.first_name
+                user.second_name = user_info.second_name
+                user_profile.gender = user_info.gender
+                user.save()
+                user_profile.save()
     return render(request, 'login.html', context)
 
 

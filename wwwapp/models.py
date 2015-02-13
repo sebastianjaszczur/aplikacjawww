@@ -1,13 +1,15 @@
 from django.db import models
-from django.db.models import TextField, BooleanField
+from django.db.models import TextField, BooleanField, CharField
 from django.forms import ModelForm
 import re
 from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-
-    just_registered = BooleanField(default=False)
+    
+    gender = CharField(max_length=10, choices=[('M', 'Male'), ('F', 'Female'),],
+                       null=True, default=None, blank=False)
+    just_registered = BooleanField(default=True)
 
     def __unicode__(self):
         return self.user.username
