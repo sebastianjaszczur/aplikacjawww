@@ -16,9 +16,6 @@ def login(request):
             context['info'] = client.get_profile_info(raw_token=access.access_token)
     return render(request, 'login.html', context)
 
-def index(request):
-    return render(request, "home.html")
-
 
 def article(request, name):
     art = Article.objects.get(name=name)
@@ -36,3 +33,14 @@ def article(request, name):
 
     return render(request, 'article.html', {'form': form, 'article': art})
 
+
+def as_article(name):
+    # make sure that article with this name exists
+    art = Article.objects.get_or_create(name=name)
+    
+    def page(request):
+        return article(request, name)
+    return page
+
+
+index = as_article("index")
