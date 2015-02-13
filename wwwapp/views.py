@@ -4,8 +4,16 @@ from django.core.urlresolvers import reverse
 
 from wwwapp.models import Article, ArticleForm
 
-def login(request):
+def get_context(request):
     context = {}
+    
+    articles_on_menubar = Article.objects.filter(on_menubar=True).all()
+    context['articles_on_menubar'] = articles_on_menubar
+    
+    return context
+
+def login(request):
+    context = get_context(request)
     if request.user.is_authenticated():
         try:
             access = request.user.accountaccess_set.all()[0]
@@ -18,6 +26,7 @@ def login(request):
 
 
 def article(request, name):
+    context = get_context(request)
     art = Article.objects.get(name=name)
     
     if request.user.is_superuser:
@@ -30,8 +39,11 @@ def article(request, name):
             form = ArticleForm(instance=art)
     else:
         form = None
+    
+    context['article'] = art
+    context['form'] = form
 
-    return render(request, 'article.html', {'form': form, 'article': art})
+    return render(request, 'article.html', context)
 
 
 def as_article(name):

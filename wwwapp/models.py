@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import TextField
+from django.db.models import TextField, BooleanField
 from django.forms import ModelForm
 import re
 
@@ -15,6 +15,8 @@ class AlphaNumericField(models.CharField):
 class Article(models.Model):
     name = AlphaNumericField(max_length=40, null=False)
     content = TextField(max_length=100000, blank=True)
+    
+    on_menubar = BooleanField()
 
 
 class ArticleForm(ModelForm):
