@@ -2,10 +2,15 @@ from django.db import models
 from django.db.models import TextField, BooleanField
 from django.forms import ModelForm
 import re
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
-class CustomUser(AbstractUser):
-    new = BooleanField(default=True)
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+
+    just_registered = BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.user.username
 
 class AlphaNumericField(models.CharField):
     def clean(self, value, model_instance):
