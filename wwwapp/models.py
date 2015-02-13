@@ -17,6 +17,9 @@ class Article(models.Model):
     content = TextField(max_length=100000, blank=True)
     
     on_menubar = BooleanField()
+    
+    def __unicode__(self):
+        return self.name
 
 
 class ArticleForm(ModelForm):
