@@ -99,9 +99,9 @@ else:
 
 # Logging and authentication
 
-LOGIN_URL = '/'
+LOGIN_URL = '/login/'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/login/'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
