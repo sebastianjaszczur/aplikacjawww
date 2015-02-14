@@ -14,9 +14,9 @@
                 {% csrf_token %}
                 {{ form.as_p }}
                 <script>
-                    CKEDITOR.replace( 'content' );
+                    CKEDITOR.replace( 'content', { height: "700px" });
                 </script>
-                <button class="button">Save</button>
+                <button class="btn btn-default">Save article</button>
             </form>
         </div>
         {% endif %}
