@@ -5,6 +5,10 @@
     <article class="col-sm-12 maincontent">
         {{ article.content|safe }}
         {% if perms.wwwapp.change_article %}
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="btn btn-default">
+            Edit article
+        </a>
+        <div id="collapseOne" class="panel-collapse collapse out" role="tabpanel" aria-labelledby="headingOne">
             <hr>
             <form action="" method="post">
                 {% csrf_token %}
@@ -14,6 +18,7 @@
                 </script>
                 <button class="button">Save</button>
             </form>
+        </div>
         {% endif %}
     </article>
 </div>
