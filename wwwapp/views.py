@@ -43,7 +43,7 @@ def article(request, name):
     context = get_context(request)
     art = Article.objects.get(name=name)
     
-    if request.user.is_superuser:
+    if request.user.has_perm('wwwapp.change_article'):
         if request.method == 'POST':
             form = ArticleForm(request.POST, instance=art)
             if form.is_valid():

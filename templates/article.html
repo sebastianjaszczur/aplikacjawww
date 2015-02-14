@@ -4,7 +4,7 @@
 <div class="container">
     <article class="col-sm-12 maincontent">
         {{ article.content|safe }}
-        {% if request.user.is_superuser %}
+        {% if perms.wwwapp.change_article %}
             <hr>
             <form action="" method="post">
                 {% csrf_token %}
