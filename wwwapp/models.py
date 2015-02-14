@@ -25,6 +25,7 @@ class ArticleContentHistory(models.Model):
     version = models.IntegerField(editable=False)
     article = models.ForeignKey('Article')
     content = models.TextField()
+    modified_by = ForeignKey(User, null=True, default=None)
 
     class Meta:
         unique_together = ('version', 'article',)
@@ -33,6 +34,7 @@ class ArticleContentHistory(models.Model):
         # start with version 1 and increment it for each version
         current_version = ArticleContentHistory.objects.filter(article=self.article).order_by('-version')[:1]
         self.version = current_version[0].version + 1 if current_version else 1
+        self.modified_by = self.article.modified_by
         super(ArticleContentHistory, self).save(*args, **kwargs)
 
 
