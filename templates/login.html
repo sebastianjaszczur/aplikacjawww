@@ -3,17 +3,12 @@
 {% block content %}
 <div class="container">
         {% if user.is_authenticated %}
-            <h2 class="heading">You are now signed in!</h2>
+            <h2 class="heading">Zalogowany jako {{ user.first_name }} {{ user.last_name }}</h2>
             <div class="user-info">
-                <p>Your profile info is given below.</p>
-                <p><a href="{% url 'logout' %}">Logout</a></p>
-                <pre>
-                    {{ info|pprint }}
-                </pre>
+                <a class="btn btn-default" href="{% url 'logout' %}">Wyloguj</a>
             </div>
         {% else %}
-            <h2 class="heading">Aplikacja WWW</h2>
-            <p>Demo aplikacji WWW. Działa logowanie, zawsze coś.</p>
+            <h2 class="heading">Wybierz metodę logowania: </h2>
             <div class="form-signin">
             {% for provider in allaccess_providers %}
                 <a class="button zocial {{ provider.name|lower }}" href="{% url 'allaccess-login' provider.name %}">
