@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from wwwapp.models import Article, ArticleForm, UserProfile
+from wwwapp.models import Article, ArticleForm, UserProfile, UserProfileForm, UserForm
 
 def get_context(request):
     context = {}
@@ -11,6 +11,25 @@ def get_context(request):
     context['articles_on_menubar'] = articles_on_menubar
     
     return context
+
+def profile(request):
+    context = get_context(request)
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('login'))
+    else:
+        user_profile = UserProfile.objects.get(user=request.user)
+        if request.method == "POST":
+            user_form = UserForm(request.POST, instance=request.user)
+            user_profile_form = UserProfileForm(request.POST, instance=user_profile)
+            if user_form.is_valid() and user_profile_form.is_valid():
+                user_form.save()
+                user_profile_form.save()
+        else:
+            user_form = UserForm(instance=request.user)
+            user_profile_form = UserProfileForm(instance=user_profile)
+        context['user_form'] = user_form
+        context['user_profile_form'] = user_profile_form
+        return render(request, 'profile.html', context)
 
 def login(request):
     context = get_context(request)

@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 from django.db import models
 from django.db.models import TextField, BooleanField, CharField, ForeignKey
 from django.forms import ModelForm
@@ -7,11 +8,31 @@ from django.contrib.auth.models import User
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     
-    gender = CharField(max_length=10, choices=[('M', 'Male'), ('F', 'Female'),],
+    gender = CharField(max_length=10, choices=[('M', u'Mężczyzna'), ('F', u'Kobieta'),],
                        null=True, default=None, blank=False)
 
     def __unicode__(self):
         return self.user.username
+
+
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['gender']
+        labels = {
+            'gender': u'Płeć',
+        }
+
+class UserForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        labels = {
+            'first_name': u'Imię',
+            'last_name': u'Nazwisko',
+            'email': u'E-mail',
+        }
+
 
 class AlphaNumericField(models.CharField):
     def clean(self, value, model_instance):

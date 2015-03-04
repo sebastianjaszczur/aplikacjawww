@@ -1,0 +1,16 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="col-sm-12 maincontent">
+        <hr>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ user_form.as_p }}
+            {{ user_profile_form.as_p }}
+            <button class="btn btn-default">Zapisz</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

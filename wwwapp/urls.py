@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', views.login, name='login'),
+    url(r'^profile/', views.profile, name='profile'),
     url(r'^article/(?P<name>[a-zA-Z0-9\-_]+)/', views.article, name='article'),
     url(r'^$', views.index, name='index'),
 )
