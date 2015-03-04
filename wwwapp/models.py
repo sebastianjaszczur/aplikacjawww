@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.db import models
 from django.db.models import TextField, BooleanField, CharField, ForeignKey
-from django.forms import ModelForm
+
 import re
 from django.contrib.auth.models import User
 
@@ -13,25 +13,6 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return self.user.username
-
-
-class UserProfileForm(ModelForm):
-    class Meta:
-        model = UserProfile
-        fields = ['gender']
-        labels = {
-            'gender': u'Płeć',
-        }
-
-class UserForm(ModelForm):
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email']
-        labels = {
-            'first_name': u'Imię',
-            'last_name': u'Nazwisko',
-            'email': u'E-mail',
-        }
 
 
 class AlphaNumericField(models.CharField):
@@ -78,9 +59,3 @@ class Article(models.Model):
         if not content_history or self.content != content_history[0].content:
             newContent = ArticleContentHistory(article=self, content=self.content)
             newContent.save()
-
-
-class ArticleForm(ModelForm):
-    class Meta:
-        model = Article
-        fields = ['name', 'content']

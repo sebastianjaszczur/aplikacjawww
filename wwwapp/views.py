@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from wwwapp.models import Article, ArticleForm, UserProfile, UserProfileForm, UserForm
+from wwwapp.models import Article, UserProfile
+from wwwapp.forms import ArticleForm, UserProfileForm, UserForm
 
 def get_context(request):
     context = {}
