@@ -62,3 +62,13 @@ class Article(models.Model):
         if not content_history or self.content != content_history[0].content:
             newContent = ArticleContentHistory(article=self, content=self.content)
             newContent.save()
+
+
+class WorkshopCategory(models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+
+
+class Workshop(models.Model):
+    title = models.CharField(max_length=100, blank=False, null=False)
+    proposition_descrption = models.TextField(max_length=100000, blank=True)
+    category = models.ManyToManyField(WorkshopCategory, blank=True)
