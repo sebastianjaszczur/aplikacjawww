@@ -69,6 +69,6 @@ class WorkshopCategory(models.Model):
 
 
 class Workshop(models.Model):
-    title = models.CharField(max_length=100, blank=False, null=False)
-    proposition_descrption = models.TextField(max_length=100000, blank=True)
+    name = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    proposition_description = models.TextField(max_length=100000, blank=True)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
