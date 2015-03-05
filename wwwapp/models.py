@@ -1,6 +1,5 @@
 #-*- coding: utf-8 -*-
 from django.db import models
-from django.db.models import TextField, BooleanField, CharField, ForeignKey
 
 import re
 from django.contrib.auth.models import User
@@ -8,9 +7,13 @@ from django.contrib.auth.models import User
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     
-    gender = CharField(max_length=10, choices=[('M', u'Mężczyzna'), ('F', u'Kobieta'),],
+    gender = models.CharField(max_length=10, choices=[('M', u'Mężczyzna'), ('F', u'Kobieta'),],
                        null=True, default=None, blank=False)
-
+    school = models.CharField(max_length=100, default="", blank=True)
+    matura_exam_year = models.PositiveSmallIntegerField(null=True, default=None)
+    how_do_you_know_about = models.CharField(max_length=1000, default="", blank=True)
+    interests = models.TextField(default="", blank=True)
+    
     def __unicode__(self):
         return self.user.username
 
@@ -27,7 +30,7 @@ class ArticleContentHistory(models.Model):
     version = models.IntegerField(editable=False)
     article = models.ForeignKey('Article')
     content = models.TextField()
-    modified_by = ForeignKey(User, null=True, default=None)
+    modified_by = models.ForeignKey(User, null=True, default=None)
 
     class Meta:
         unique_together = ('version', 'article',)
@@ -42,9 +45,9 @@ class ArticleContentHistory(models.Model):
 
 class Article(models.Model):
     name = AlphaNumericField(max_length=40, null=False)
-    content = TextField(max_length=100000, blank=True)
-    modified_by = ForeignKey(User, null=True, default=None)
-    on_menubar = BooleanField(default=False)
+    content = models.TextField(max_length=100000, blank=True)
+    modified_by = models.ForeignKey(User, null=True, default=None)
+    on_menubar = models.BooleanField(default=False)
     
     def content_history(self):
         return ArticleContentHistory.objects.filter(article=self).order_by('-version')
