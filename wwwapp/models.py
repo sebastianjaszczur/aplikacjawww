@@ -52,7 +52,7 @@ class ArticleContentHistory(models.Model):
 
 class Article(models.Model):
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
-    title = models.CharField(max_length=50, null=True, blank=False)
+    title = models.CharField(max_length=50, null=True, blank=True)
     content = models.TextField(max_length=100000, blank=True)
     modified_by = models.ForeignKey(User, null=True, default=None)
     on_menubar = models.BooleanField(default=False)
