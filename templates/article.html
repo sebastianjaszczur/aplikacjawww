@@ -5,10 +5,12 @@
     <article class="col-sm-12 maincontent">
         {{ article.content|safe }}
         {% if perms.wwwapp.change_article %}
+        {% if not addArticle %}
         <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="btn btn-default">
             Edit article
         </a>
-        <div id="collapseOne" class="panel-collapse collapse out" role="tabpanel" aria-labelledby="headingOne">
+        {% endif %}
+        <div {%if not addArticle %}id="collapseOne" class="panel-collapse collapse out"{% endif %} role="tabpanel" aria-labelledby="headingOne">
             <hr>
             <form action="" method="post">
                 {% csrf_token %}

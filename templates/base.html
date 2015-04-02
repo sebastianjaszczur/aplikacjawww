@@ -50,6 +50,9 @@
                             {% for article in articles_on_menubar %}
                                 <li><a href="{% url 'article' article.name%}">{{ article.title }}</a></li>
                             {% endfor %}
+                            {% if perms.wwwapp.add_article %}
+                                <li><a href="{% url 'addArticle' %}">nowy artykuł</a></li>
+                            {% endif %}
 						</ul>
 					</li>
                     
