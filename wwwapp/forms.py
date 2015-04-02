@@ -39,3 +39,8 @@ class ArticleForm(ModelForm):
             'on_menubar': u'Umieść w menu',
             'content': u'Treść',
         }
+    
+    def __init__(self, user, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+        if not user.has_perm('wwwapp.can_put_on_menubar'):
+            del self.fields['on_menubar']

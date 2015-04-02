@@ -32,7 +32,7 @@ class ArticleContentHistory(models.Model):
     content = models.TextField()
     modified_by = models.ForeignKey(User, null=True, default=None)
     time = models.DateTimeField(auto_now_add=True, null=True, editable=False)
-
+    
     def __unicode__(self):
         time = u'?'
         if (self.time):
@@ -41,7 +41,7 @@ class ArticleContentHistory(models.Model):
     
     class Meta:
         unique_together = ('version', 'article',)
-
+    
     def save(self, *args, **kwargs):
         # start with version 1 and increment it for each version
         current_version = ArticleContentHistory.objects.filter(article=self.article).order_by('-version')[:1]
@@ -56,6 +56,9 @@ class Article(models.Model):
     content = models.TextField(max_length=100000, blank=True)
     modified_by = models.ForeignKey(User, null=True, default=None)
     on_menubar = models.BooleanField(default=False)
+    
+    class Meta:
+        permissions = (('can_put_on_menubar', u'Can put on menubar'),)
     
     def content_history(self):
         return ArticleContentHistory.objects.filter(article=self).order_by('-version')

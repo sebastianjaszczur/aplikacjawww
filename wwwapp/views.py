@@ -65,14 +65,15 @@ def article(request, name):
     
     if request.user.has_perm('wwwapp.change_article'):
         if request.method == 'POST':
-            form = ArticleForm(request.POST, instance=art)
+            form = ArticleForm(request.user, request.POST, instance=art)
             if form.is_valid():
                 article = form.save(commit=False)
                 article.modified_by = request.user
                 article.save()
+                form.save_m2m()
                 return HttpResponseRedirect(reverse('article', args=(form.instance.name,)))
         else:
-            form = ArticleForm(instance=art)
+            form = ArticleForm(request.user, instance=art)
     else:
         form = None
     
