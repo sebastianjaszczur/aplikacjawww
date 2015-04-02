@@ -8,9 +8,9 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     
     gender = models.CharField(max_length=10, choices=[('M', u'Mężczyzna'), ('F', u'Kobieta'),],
-                       null=True, default=None, blank=False)
+                       null=True, default=None, blank=True)
     school = models.CharField(max_length=100, default="", blank=True)
-    matura_exam_year = models.PositiveSmallIntegerField(null=True, default=None)
+    matura_exam_year = models.PositiveSmallIntegerField(null=True, default=None, blank=True)
     how_do_you_know_about = models.CharField(max_length=1000, default="", blank=True)
     interests = models.TextField(default="", blank=True)
     
