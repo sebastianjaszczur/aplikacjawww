@@ -12,5 +12,6 @@ urlpatterns = patterns('',
     url(r'^login/', views.login, name='login'),
     url(r'^profile/', views.profile, name='profile'),
     url(r'^article/(?P<name>[a-zA-Z0-9\-_]+)/', views.article, name='article'),
+    url(r'^addArticle/', views.article, name='addArticle'),
     url(r'^$', views.index, name='index'),
 )
