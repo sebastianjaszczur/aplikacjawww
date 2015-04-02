@@ -44,7 +44,8 @@ class ArticleContentHistory(models.Model):
 
 
 class Article(models.Model):
-    name = AlphaNumericField(max_length=40, null=False)
+    name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
+    title = models.CharField(max_length=50, null=True, blank=False)
     content = models.TextField(max_length=100000, blank=True)
     modified_by = models.ForeignKey(User, null=True, default=None)
     on_menubar = models.BooleanField(default=False)
@@ -53,7 +54,7 @@ class Article(models.Model):
         return ArticleContentHistory.objects.filter(article=self).order_by('-version')
     
     def __unicode__(self):
-        return self.name
+        return u'{} "{}"'.format(self.name, self.title)
     
     def save(self, *args, **kwargs):
         super(Article, self).save(*args, **kwargs)

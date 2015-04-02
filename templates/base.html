@@ -9,7 +9,7 @@
 	<meta name="description" content="">
 	<meta name="author"      content="Sergey Pozhilov (GetTemplate.com)">
 	
-	<title>Wakacyjne Warsztaty Wielodyscyplinarne</title>
+	<title>{% if title %}{{ title }} - WWW{% else %}Wakacyjne Warsztaty Wielodyscyplinarne{% endif %}</title>
 
 	<link rel="shortcut icon" href="{% static 'images/gt_favicon.png' %}">
 	
@@ -48,7 +48,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Artykuły <b class="caret"></b></a>
 						<ul class="dropdown-menu">
                             {% for article in articles_on_menubar %}
-                                <li><a href="{% url 'article' article.name%}">{{ article.name }}</a></li>
+                                <li><a href="{% url 'article' article.name%}">{{ article.title }}</a></li>
                             {% endfor %}
 						</ul>
 					</li>

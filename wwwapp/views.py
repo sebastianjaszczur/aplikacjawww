@@ -76,6 +76,7 @@ def article(request, name):
     else:
         form = None
     
+    context['title'] = art.title
     context['article'] = art
     context['form'] = form
 

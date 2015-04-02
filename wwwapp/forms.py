@@ -32,4 +32,10 @@ class UserForm(ModelForm):
 class ArticleForm(ModelForm):
     class Meta:
         model = Article
-        fields = ['name', 'content']
+        fields = ['title', 'name', 'on_menubar', 'content']
+        labels = {
+            'title': u'Tytuł',
+            'name': u'Nazwa (w URLach)',
+            'on_menubar': u'Umieść w menu',
+            'content': u'Treść',
+        }
