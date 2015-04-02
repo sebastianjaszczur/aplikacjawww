@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
-from wwwapp.models import Article, UserProfile, ArticleContentHistory
+from wwwapp.models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop
 from django.contrib.auth.admin import UserAdmin
 
 admin.site.unregister(User)
@@ -15,3 +15,6 @@ admin.site.register(User, UserProfileAdmin)
 
 admin.site.register(Article)
 admin.site.register(ArticleContentHistory)
+
+admin.site.register(WorkshopCategory)
+admin.site.register(Workshop)

@@ -2,7 +2,7 @@
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 
-from wwwapp.models import UserProfile, Article
+from wwwapp.models import UserProfile, Article, Workshop
 
 
 class UserProfileForm(ModelForm):
@@ -33,3 +33,9 @@ class ArticleForm(ModelForm):
     class Meta:
         model = Article
         fields = ['name', 'content']
+
+
+class WorkshopForm(ModelForm):
+    class Meta:
+        model = Workshop
+        fields = ['name', 'proposition_description', 'category']
