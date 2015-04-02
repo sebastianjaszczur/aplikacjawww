@@ -31,7 +31,14 @@ class ArticleContentHistory(models.Model):
     article = models.ForeignKey('Article')
     content = models.TextField()
     modified_by = models.ForeignKey(User, null=True, default=None)
+    time = models.DateTimeField(auto_now_add=True, null=True, editable=False)
 
+    def __unicode__(self):
+        time = u'?'
+        if (self.time):
+            time = self.time.strftime(u'%y-%m-%d %H:%M')
+        return u'{} (v{} by {} at {})'.format(self.article.name, self.version, self.modified_by, time)
+    
     class Meta:
         unique_together = ('version', 'article',)
 
