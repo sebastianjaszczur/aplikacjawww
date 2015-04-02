@@ -51,7 +51,7 @@
                                 <li><a href="{% url 'article' article.name%}">{{ article.title }}</a></li>
                             {% endfor %}
                             {% if perms.wwwapp.add_article %}
-                                <li><a href="{% url 'addArticle' %}">nowy artykuł</a></li>
+                                <li><a href="{% url 'addArticle' %}">Nowy artykuł</a></li>
                             {% endif %}
 						</ul>
 					</li>
