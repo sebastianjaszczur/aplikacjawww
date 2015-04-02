@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -59,23 +60,34 @@ def login(request):
     return render(request, 'login.html', context)
 
 
-def article(request, name):
+def article(request, name = None):
     context = get_context(request)
-    art = Article.objects.get(name=name)
+    new = (name is None)
+    if new:
+        art = None
+        title = u'Nowy artykuł'
+        has_perm = request.user.has_perm('wwwapp.add_article')
+    else:
+        art = Article.objects.get(name=name)
+        title = art.title
+        has_perm = request.user.has_perm('wwwapp.change_article')
     
-    if request.user.has_perm('wwwapp.change_article'):
+    if has_perm:
         if request.method == 'POST':
-            form = ArticleForm(request.POST, instance=art)
+            form = ArticleForm(request.user, request.POST, instance=art)
             if form.is_valid():
                 article = form.save(commit=False)
                 article.modified_by = request.user
                 article.save()
+                form.save_m2m()
                 return HttpResponseRedirect(reverse('article', args=(form.instance.name,)))
         else:
-            form = ArticleForm(instance=art)
+            form = ArticleForm(request.user, instance=art)
     else:
         form = None
     
+    context['addArticle'] = new
+    context['title'] = title
     context['article'] = art
     context['form'] = form
 

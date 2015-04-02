@@ -31,10 +31,17 @@ class ArticleContentHistory(models.Model):
     article = models.ForeignKey('Article')
     content = models.TextField()
     modified_by = models.ForeignKey(User, null=True, default=None)
-
+    time = models.DateTimeField(auto_now_add=True, null=True, editable=False)
+    
+    def __unicode__(self):
+        time = u'?'
+        if (self.time):
+            time = self.time.strftime(u'%y-%m-%d %H:%M')
+        return u'{} (v{} by {} at {})'.format(self.article.name, self.version, self.modified_by, time)
+    
     class Meta:
         unique_together = ('version', 'article',)
-
+    
     def save(self, *args, **kwargs):
         # start with version 1 and increment it for each version
         current_version = ArticleContentHistory.objects.filter(article=self.article).order_by('-version')[:1]
@@ -44,16 +51,20 @@ class ArticleContentHistory(models.Model):
 
 
 class Article(models.Model):
-    name = AlphaNumericField(max_length=40, null=False, unique=True)
+    name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
+    title = models.CharField(max_length=50, null=True, blank=False)
     content = models.TextField(max_length=100000, blank=True)
     modified_by = models.ForeignKey(User, null=True, default=None)
     on_menubar = models.BooleanField(default=False)
+    
+    class Meta:
+        permissions = (('can_put_on_menubar', u'Can put on menubar'),)
     
     def content_history(self):
         return ArticleContentHistory.objects.filter(article=self).order_by('-version')
     
     def __unicode__(self):
-        return self.name
+        return u'{} "{}"'.format(self.name, self.title)
     
     def save(self, *args, **kwargs):
         super(Article, self).save(*args, **kwargs)
