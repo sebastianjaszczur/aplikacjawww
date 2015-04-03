@@ -76,10 +76,15 @@ class Article(models.Model):
 
 
 class WorkshopCategory(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False)
+    name = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    
+    def __unicode__(self):
+        return self.name
 
 
 class Workshop(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
+    title = models.CharField(max_length=50, null=True, blank=False)
     proposition_description = models.TextField(max_length=100000, blank=True)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
+    lecturer = models.ManyToManyField(UserProfile, blank=True)

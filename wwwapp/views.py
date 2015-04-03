@@ -3,8 +3,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 
-from wwwapp.models import Article, UserProfile
-from wwwapp.forms import ArticleForm, UserProfileForm, UserForm
+from wwwapp.models import Article, UserProfile, Workshop
+from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm
 
 def get_context(request):
     context = {}
@@ -58,6 +58,45 @@ def login(request):
                 user.save()
                 user_profile.save()
     return render(request, 'login.html', context)
+
+
+def workshop(request, name=None):
+    context = get_context(request)
+    new = (name is None)
+    if new:
+        workshop = None
+        title = u'Nowe warsztaty'
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect(reverse('login'))
+        else:
+            has_perm = True
+    else:
+        workshop = Workshop.objects.get(name=name)
+        title = workshop.title
+        has_perm = Workshop.objects.filter(lecturer__user=request.user).exists()
+    
+    if has_perm:
+        if request.method == 'POST':
+            form = WorkshopForm(request.POST, instance=workshop)
+            if form.is_valid():
+                workshop = form.save(commit=False)
+                workshop.save()
+                user_profile = UserProfile.objects.get(user=request.user)
+                workshop.lecturer.add(user_profile)
+                workshop.save()
+                return HttpResponseRedirect(reverse('workshop', args=(form.instance.name,)))
+        else:
+            form = WorkshopForm(instance=workshop)
+    else:
+        form = None
+    
+    context['addWorkshop'] = new
+    context['title'] = title
+    context['workshop'] = workshop
+    context['form'] = form
+    context['has_perm'] = has_perm
+
+    return render(request, 'workshop.html', context)
 
 
 def article(request, name = None):

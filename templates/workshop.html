@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <article class="col-sm-12 maincontent">
+        {{ workshop.proposition_description|safe }}
+        {% if has_perm %}
+            <div role="tabpanel" aria-labelledby="headingOne">
+                <hr>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <script>
+                        CKEDITOR.replace( 'proposition_description', { height: "350px" });
+                    </script>
+                    <button class="btn btn-default">Save article</button>
+                </form>
+            </div>
+        {% endif %}
+    </article>
+</div>
+{% endblock %}

@@ -13,5 +13,7 @@ urlpatterns = patterns('',
     url(r'^profile/', views.profile, name='profile'),
     url(r'^article/(?P<name>[a-zA-Z0-9\-_]+)/', views.article, name='article'),
     url(r'^addArticle/', views.article, name='addArticle'),
+    url(r'^workshop/(?P<name>[a-zA-Z0-9\-_]+)/', views.workshop, name='workshop'),
+    url(r'^addWorkshop/', views.workshop, name='addWorkshop'),
     url(r'^$', views.index, name='index'),
 )
