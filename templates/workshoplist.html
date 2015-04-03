@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <article class="col-sm-12 maincontent">
+        <h1> {{ listTitle }}</h1>
+        {% if workshops %}
+            {% for workshop in workshops %}
+                <li><a href="{% url 'workshop' workshop.name%}">{{ workshop.title }}</a></li>
+            {% endfor %}
+        {% else %}
+            Nie ma żadnych warsztatów do wyświetlenia.
+        {% endif %}
+        
+        {% if canAddWorkshop %}
+            <br>
+            <a href="{% url 'addWorkshop' %}">Dodaj warsztaty</a>
+        {% endif %}
+    </article>
+</div>
+{% endblock %}

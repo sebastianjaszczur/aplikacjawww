@@ -15,5 +15,6 @@ urlpatterns = patterns('',
     url(r'^addArticle/', views.article, name='addArticle'),
     url(r'^workshop/(?P<name>[a-zA-Z0-9\-_]+)/', views.workshop, name='workshop'),
     url(r'^addWorkshop/', views.workshop, name='addWorkshop'),
+    url(r'^yourWorkshops/', views.your_workshops, name='yourWorkshops'),
     url(r'^$', views.index, name='index'),
 )

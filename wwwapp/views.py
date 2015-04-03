@@ -133,6 +133,19 @@ def article(request, name = None):
     return render(request, 'article.html', context)
 
 
+def your_workshops(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('login'))
+    context = get_context(request)
+    
+    workshops = Workshop.objects.filter(lecturer__user=request.user)
+    context['workshops'] = workshops
+    context['canAddWorkshop'] = True
+    context['listTitle'] = "Twoje warsztaty"
+    
+    return render(request, 'workshoplist.html', context)
+
+
 def as_article(name):
     # make sure that article with this name exists
     art = Article.objects.get_or_create(name=name)
