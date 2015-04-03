@@ -49,9 +49,10 @@ class ArticleForm(ModelForm):
 class WorkshopForm(ModelForm):
     class Meta:
         model = Workshop
-        fields = ['title', 'name', 'proposition_description', 'category']
+        fields = ['title', 'name', 'type', 'category', 'proposition_description']
         labels = {
             'title': u'Tytuł',
+            'type': u'Rodzaj zajęć',
             'name': u'Nazwa (w URLach)',
             'proposition_description': u'Opis propozycji warsztatów',
             'category': 'kategorie',
