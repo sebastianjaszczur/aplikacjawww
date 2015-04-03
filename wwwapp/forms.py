@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User
 
 from wwwapp.models import UserProfile, Article, Workshop
+from wwwapp.widgets import RichTextarea
 
 
 class UserProfileForm(ModelForm):
@@ -38,6 +39,9 @@ class ArticleForm(ModelForm):
             'name': u'Nazwa (w URLach)',
             'on_menubar': u'Umieść w menu',
             'content': u'Treść',
+        }
+        widgets = {
+            'content': RichTextarea()
         }
     
     def __init__(self, user, *args, **kwargs):
