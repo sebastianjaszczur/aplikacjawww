@@ -16,4 +16,5 @@ Django-based application to manage registration of people for [scientific summer
 - `./runserver.sh`
 
 ### Online version:
-App currently available at http://aplikacjawww-jaszczur.rhcloud.com/
+App currently available at http://warsztatywww.pl/
+Also: http://aplikacjawww-jaszczur.rhcloud.com/
