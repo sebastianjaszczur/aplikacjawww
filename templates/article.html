@@ -15,9 +15,6 @@
             <form action="" method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <script>
-                    CKEDITOR.replace( 'content', { height: "700px" });
-                </script>
                 <button class="btn btn-default">Save article</button>
             </form>
         </div>
