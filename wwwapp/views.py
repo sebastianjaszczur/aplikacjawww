@@ -1,7 +1,10 @@
 #-*- coding: utf-8 -*-
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, JsonResponse
+from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
+
+from allaccess.views import OAuthRedirect
 
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm
@@ -42,7 +45,7 @@ def login(request):
             access = None
         else:
             client = access.api_client
-            user_info = client.get_profile_info(raw_token=access.access_token)        
+            user_info = client.get_profile_info(raw_token=access.access_token)
             context['info'] = user_info
             
             user = request.user
@@ -51,13 +54,38 @@ def login(request):
             if just_created:
                 if 'first_name' in user_info:
                     user.first_name = user_info['first_name']
+                elif 'given_name' in user_info:
+                    user.first_name = user_info['given_name']
+                elif 'name' in user_info and 'givenName' in user_info['name']:
+                    user.first_name = user_info['name']['givenName']
                 if 'last_name' in user_info:
                     user.last_name = user_info['last_name']
+                elif 'family_name' in user_info:
+                    user.last_name = user_info['family_name']
+                elif 'name' in user_info and 'familyName' in user_info['name']:
+                    user.last_name = user_info['name']['familyName']
                 if 'gender' in user_info:
-                    user_profile.gender = user_info['gender']
+                    if user_info['gender'].lower() == 'm' or user_info['gender'].lower() == 'male': 
+                        user_profile.gender = 'M'
+                    elif user_info['gender'].lower() == 'f' or user_info['gender'].lower() == 'female': 
+                        user_profile.gender = 'F'
+                if 'email' in user_info:
+                    user.email = user_info['email']
+                elif 'emails' in user_info and user_info['emails'] and 'value' in user_info['emails'][0]:
+                    user.email = user_info['emails'][0]['value']
                 user.save()
                 user_profile.save()
     return render(request, 'login.html', context)
+
+
+# Replace's django-all-access' OAuthRedirect to make G+ and emails work.
+class ScopedOAuthRedirect(OAuthRedirect):
+    def get_additional_parameters(self, provider):
+        if provider.name == 'facebook':
+            return {'scope': 'public_profile email'}
+        if provider.name == 'google':
+            return {'scope': 'openid profile email'}
+        return super(ScopedOAuthRedirect, self).get_additional_parameters(provider)
 
 
 def workshop(request, name=None):
@@ -73,7 +101,7 @@ def workshop(request, name=None):
     else:
         workshop = Workshop.objects.get(name=name)
         title = workshop.title
-        has_perm = Workshop.objects.filter(lecturer__user=request.user).exists()
+        has_perm = Workshop.objects.filter(name=name,lecturer__user=request.user).exists()
     
     if has_perm:
         if request.method == 'POST':

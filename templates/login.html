@@ -11,7 +11,7 @@
             <h2 class="heading">Wybierz metodę logowania: </h2>
             <div class="form-signin">
             {% for provider in allaccess_providers %}
-                <a class="button zocial {{ provider.name|lower }}" href="{% url 'allaccess-login' provider.name %}">
+                <a class="button zocial {{ provider.name|lower }}" href="{% url 'scopedallaccess-login' provider.name %}">
                     Sign in with {{ provider.name|title }}
                 </a>
             {% endfor %}
