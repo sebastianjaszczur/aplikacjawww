@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django_select2 import ModelSelect2MultipleField, Select2MultipleWidget, ModelSelect2Field, Select2Widget
 
 from wwwapp.models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType
+from wwwapp.widgets import RichTextarea
 
 
 class UserProfileForm(ModelForm):
@@ -41,6 +42,9 @@ class ArticleForm(ModelForm):
             'on_menubar': u'Umieść w menu',
             'content': u'Treść',
         }
+        widgets = {
+            'content': RichTextarea()
+        }
     
     def __init__(self, user, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
@@ -59,6 +63,9 @@ class WorkshopForm(ModelForm):
     class Meta:
         model = Workshop
         fields = ['title', 'name', 'type', 'category', 'proposition_description']
+        widgets = {
+            'proposition_description': RichTextarea()
+        }
         labels = {
             'title': u'Tytuł',
             'name': u'Nazwa (w URLach)',

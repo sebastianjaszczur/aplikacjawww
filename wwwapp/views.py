@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.core.urlresolvers import reverse
 
 from wwwapp.models import Article, UserProfile, Workshop
@@ -132,6 +132,11 @@ def article(request, name = None):
     context['form'] = form
 
     return render(request, 'article.html', context)
+
+
+def article_name_list(request):
+    names = Article.objects.values_list('name', flat=True)
+    return JsonResponse(list(names), safe=False)
 
 
 def your_workshops(request):
