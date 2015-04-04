@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'allaccess',
     'sanitizer',
+    'django_select2',
     'wwwapp',
 )
 

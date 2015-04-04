@@ -2,7 +2,9 @@
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 
-from wwwapp.models import UserProfile, Article, Workshop
+from django_select2 import ModelSelect2MultipleField, Select2MultipleWidget, ModelSelect2Field, Select2Widget
+
+from wwwapp.models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType
 
 
 class UserProfileForm(ModelForm):
@@ -47,13 +49,18 @@ class ArticleForm(ModelForm):
 
 
 class WorkshopForm(ModelForm):
+    category = ModelSelect2MultipleField(label="Kategorie", queryset=WorkshopCategory.objects, required=False, 
+                                         widget=Select2MultipleWidget(select2_options={'width': '200px',})
+                                         )
+    category.help_text = "" # this removes annoying message ' Hold down "Control", or "Command" (..) '
+    type = ModelSelect2Field(label="Rodzaj zajęć", queryset=WorkshopType.objects, required=False, 
+                             widget=Select2Widget(select2_options={'width': '200px',})
+                             )
     class Meta:
         model = Workshop
         fields = ['title', 'name', 'type', 'category', 'proposition_description']
         labels = {
             'title': u'Tytuł',
-            'type': u'Rodzaj zajęć',
             'name': u'Nazwa (w URLach)',
             'proposition_description': u'Opis propozycji warsztatów',
-            'category': 'kategorie',
         }
