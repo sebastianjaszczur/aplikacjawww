@@ -52,8 +52,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'allaccess',
-    'sanitizer',
     'django_select2',
+    'django_bleach',
     'wwwapp',
 )
 
@@ -97,6 +97,31 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
+# Which HTML tags are allowed
+BLEACH_ALLOWED_TAGS = [
+    'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'pre', 'div', 'strong', 'sup', 'sub', 'ol', 'ul', 'li', 'address',
+    'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'table', 'tbody', 'tr', 'td', 'hr', 'img',
+    ]
+
+# Which HTML attributes are allowed
+BLEACH_ALLOWED_ATTRIBUTES = [
+    'href', 'title', 'style', 'alt', 'src', 'dir', 'class', 'border', 'cellpadding', 'cellspacing'
+    ]
+
+# Which CSS properties are allowed in 'style' attributes (assuming
+# style is an allowed attribute)
+BLEACH_ALLOWED_STYLES = [
+    'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
+    'margin-left', 'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
+    ]
+
+# Strip unknown tags if True, replace with HTML escaped characters if
+# False
+BLEACH_STRIP_TAGS = True
+
+# Strip comments, or leave them in.
+BLEACH_STRIP_COMMENTS = False
 
 # Logging and authentication
 

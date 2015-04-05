@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
+{% load bleach_tags %}
+
 {% block content %}
 <div class="container">
     <article class="col-sm-12 maincontent">
-        {{ workshop.proposition_description|safe }}
+        {{ workshop.proposition_description|bleach }}
         {% if has_perm %}
             <div role="tabpanel" aria-labelledby="headingOne">
                 <hr>

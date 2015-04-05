@@ -10,8 +10,16 @@ from wwwapp.models import Article
 
 DEFAULT_CONFIG = {
     'language': 'pl',
-    'removePlugins': 'link',
+    'removePlugins': 'link,scayt,contextmenu,liststyle,tabletools,forms,language,print,preview,newpage,bidi,flash,iframe',
+    # contextmenu is removed, because it's annoying (and it replaces better browser contextmenu)
+    # scayt,liststyle,tabletools are removed, because they require contextmenu
+    # forms is removed, because there is no use-case for it
+    # language is removed, because it's useless (it sets language of content, by the way)
+    # print,preview,newpage are removed, because they're useless
+    # bidi is removed, because it's completely useless (it changes direction of text)
+    # flash,iframe are removed, because they're dangerous
     'extraPlugins': 'linklocal',
+    'disableNativeSpellChecker': False, # browser spellchecker is better
     'linklocal_autocomplete': '/articleNameList',
     'linklocal_prefix': '/article/',
 }
