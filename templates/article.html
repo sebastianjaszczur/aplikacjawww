@@ -5,6 +5,7 @@
 {% block content %}
 <div class="container">
     <article class="col-sm-12 maincontent">
+        {% if article.title %}<header><h1>{{ article.title }}</h1></header>{% endif %}
         {{ article.content|bleach }}
         {% if perms.wwwapp.change_article %}
         {% if not addArticle %}

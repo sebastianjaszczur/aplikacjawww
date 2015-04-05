@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container">
     <div class="col-sm-12 maincontent">
-        <hr>
+        <h1>{{ title }}</h1>
         <form action="" method="post">
             {% csrf_token %}
             {{ user_form.as_p }}

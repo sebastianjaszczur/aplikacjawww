@@ -34,6 +34,7 @@ def profile(request):
             user_profile_form = UserProfileForm(instance=user_profile)
         context['user_form'] = user_form
         context['user_profile_form'] = user_profile_form
+        context['title'] = u'Profil'
         return render(request, 'profile.html', context)
 
 
@@ -124,7 +125,7 @@ def your_workshops(request):
     workshops = Workshop.objects.filter(lecturer__user=request.user)
     context['workshops'] = workshops
     context['canAddWorkshop'] = True
-    context['listTitle'] = "Twoje warsztaty"
+    context['title'] = u'Twoje warsztaty'
     
     return render(request, 'workshoplist.html', context)
 
