@@ -5,6 +5,7 @@
 {% block content %}
 <div class="container">
     <article class="col-sm-12 maincontent">
+        <h1>{{ title }}</h1>
         {{ workshop.proposition_description|bleach }}
         {% if has_perm %}
             <div role="tabpanel" aria-labelledby="headingOne">

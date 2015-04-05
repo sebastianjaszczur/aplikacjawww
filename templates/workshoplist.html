@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
     <article class="col-sm-12 maincontent">
-        <h1> {{ listTitle }}</h1>
+        <h1> {{ title }}</h1>
         {% if workshops %}
             {% for workshop in workshops %}
                 <li><a href="{% url 'workshop' workshop.name%}">{{ workshop.title }}</a></li>
