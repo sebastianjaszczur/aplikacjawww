@@ -47,6 +47,9 @@ else:
 ADMINS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
           ('Marcin Wrochna', 'mwrochna+django@gmail.com'))
 
+MANAGERS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
+            ('Marcin Wrochna', 'mwrochna+django@gmail.com'))
+
 if ON_PAAS:
     EMAIL_HOST = "smtp.gmail.com"
     EMAIL_PORT = 587
