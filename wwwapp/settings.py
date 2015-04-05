@@ -47,7 +47,7 @@ else:
 ADMINS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
           ('Marcin Wrochna', 'mwrochna+django@gmail.com'))
 
-if ON_PASS:
+if ON_PAAS:
     EMAIL_HOST = "smtp.gmail.com"
     EMAIL_PORT = 587
     EMAIL_HOST_USER = os.environ['GMAIL_ADDRESS']
