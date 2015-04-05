@@ -106,7 +106,8 @@ BLEACH_ALLOWED_TAGS = [
 
 # Which HTML attributes are allowed
 BLEACH_ALLOWED_ATTRIBUTES = [
-    'href', 'title', 'style', 'alt', 'src', 'dir', 'class', 'border', 'cellpadding', 'cellspacing'
+    'href', 'title', 'style', 'alt', 'src', 'dir', 'class', 'border', 'cellpadding', 'cellspacing', 'id',
+    'name', 
     ]
 
 # Which CSS properties are allowed in 'style' attributes (assuming
@@ -114,6 +115,8 @@ BLEACH_ALLOWED_ATTRIBUTES = [
 BLEACH_ALLOWED_STYLES = [
     'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
     'margin-left', 'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
+    'margin', 'padding-top', 'font-size', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color', 
+    'line-height', 'border-collapse', 'border-spacing', 'empty-cells', 
     ]
 
 # Strip unknown tags if True, replace with HTML escaped characters if
