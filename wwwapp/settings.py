@@ -112,8 +112,8 @@ BLEACH_ALLOWED_ATTRIBUTES = [
 # Which CSS properties are allowed in 'style' attributes (assuming
 # style is an allowed attribute)
 BLEACH_ALLOWED_STYLES = [
-    #'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
-    #'margin-left', 'text-align', 'title', 'page-break-after', 'display'
+    'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
+    'margin-left', 'text-align', 'title', 'page-break-after', 'display'
     ]
 
 # Strip unknown tags if True, replace with HTML escaped characters if
