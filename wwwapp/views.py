@@ -11,6 +11,7 @@ def get_context(request):
     context = {}
     
     articles_on_menubar = Article.objects.filter(on_menubar=True).all()
+    context['google_analytics_key'] = GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     
     return context

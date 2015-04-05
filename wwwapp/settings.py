@@ -176,3 +176,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'allaccess.context_processors.available_providers',
 )
+
+if ON_PAAS and not DEBUG:
+	GOOGLE_ANALYTICS_KEY = 'UA-12926426-8'
+else
+	GOOGLE_ANALYTICS_KEY = None
