@@ -113,7 +113,7 @@ BLEACH_ALLOWED_ATTRIBUTES = [
 # style is an allowed attribute)
 BLEACH_ALLOWED_STYLES = [
     'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
-    'margin-left', 'text-align', 'title', 'page-break-after', 'display'
+    'margin-left', 'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
     ]
 
 # Strip unknown tags if True, replace with HTML escaped characters if
