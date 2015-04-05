@@ -52,7 +52,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'allaccess',
-    'sanitizer',
     'django_select2',
     'wwwapp',
 )
