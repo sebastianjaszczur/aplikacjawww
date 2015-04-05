@@ -2,9 +2,7 @@
 from django.db import models
 
 import re
-from django.contrib.auth.models import Group, User
-from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
@@ -19,13 +17,6 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return self.user.username
 
-# Register a receiver called whenever a User object is saved.
-# Add all created Users to group allUsers.
-@receiver(post_save, sender=User, dispatch_uid='user_post_save_handler')
-def user_post_save(sender, instance, created, **kwargs):
-    if created:
-        group, groupCreated = Group.objects.get_or_create(name='allUsers')
-        group.user_set.add(instance)
 
 class AlphaNumericField(models.CharField):
     def clean(self, value, model_instance):
