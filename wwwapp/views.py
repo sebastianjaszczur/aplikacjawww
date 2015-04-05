@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, JsonResponse
@@ -11,7 +12,7 @@ def get_context(request):
     context = {}
     
     articles_on_menubar = Article.objects.filter(on_menubar=True).all()
-    context['google_analytics_key'] = GOOGLE_ANALYTICS_KEY
+    context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     
     return context
