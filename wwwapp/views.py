@@ -1,10 +1,9 @@
 #-*- coding: utf-8 -*-
+from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
-
-from allaccess.views import OAuthRedirect
 
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm
@@ -13,6 +12,7 @@ def get_context(request):
     context = {}
     
     articles_on_menubar = Article.objects.filter(on_menubar=True).all()
+    context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     
     return context
@@ -35,57 +35,6 @@ def profile(request):
         context['user_form'] = user_form
         context['user_profile_form'] = user_profile_form
         return render(request, 'profile.html', context)
-
-def login(request):
-    context = get_context(request)
-    if request.user.is_authenticated():
-        try:
-            access = request.user.accountaccess_set.all()[0]
-        except IndexError:
-            access = None
-        else:
-            client = access.api_client
-            user_info = client.get_profile_info(raw_token=access.access_token)
-            context['info'] = user_info
-            
-            user = request.user
-            user_profile, just_created = UserProfile.objects.get_or_create(user=user)
-            
-            if just_created:
-                if 'first_name' in user_info:
-                    user.first_name = user_info['first_name']
-                elif 'given_name' in user_info:
-                    user.first_name = user_info['given_name']
-                elif 'name' in user_info and 'givenName' in user_info['name']:
-                    user.first_name = user_info['name']['givenName']
-                if 'last_name' in user_info:
-                    user.last_name = user_info['last_name']
-                elif 'family_name' in user_info:
-                    user.last_name = user_info['family_name']
-                elif 'name' in user_info and 'familyName' in user_info['name']:
-                    user.last_name = user_info['name']['familyName']
-                if 'gender' in user_info:
-                    if user_info['gender'].lower() == 'm' or user_info['gender'].lower() == 'male': 
-                        user_profile.gender = 'M'
-                    elif user_info['gender'].lower() == 'f' or user_info['gender'].lower() == 'female': 
-                        user_profile.gender = 'F'
-                if 'email' in user_info:
-                    user.email = user_info['email']
-                elif 'emails' in user_info and user_info['emails'] and 'value' in user_info['emails'][0]:
-                    user.email = user_info['emails'][0]['value']
-                user.save()
-                user_profile.save()
-    return render(request, 'login.html', context)
-
-
-# Replace's django-all-access' OAuthRedirect to make G+ and emails work.
-class ScopedOAuthRedirect(OAuthRedirect):
-    def get_additional_parameters(self, provider):
-        if provider.name == 'facebook':
-            return {'scope': 'public_profile email'}
-        if provider.name == 'google':
-            return {'scope': 'openid profile email'}
-        return super(ScopedOAuthRedirect, self).get_additional_parameters(provider)
 
 
 def workshop(request, name=None):
