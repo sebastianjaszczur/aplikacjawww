@@ -42,6 +42,18 @@ if ON_PAAS:
 else:
     ALLOWED_HOSTS = ["*"]
 
+# E-mail settings
+
+ADMINS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
+          ('Marcin Wrochna', 'mwrochna+django@gmail.com'))
+
+if ON_PASS:
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = os.environ['GMAIL_ADDRESS']
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_PASSWORD = os.environ['GMAIL_PASSWORD']
+
 # Application definition
 
 INSTALLED_APPS = (
