@@ -25,7 +25,7 @@ class UserProfileForm(ModelForm):
             'school': u'Szkoła lub uniwersytet',
             'matura_exam_year': u'Rok zdania matury',
             'how_do_you_know_about': u'Skąd wiesz o WWW?',
-            'interests': 'Zainteresowania',
+            'interests': u'Zainteresowania',
         }
 
 
