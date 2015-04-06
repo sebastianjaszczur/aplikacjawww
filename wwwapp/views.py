@@ -8,6 +8,7 @@ from django.shortcuts import render
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm
 
+
 def get_context(request):
     context = {}
     
@@ -16,6 +17,7 @@ def get_context(request):
     context['articles_on_menubar'] = articles_on_menubar
     
     return context
+
 
 def profile(request):
     context = get_context(request)
@@ -35,6 +37,8 @@ def profile(request):
         context['user_form'] = user_form
         context['user_profile_form'] = user_profile_form
         context['title'] = u'Profil'
+        user_form.helper.form_tag = False
+        user_profile_form.helper.form_tag = False
         return render(request, 'profile.html', context)
 
 

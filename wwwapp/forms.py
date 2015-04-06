@@ -2,6 +2,8 @@
 from django.forms import ModelForm
 from django.contrib.auth.models import User
 
+from crispy_forms.helper import FormHelper
+
 from django_select2 import ModelSelect2MultipleField, Select2MultipleWidget, ModelSelect2Field, Select2Widget
 
 from wwwapp.models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType
@@ -9,6 +11,12 @@ from wwwapp.widgets import RichTextarea
 
 
 class UserProfileForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserProfileForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-10'
+
     class Meta:
         model = UserProfile
         fields = ['gender', 'school', 'matura_exam_year', 'how_do_you_know_about', 'interests']
@@ -22,6 +30,12 @@ class UserProfileForm(ModelForm):
 
 
 class UserForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-lg-2'
+        self.helper.field_class = 'col-lg-10'
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
