@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'allaccess',
+    'crispy_forms',
     'django_select2',
     'django_bleach',
     'wwwapp',
@@ -113,6 +114,9 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
+# Set cripsy forms template pack
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # Which HTML tags are allowed
 BLEACH_ALLOWED_TAGS = [
