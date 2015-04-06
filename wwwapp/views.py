@@ -13,8 +13,16 @@ def get_context(request):
     context = {}
     
     articles_on_menubar = Article.objects.filter(on_menubar=True).all()
+    if not request.user.is_authenticated():
+        has_workshops = False
+    else:
+        if Workshop.objects.filter(lecturer__user=request.user).exists():
+            has_workshops = True
+        else:
+            has_workshops = False
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
+    context['has_workshops'] = has_workshops
     
     return context
 
@@ -51,13 +59,16 @@ def workshop(request, name=None):
         if not request.user.is_authenticated():
             return HttpResponseRedirect(reverse('login'))
         else:
-            has_perm = True
+            has_perm_to_edit = True
     else:
         workshop = Workshop.objects.get(name=name)
         title = workshop.title
-        has_perm = Workshop.objects.filter(name=name,lecturer__user=request.user).exists()
+        if request.user.is_authenticated():
+            has_perm_to_edit = Workshop.objects.filter(name=name,lecturer__user=request.user).exists()
+        else:
+            has_perm_to_edit = False
     
-    if has_perm:
+    if has_perm_to_edit:
         if request.method == 'POST':
             form = WorkshopForm(request.POST, instance=workshop)
             if form.is_valid():
@@ -77,7 +88,7 @@ def workshop(request, name=None):
     context['title'] = title
     context['workshop'] = workshop
     context['form'] = form
-    context['has_perm'] = has_perm
+    context['has_perm_to_edit'] = has_perm_to_edit
 
     return render(request, 'workshop.html', context)
 
@@ -128,8 +139,19 @@ def your_workshops(request):
     
     workshops = Workshop.objects.filter(lecturer__user=request.user)
     context['workshops'] = workshops
-    context['canAddWorkshop'] = True
     context['title'] = u'Twoje warsztaty'
+    
+    return render(request, 'workshoplist.html', context)
+
+def all_workshops(request):
+    if not request.user.has_perm('wwwapp.see_all_workshops'):
+        # it should show page like "you don't have permission", probably
+        return HttpResponseRedirect(reverse('login'))
+    context = get_context(request)
+    
+    workshops = Workshop.objects.all()
+    context['workshops'] = workshops
+    context['title'] = u'Wszystkie warsztaty'
     
     return render(request, 'workshoplist.html', context)
 

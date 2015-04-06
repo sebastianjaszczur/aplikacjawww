@@ -11,11 +11,6 @@
         {% else %}
             Nie ma żadnych warsztatów do wyświetlenia.
         {% endif %}
-        
-        {% if canAddWorkshop %}
-            <br>
-            <a href="{% url 'addWorkshop' %}">Dodaj warsztaty</a>
-        {% endif %}
     </article>
 </div>
 {% endblock %}

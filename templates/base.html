@@ -73,7 +73,20 @@
 						</ul>
 					</li>
                     
-                    <li><a href="{% url 'yourWorkshops' %}">Twoje warsztaty</a></li>
+                    <li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Warsztaty<b class="caret"></b></a>
+						<ul class="dropdown-menu">
+                            <li><a href="{% url 'addWorkshop' %}">Zgłoś warsztaty!</a></li>
+                            {% if has_workshops %}
+                                <li><a href="{% url 'yourWorkshops' %}">Twoje warsztaty</a></li>
+                            {% endif %}
+                            {% if perms.wwwapp.see_all_workshops %}
+                                <li><a href="{% url 'allWorkshops' %}">Wszystkie warsztaty</a></li>
+                            {% endif %}
+						</ul>
+					</li>
+                    
+                    
                     
                     <li><a href="{% url 'profile' %}">Profil</a></li>
                     
