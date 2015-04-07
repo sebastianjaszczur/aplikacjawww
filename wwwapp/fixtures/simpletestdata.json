@@ -1,0 +1,12 @@
+[
+  {
+    "model": "wwwapp.article",
+    "pk": 1,
+    "fields": {
+      "name": "index",
+      "title": "",
+      "content": "example index page content",
+      "on_menubar": false
+    }
+  }
+]
