@@ -26,7 +26,11 @@ def get_context(request):
     return context
 
 
-def profile(request):
+def profile(request, user_id):
+    return redirect('index')
+
+
+def my_profile(request):
     context = get_context(request)
     if not request.user.is_authenticated():
         return redirect('login')
