@@ -11,7 +11,7 @@
             <tbody>
                 {% for field in user_form %}
                 <tr>
-                    <td>{{field.label}}</td><td>{% if field.value %}{{ user_form.get_field_display }}{% else %} {% endif %}</td>
+                    <td>{{field.label}}</td><td>{% if field.value %}{{ field.value }}{% else %} {% endif %}</td>
                 </tr>
                 {% endfor %}
                 {% for field in user_profile_form %}

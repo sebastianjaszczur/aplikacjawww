@@ -2,8 +2,8 @@
 from django.conf import settings
 from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm
 
@@ -26,8 +26,24 @@ def get_context(request):
     return context
 
 
-def profile(request, user_id):
-    return redirect('index')
+def profile(request, user_id):  # Can't get printing gender right :(
+    """
+    This function allows to view other people's profile by id.
+    However, to view them easily some kind of resolver might be needed as we don't have usernames.
+    """
+    context = get_context(request)
+    user_id = int(user_id)
+    #  No need for authentication to view profiles
+    user = get_object_or_404(User, pk=user_id)
+    if request.user == user:
+        return redirect('myProfile')
+    user_profile = UserProfile.objects.get(user=user)
+    context['title'] = u"Profil"
+    context['user_form'] = UserForm(instance=user)
+    context['user_profile_form'] = UserProfileForm(instance=user_profile)
+    context['myProfile'] = False
+
+    return render(request, 'profile.html', context)
 
 
 def my_profile(request):
@@ -42,15 +58,16 @@ def my_profile(request):
             if user_form.is_valid() and user_profile_form.is_valid():
                 user_form.save()
                 user_profile_form.save()
-            return redirect('profile')
+            return redirect('myProfile')
         else:
             user_form = UserForm(instance=request.user)
             user_profile_form = UserProfileForm(instance=user_profile)
-            context['user_form'] = user_form
-            context['user_profile_form'] = user_profile_form
-            context['title'] = u'Profil'
             user_form.helper.form_tag = False
             user_profile_form.helper.form_tag = False
+            context['user_form'] = user_form
+            context['user_profile_form'] = user_profile_form
+            context['myProfile'] = True
+            context['title'] = u'Mój profil'
             return render(request, 'profile.html', context)
 
 
@@ -68,7 +85,7 @@ def workshop(request, name=None):
         workshop = Workshop.objects.get(name=name)
         title = workshop.title
         if request.user.is_authenticated():
-            has_perm_to_edit = Workshop.objects.filter(name=name,lecturer__user=request.user).exists()
+            has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
         else:
             has_perm_to_edit = False
     
@@ -147,10 +164,11 @@ def your_workshops(request):
     
     return render(request, 'workshoplist.html', context)
 
+
 def all_workshops(request):
     if not request.user.has_perm('wwwapp.see_all_workshops'):
         # it should show page like "you don't have permission", probably
-        return HttpResponseRedirect(reverse('login'))
+        return redirect('login')
     context = get_context(request)
     
     workshops = Workshop.objects.all()
