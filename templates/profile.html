@@ -1,43 +1,28 @@
 
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
     <div id="profile_list" class="col-sm-12 maincontent" style="display: block;">
         <h1>{{ title }}</h1>
-
-        <table class="table table-bordered">
-            <tbody>
-                {% for field in user_form %}
-                <tr>
-                    <td>{{field.label}}</td><td>{% if field.value %}{{ field.value }}{% else %} {% endif %}</td>
-                </tr>
-                {% endfor %}
-                {% for field in user_profile_form %}
-                <tr>
-                    <td>{{field.label}}</td><td>{% if field.value %}{{field.value}}{% else %} {% endif %}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-
-    </div>
-    {% if myProfile %}
-    <div id="profile_edit" class="col-sm-12 maincontent" style="display: none;">
-        <h1>{{ title }}</h1>
-
-        <form action="" method="post" class="form-horizontal">
+        <form id="profile_form" action="" method="post" class="form-horizontal">
             {% crispy user_form %}
             {% crispy user_profile_form %}
-            <button class="btn btn-default">Zapisz</button>
+            {% if myProfile %}
+            <button type="button" id="edit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right" onclick="changeEdit()">Edytuj</button>
+            <button id="submit_button" style="display: none; margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
+            {% endif %}
         </form>
     </div>
+
+        {% if myProfile %}
+        <script src="{% static 'js/save_form_state.js' %}"></script>
         <script type="text/javascript">
             function SwapButtonNames(button, name1, name2)
             {
-            button = document.getElementById(button);
+
             if(button.innerHTML==name1)
             {
                 button.innerHTML = name2;
@@ -48,25 +33,32 @@
             }
             }
 
-            function SwapDivsWithClick(div1,div2)
+            function changeEdit()
             {
-            d1 = document.getElementById(div1);
-            d2 = document.getElementById(div2);
-            if( d2.style.display == "none" )
+            var button = document.getElementById('edit_button');
+            SwapButtonNames(button, 'Edytuj', 'Anuluj');
+            if(button.innerHTML == 'Edytuj')
             {
-            d1.style.display = "none";
-            d2.style.display = "block";
+                restoreForm("profile_form");
+                $("#profile_form input,select,textarea").attr('disabled', 'disabled');
+            } else
+            {
+                saveForm("profile_form");
+                $("#profile_form input,select,textarea").removeAttr('disabled');
+            }
+
+            var save = document.getElementById('submit_button');
+            if( save.style.display == "none" )
+            {
+            save.style.display = "block";
             }
             else
             {
-            d1.style.display = "block";
-            d2.style.display = "none";
+            save.style.display = "none";
             }
-            SwapButtonNames('edit_button', 'Edytuj', 'Anuluj');
+
             }
         </script>
-        <button id="edit_button" class="btn btn-default pull-right" onclick="SwapDivsWithClick('profile_list', 'profile_edit')">Edytuj</button>
-
         {% endif %}
 </div>
 {% endblock %}
