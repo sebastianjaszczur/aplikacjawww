@@ -1,16 +1,64 @@
 
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
-    <div class="col-sm-12 maincontent">
+    <div id="profile_list" class="col-sm-12 maincontent" style="display: block;">
         <h1>{{ title }}</h1>
-        <form action="" method="post" class="form-horizontal">
+        <form id="profile_form" action="" method="post" class="form-horizontal">
             {% crispy user_form %}
             {% crispy user_profile_form %}
-            <button class="btn btn-default">Zapisz</button>
+            {% if myProfile %}
+            <button type="button" id="edit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right" onclick="changeEdit()">Edytuj</button>
+            <button id="submit_button" style="display: none; margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
+            {% endif %}
         </form>
     </div>
+
+        {% if myProfile %}
+        <script src="{% static 'js/save_form_state.js' %}"></script>
+        <script type="text/javascript">
+            function SwapButtonNames(button, name1, name2)
+            {
+
+            if(button.innerHTML==name1)
+            {
+                button.innerHTML = name2;
+            }
+            else
+            {
+                button.innerHTML = name1;
+            }
+            }
+
+            function changeEdit()
+            {
+            var button = document.getElementById('edit_button');
+            SwapButtonNames(button, 'Edytuj', 'Anuluj');
+            if(button.innerHTML == 'Edytuj')
+            {
+                restoreForm("profile_form");
+                $("#profile_form input,select,textarea").attr('disabled', 'disabled');
+            } else
+            {
+                saveForm("profile_form");
+                $("#profile_form input,select,textarea").removeAttr('disabled');
+            }
+
+            var save = document.getElementById('submit_button');
+            if( save.style.display == "none" )
+            {
+            save.style.display = "block";
+            }
+            else
+            {
+            save.style.display = "none";
+            }
+
+            }
+        </script>
+        {% endif %}
 </div>
 {% endblock %}

@@ -117,6 +117,7 @@ else:
 
 # Set cripsy forms template pack
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+SELECT2_BOOTSTRAP = True
 
 # Which HTML tags are allowed
 BLEACH_ALLOWED_TAGS = [

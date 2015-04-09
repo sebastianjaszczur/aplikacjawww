@@ -1,10 +1,9 @@
 #-*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import messages
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
-
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm
 
@@ -27,10 +26,45 @@ def get_context(request):
     return context
 
 
-def profile(request):
+def set_form_readonly(form):
+    for field in form:
+        form.fields[field.name].widget.attrs['disabled'] = True
+    return form
+
+
+def profile(request, user_id):  # Can't get printing gender right :(
+    """
+    This function allows to view other people's profile by id.
+    However, to view them easily some kind of resolver might be needed as we don't have usernames.
+    """
+    # we don't want to make users' emails public - so we have to check for permission to view
+    if not request.user.has_perm('wwwapp.see_all_users'):
+        # it should show page like "you don't have permission", probably
+        return redirect('login')
+    
+    context = get_context(request)
+    user_id = int(user_id)
+    user = get_object_or_404(User, pk=user_id)
+    if request.user == user:
+        return redirect('myProfile')
+    user_profile = UserProfile.objects.get(user=user)
+    user_form = set_form_readonly(UserForm(instance=user))
+    user_profile_form = set_form_readonly(UserProfileForm(instance=user_profile))
+    user_form.helper.form_tag = False
+    user_profile_form.helper.form_tag = False
+
+    context['title'] = u"Profil"
+    context['user_form'] = user_form
+    context['user_profile_form'] = user_profile_form
+    context['myProfile'] = False
+
+    return render(request, 'profile.html', context)
+
+
+def my_profile(request):
     context = get_context(request)
     if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('login'))
+        return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
         if request.method == "POST":
@@ -39,15 +73,17 @@ def profile(request):
             if user_form.is_valid() and user_profile_form.is_valid():
                 user_form.save()
                 user_profile_form.save()
+            return redirect('myProfile')
         else:
-            user_form = UserForm(instance=request.user)
-            user_profile_form = UserProfileForm(instance=user_profile)
-        context['user_form'] = user_form
-        context['user_profile_form'] = user_profile_form
-        context['title'] = u'Profil'
-        user_form.helper.form_tag = False
-        user_profile_form.helper.form_tag = False
-        return render(request, 'profile.html', context)
+            user_form = set_form_readonly(UserForm(instance=request.user))
+            user_profile_form = set_form_readonly(UserProfileForm(instance=user_profile))
+            user_form.helper.form_tag = False
+            user_profile_form.helper.form_tag = False
+            context['user_form'] = user_form
+            context['user_profile_form'] = user_profile_form
+            context['myProfile'] = True
+            context['title'] = u'Mój profil'
+            return render(request, 'profile.html', context)
 
 
 def workshop(request, name=None):
@@ -57,14 +93,14 @@ def workshop(request, name=None):
         workshop = None
         title = u'Nowe warsztaty'
         if not request.user.is_authenticated():
-            return HttpResponseRedirect(reverse('login'))
+            return redirect('login')
         else:
             has_perm_to_edit = True
     else:
         workshop = Workshop.objects.get(name=name)
         title = workshop.title
         if request.user.is_authenticated():
-            has_perm_to_edit = Workshop.objects.filter(name=name,lecturer__user=request.user).exists()
+            has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
         else:
             has_perm_to_edit = False
     
@@ -78,7 +114,7 @@ def workshop(request, name=None):
                 user_profile = UserProfile.objects.get(user=request.user)
                 workshop.lecturer.add(user_profile)
                 workshop.save()
-                return HttpResponseRedirect(reverse('workshop', args=(form.instance.name,)))
+                return redirect('workshop', form.instance.name)
         else:
             form = WorkshopForm(instance=workshop)
     else:
@@ -113,7 +149,7 @@ def article(request, name = None):
                 article.modified_by = request.user
                 article.save()
                 form.save_m2m()
-                return HttpResponseRedirect(reverse('article', args=(form.instance.name,)))
+                return redirect('article', form.instance.name)
         else:
             form = ArticleForm(request.user, instance=art)
     else:
@@ -134,7 +170,7 @@ def article_name_list(request):
 
 def your_workshops(request):
     if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('login'))
+        return redirect('login')
     context = get_context(request)
     
     workshops = Workshop.objects.filter(lecturer__user=request.user)
@@ -143,10 +179,11 @@ def your_workshops(request):
     
     return render(request, 'workshoplist.html', context)
 
+
 def all_workshops(request):
     if not request.user.has_perm('wwwapp.see_all_workshops'):
         # it should show page like "you don't have permission", probably
-        return HttpResponseRedirect(reverse('login'))
+        return redirect('login')
     context = get_context(request)
     
     workshops = Workshop.objects.all()

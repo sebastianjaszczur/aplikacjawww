@@ -16,6 +16,9 @@ class UserProfile(models.Model):
     
     def __unicode__(self):
         return self.user.username
+    
+    class Meta:
+        permissions = (('see_all_users', u'Can see all users'),)
 
 
 class AlphaNumericField(models.CharField):
