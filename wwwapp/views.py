@@ -26,6 +26,12 @@ def get_context(request):
     return context
 
 
+def set_form_readonly(form):
+    for field in form:
+        form.fields[field.name].widget.attrs['disabled'] = True
+    return form
+
+
 def profile(request, user_id):  # Can't get printing gender right :(
     """
     This function allows to view other people's profile by id.
@@ -38,9 +44,14 @@ def profile(request, user_id):  # Can't get printing gender right :(
     if request.user == user:
         return redirect('myProfile')
     user_profile = UserProfile.objects.get(user=user)
+    user_form = set_form_readonly(UserForm(instance=user))
+    user_profile_form = set_form_readonly(UserProfileForm(instance=user_profile))
+    user_form.helper.form_tag = False
+    user_profile_form.helper.form_tag = False
+
     context['title'] = u"Profil"
-    context['user_form'] = UserForm(instance=user)
-    context['user_profile_form'] = UserProfileForm(instance=user_profile)
+    context['user_form'] = user_form
+    context['user_profile_form'] = user_profile_form
     context['myProfile'] = False
 
     return render(request, 'profile.html', context)
@@ -60,8 +71,8 @@ def my_profile(request):
                 user_profile_form.save()
             return redirect('myProfile')
         else:
-            user_form = UserForm(instance=request.user)
-            user_profile_form = UserProfileForm(instance=user_profile)
+            user_form = set_form_readonly(UserForm(instance=request.user))
+            user_profile_form = set_form_readonly(UserProfileForm(instance=user_profile))
             user_form.helper.form_tag = False
             user_profile_form.helper.form_tag = False
             context['user_form'] = user_form
