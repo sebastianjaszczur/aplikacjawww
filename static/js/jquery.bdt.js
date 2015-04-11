@@ -432,7 +432,8 @@
                     .find('li:first')
                     .addClass('disabled');
 
-            } else if (page == pageCount) {
+            }
+            if (page == pageCount) {
                 pagination
                     .find('li:last')
                     .addClass('disabled');
