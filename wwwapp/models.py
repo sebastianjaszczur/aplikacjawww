@@ -4,6 +4,7 @@ from django.db import models
 import re
 from django.contrib.auth.models import User
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     
@@ -12,8 +13,8 @@ class UserProfile(models.Model):
     school = models.CharField(max_length=100, default="", blank=True)
     matura_exam_year = models.PositiveSmallIntegerField(null=True, default=None, blank=True)
     how_do_you_know_about = models.CharField(max_length=1000, default="", blank=True)
-    interests = models.TextField(default="", blank=True)
-    
+    profile_page = models.TextField(max_length=100000, blank=True, default="")
+
     def __unicode__(self):
         return self.user.username
     
