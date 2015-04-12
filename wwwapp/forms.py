@@ -10,6 +10,14 @@ from wwwapp.models import UserProfile, Article, Workshop, WorkshopCategory, Work
 from wwwapp.widgets import RichTextarea
 
 
+class UserProfilePageForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_page']
+        labels = {'profile_page': u"Strona profilowa"}
+        widgets = {'profile_page': RichTextarea()}
+
+
 class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
@@ -19,13 +27,12 @@ class UserProfileForm(ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['gender', 'school', 'matura_exam_year', 'how_do_you_know_about', 'interests']
+        fields = ['gender', 'school', 'matura_exam_year', 'how_do_you_know_about']
         labels = {
             'gender': u'Płeć',
             'school': u'Szkoła lub uniwersytet',
             'matura_exam_year': u'Rok zdania matury',
             'how_do_you_know_about': u'Skąd wiesz o WWW?',
-            'interests': u'Zainteresowania',
         }
 
 
