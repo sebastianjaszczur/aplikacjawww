@@ -2,27 +2,48 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
+{% load bleach_tags %}
 
 {% block content %}
+
 <div class="container">
-    <div id="profile_list" class="col-sm-12 maincontent" style="display: block;">
+    <div id="profile_content" class="col-sm-12 maincontent" style="display: block;">
         <h1>{{ title }}</h1>
-        <form id="profile_form" action="" method="post" class="form-horizontal">
+
+{% if myProfile %}
+    <script src="{% static 'js/jquery.content_pagination.js' %}"></script>
+
+    <div id="pagination_content">
+        <div title="Dane" id="data">
+
+        <form id="profile_data_form" action="" method="post" class="form-horizontal">
             {% crispy user_form %}
             {% crispy user_profile_form %}
-            {% if myProfile %}
-            <button type="button" id="edit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right" onclick="changeEdit()">Edytuj</button>
-            <button id="submit_button" style="display: none; margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
-            {% endif %}
+            <button type="button" id="profile_data_form_edit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right" onclick='changeEdit("profile_data_form","profile_data_form_edit_button","profile_data_form_submit_button")'>Edytuj</button>
+            <button id="profile_data_form_submit_button" style="display: none; margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
         </form>
-    </div>
 
-        {% if myProfile %}
+        </div>
+        <div title="Strona profilowa" id="profile_page">
+            <div id="profile_page_view">
+                {{ user_profile_page_form.profile_page.value | bleach }}
+            </div>
+
+            <a id="profile_page_edit_button" onclick='SwapButtonNames("profile_page_edit_button","Edytuj","Anuluj")' style="margin: 10px 10px 10px 0px;" data-toggle="collapse" data-parent="#accordion" href="#profile_page_edit_collapse" aria-expanded="true" aria-controls="collapseOne" class="btn btn-default">Edytuj</a>
+            <div id="profile_page_edit_collapse" class="panel-collapse collapse out">
+                <form id="profile_page_form" action="{% url 'updateProfilePage' %}" method="post" class="form">
+                    {% csrf_token %}
+                    {{ user_profile_page_form.profile_page }}
+                    <button id="profile_page_form_submit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
+                </form>
+            </div>
+        </div>
+    </div>
         <script src="{% static 'js/save_form_state.js' %}"></script>
         <script type="text/javascript">
             function SwapButtonNames(button, name1, name2)
             {
-
+            var button = document.getElementById(button);
             if(button.innerHTML==name1)
             {
                 button.innerHTML = name2;
@@ -33,21 +54,22 @@
             }
             }
 
-            function changeEdit()
+            function changeEdit(form, edit_button, submit_button)
             {
-            var button = document.getElementById('edit_button');
-            SwapButtonNames(button, 'Edytuj', 'Anuluj');
+
+            SwapButtonNames(edit_button, 'Edytuj', 'Anuluj');
+            var button = document.getElementById(edit_button);
             if(button.innerHTML == 'Edytuj')
             {
-                restoreForm("profile_form");
-                $("#profile_form input,select,textarea").attr('disabled', 'disabled');
+                restoreForm(form);
+                $("#"+form+" input,select,textarea").attr('disabled', 'disabled');
             } else
             {
-                saveForm("profile_form");
-                $("#profile_form input,select,textarea").removeAttr('disabled');
+                saveForm(form);
+                $("#"+form+" input,select,textarea").removeAttr('disabled');
             }
 
-            var save = document.getElementById('submit_button');
+            var save = document.getElementById(submit_button);
             if( save.style.display == "none" )
             {
             save.style.display = "block";
@@ -59,6 +81,20 @@
 
             }
         </script>
-        {% endif %}
+    </div>
+    <script>
+        $(document).ready(function() {
+                paginate_content("pagination_content");});
+    </script>
+
+
+{% else %}
+
+{{ profile_page | bleach }}
+
+{% endif %}
+
+      </div>
 </div>
+
 {% endblock %}
