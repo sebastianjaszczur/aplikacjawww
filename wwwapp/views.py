@@ -49,7 +49,7 @@ def profile(request, user_id):  # Can't get printing gender right :(
         return redirect('myProfile')
     profile_page = UserProfile.objects.get(user=user).profile_page
 
-    context['title'] = "{0.first_name} {0.last_name}".format(user)
+    context['title'] = u"{0.first_name} {0.last_name}".format(user)
     context['profile_page'] = profile_page
     context['myProfile'] = False
 
