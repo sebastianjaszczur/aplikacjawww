@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
-from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm
+from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm
 
 
 def get_context(request):
@@ -28,7 +28,7 @@ def get_context(request):
 
 def set_form_readonly(form):
     for field in form:
-        form.fields[field.name].widget.attrs['disabled'] = True
+        form.fields[field.name].widget.attrs['disabled'] = 'True'
     return form
 
 
@@ -47,18 +47,27 @@ def profile(request, user_id):  # Can't get printing gender right :(
     user = get_object_or_404(User, pk=user_id)
     if request.user == user:
         return redirect('myProfile')
-    user_profile = UserProfile.objects.get(user=user)
-    user_form = set_form_readonly(UserForm(instance=user))
-    user_profile_form = set_form_readonly(UserProfileForm(instance=user_profile))
-    user_form.helper.form_tag = False
-    user_profile_form.helper.form_tag = False
+    profile_page = UserProfile.objects.get(user=user).profile_page
 
-    context['title'] = u"Profil"
-    context['user_form'] = user_form
-    context['user_profile_form'] = user_profile_form
+    context['title'] = "{0.first_name} {0.last_name}".format(user)
+    context['profile_page'] = profile_page
     context['myProfile'] = False
 
     return render(request, 'profile.html', context)
+
+
+def update_profile_page(request):
+    if not request.user.is_authenticated():
+        return redirect('login')
+    else:
+        user_profile = UserProfile.objects.get(user=request.user)
+        if request.method == "POST":
+            user_profile_page_form = UserProfilePageForm(request.POST, instance=user_profile)
+            if user_profile_page_form.is_valid():
+                user_profile_page_form.save()
+            return redirect('myProfile')
+        else:
+            return redirect('myProfile')
 
 
 def my_profile(request):
@@ -81,6 +90,7 @@ def my_profile(request):
             user_profile_form.helper.form_tag = False
             context['user_form'] = user_form
             context['user_profile_form'] = user_profile_form
+            context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
             context['myProfile'] = True
             context['title'] = u'Mój profil'
             return render(request, 'profile.html', context)
