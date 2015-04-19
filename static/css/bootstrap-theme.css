@@ -28,7 +28,7 @@
 .navbar-nav .dropdown-menu {
 	left:-5px;
 	font-size: 13px;
-	background-color: rgba(0, 0, 0, .7);
+	background-color: rgba(20, 20, 20, 0.95);
 	border: 0px none;
 	-webkit-border-radius: 0px; -moz-border-radius: 0px; border-radius: 0px;
 	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
