@@ -140,12 +140,6 @@
                                                             text: 25
                                                         })
                                                     )
-                                                    .append(
-                                                        $('<option>', {
-                                                            value: 50,
-                                                            text: 50
-                                                        })
-                                                    )
                                             )
                                     )
                             )
@@ -383,9 +377,9 @@
          */
         function setPageCount(tableBody) {
             if (activeSearch) {
-                pageCount = Math.round(tableBody.children('.search-item').length / pageRowCount);
+                pageCount = Math.ceil(tableBody.children('.search-item').length / pageRowCount);
             } else {
-                pageCount = Math.round(tableBody.children('tr').length / pageRowCount);
+                pageCount = Math.ceil(tableBody.children('tr').length / pageRowCount);
             }
 
             if (pageCount == 0) {
@@ -432,8 +426,7 @@
                     .find('li:first')
                     .addClass('disabled');
 
-            }
-            if (page == pageCount) {
+            }if (page == pageCount) {
                 pagination
                     .find('li:last')
                     .addClass('disabled');
