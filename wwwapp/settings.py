@@ -51,11 +51,14 @@ MANAGERS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
             ('Marcin Wrochna', 'mwrochna+django@gmail.com'))
 
 if ON_PAAS:
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_PORT = 587
-    EMAIL_HOST_USER = os.environ['GMAIL_ADDRESS']
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_PASSWORD = os.environ['GMAIL_PASSWORD']
+    if 'GMAIL_ADDRESS' in os.environ and 'GMAIL_PASSWORD' in os.environ:
+        EMAIL_HOST = "smtp.gmail.com"
+        EMAIL_PORT = 587
+        EMAIL_HOST_USER = os.environ['GMAIL_ADDRESS']
+        EMAIL_USE_TLS = True
+        EMAIL_HOST_PASSWORD = os.environ['GMAIL_PASSWORD']
+    else:
+        print "ERROR: There is no Gmail credentials!"
 
 # Application definition
 
