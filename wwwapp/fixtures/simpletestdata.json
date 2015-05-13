@@ -8,5 +8,31 @@
       "content": "example index page content",
       "on_menubar": false
     }
+  },
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "first_name": "Jan",
+      "last_name": "Kowalski",
+      "email": "jan@kowalski.com"
+    }
+  },
+  {
+    "model": "wwwapp.userprofile",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "gender": "M"
+    }
+  },
+  {
+    "model": "wwwapp.workshop",
+    "pk": 1,
+    "fields": {
+      "name": "warkow",
+      "title": "WarsztatyKow",
+      "lecturer": [1]
+    }
   }
 ]

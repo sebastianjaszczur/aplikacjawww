@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
@@ -203,6 +203,25 @@ def all_workshops(request):
     return render(request, 'workshoplist.html', context)
 
 
+def emails(request):
+    # think about seperate permission
+    if not request.user.has_perm('wwwapp.see_all_workshops'):
+        # it should show page like "you don't have permission", probably
+        return redirect('login')
+    
+    workshops = Workshop.objects.all()
+    
+    result = []
+    for workshop in workshops:
+        lecturer = workshop.lecturer.all()[0]
+        email = lecturer.user.email
+        name = lecturer.user.first_name + " " + lecturer.user.last_name
+        
+        to_append = {'workshopname': workshop.title, 'email': email, 'name': name}
+        result.append(to_append)
+    
+    return JsonResponse(result, safe=False)
+
 def as_article(name):
     # make sure that article with this name exists
     art = Article.objects.get_or_create(name=name)
@@ -210,6 +229,5 @@ def as_article(name):
     def page(request):
         return article(request, name)
     return page
-
 
 index = as_article("index")
