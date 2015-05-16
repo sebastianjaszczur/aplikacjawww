@@ -100,6 +100,11 @@ class Workshop(models.Model):
     type = models.ForeignKey(WorkshopType, null=True, default=None)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
+    status = models.CharField(max_length=10, choices=[('Z', u'Zaakceptowane'), ('O', u'Odrzucone'),],
+                              null=True, default=None, blank=True)
     
     class Meta:
         permissions = (('see_all_workshops', u'Can see all workshops'),)
+    
+    def __unicode__(self):
+        return (self.status + ":" if self.status else "") + self.title
