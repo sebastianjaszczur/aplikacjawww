@@ -7,6 +7,7 @@
     <article class="col-sm-12 maincontent">
         <h1>{{ title }}</h1>
         {% if has_perm_to_edit %}
+            <a href="{% url 'workshop_page' workshop.name%}">Edycja strony Twoich warsztatów</a>
             <div role="tabpanel" aria-labelledby="headingOne">
                 <hr>
                 <form action="" method="post">
@@ -16,6 +17,7 @@
                 </form>
             </div>
         {% else %}
+            <a href="{% url 'workshop_page' workshop.name%}">Link do głównej strony warsztatów</a>
             {{ workshop.proposition_description|bleach }}
         {% endif %}
     </article>
