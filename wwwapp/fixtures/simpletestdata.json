@@ -32,7 +32,9 @@
     "fields": {
       "name": "warkow",
       "title": "WarsztatyKow",
-      "lecturer": [1]
+      "lecturer": [1],
+      "page_content": "example workshop page content",
+      "page_content_is_public": false
     }
   }
 ]
