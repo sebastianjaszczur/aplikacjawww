@@ -23,7 +23,8 @@ DEFAULT_CONFIG = {
     'disableNativeSpellChecker': False, # browser spellchecker is better
     'linklocal_autocomplete': '/articleNameList',
     'linklocal_prefix': '/article/',
-    'format_tags': 'p;h2;h3;h4'
+    'format_tags': 'p;h2;h3;h4',
+    'height': 1000
 }
 
 
