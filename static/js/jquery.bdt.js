@@ -50,7 +50,7 @@
     $.fn.bdt = function (options, callback) {
 
         var settings = $.extend({
-            pageRowCount: 10,
+            pageRowCount: 100,
             arrowDown: 'fa-angle-down',
             arrowUp: 'fa-angle-up'
         }, options);
@@ -101,7 +101,7 @@
                                     .attr('id', 'page-rows-form')
                                     .append($('<label/>')
                                         .addClass('pull-left control-label')
-                                        .text('Entries per Page:')
+                                        .text('Elementów na stronę:')
                                     )
                                     .append(
                                         $('<div/>')
@@ -118,14 +118,7 @@
                                                     .append(
                                                         $('<option>', {
                                                             value: 10,
-                                                            text: 10,
-                                                            selected: 'selected'
-                                                        })
-                                                    )
-                                                    .append(
-                                                        $('<option>', {
-                                                            value: 15,
-                                                            text: 15
+                                                            text: 10
                                                         })
                                                     )
                                                     .append(
@@ -136,8 +129,15 @@
                                                     )
                                                     .append(
                                                         $('<option>', {
-                                                            value: 25,
-                                                            text: 25
+                                                            value: 50,
+                                                            text: 50
+                                                        })
+                                                    )
+                                                    .append(
+                                                        $('<option>', {
+                                                            value: 100,
+                                                            text: 100,
+                                                            selected: 'selected'
                                                         })
                                                     )
                                             )
