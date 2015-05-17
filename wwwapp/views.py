@@ -5,7 +5,8 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
-from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm
+from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
+                         WorkshopPageForm
 
 
 def get_context(request):
@@ -137,6 +138,53 @@ def workshop(request, name=None):
     context['has_perm_to_edit'] = has_perm_to_edit
 
     return render(request, 'workshop.html', context)
+
+
+def workshop_page(request, name=None):
+    context = get_context(request)
+    new = (name is None)
+    if new:
+        workshop = None
+        title = u'Nowe warsztaty'
+        if not request.user.is_authenticated():
+            return redirect('login')
+        else:
+            has_perm_to_edit = True
+    else:
+        workshop = Workshop.objects.get(name=name)
+        title = workshop.title
+        if request.user.is_authenticated():
+            has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
+        else:
+            has_perm_to_edit = False
+    
+    if has_perm_to_edit:
+        if request.method == 'POST':
+            form = WorkshopPageForm(request.POST, instance=workshop)
+            if form.is_valid():
+                workshop = form.save(commit=False)
+                workshop.save()
+                form.save_m2m()
+                user_profile = UserProfile.objects.get(user=request.user)
+                workshop.lecturer.add(user_profile)
+                workshop.save()
+                return redirect('workshop_page', form.instance.name)
+        else:
+            if not workshop.page_content:
+                workshop_template = Article.objects.get(name="template_for_workshop_page").content
+                workshop.page_content = workshop_template
+                workshop.save()
+            form = WorkshopPageForm(instance=workshop)
+    else:
+        form = None
+    
+    context['addWorkshop'] = new
+    context['title'] = title
+    context['workshop'] = workshop
+    context['form'] = form
+    context['has_perm_to_edit'] = has_perm_to_edit
+
+    return render(request, 'workshoppage.html', context)
 
 
 def article(request, name = None):

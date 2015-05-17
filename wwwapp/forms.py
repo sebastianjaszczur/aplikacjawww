@@ -92,3 +92,16 @@ class WorkshopForm(ModelForm):
             'name': u'Nazwa (w URLach)',
             'proposition_description': u'Opis propozycji warsztatów',
         }
+
+
+class WorkshopPageForm(ModelForm):
+    class Meta:
+        model = Workshop
+        fields = ['page_content_is_public', 'page_content']
+        widgets = {
+            'page_content': RichTextarea()
+        }
+        labels = {
+            'page_content': u'Strona warsztatów',
+            'page_content_is_public': u'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
+        }
