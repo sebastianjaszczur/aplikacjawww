@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.conf import settings
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
@@ -140,23 +140,18 @@ def workshop(request, name=None):
     return render(request, 'workshop.html', context)
 
 
-def workshop_page(request, name=None):
+def workshop_page(request, name):
     context = get_context(request)
-    new = (name is None)
-    if new:
-        workshop = None
-        title = u'Nowe warsztaty'
-        if not request.user.is_authenticated():
-            return redirect('login')
-        else:
-            has_perm_to_edit = True
+    
+    workshop = get_object_or_404(Workshop, name=name)
+    if workshop.status != 'Z': # Zaakceptowane
+        raise Http404("Warsztaty nie zostały zaakceptowane")
+    
+    title = workshop.title
+    if request.user.is_authenticated():
+        has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
     else:
-        workshop = Workshop.objects.get(name=name)
-        title = workshop.title
-        if request.user.is_authenticated():
-            has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
-        else:
-            has_perm_to_edit = False
+        has_perm_to_edit = False
     
     if has_perm_to_edit:
         if request.method == 'POST':
@@ -178,7 +173,6 @@ def workshop_page(request, name=None):
     else:
         form = None
     
-    context['addWorkshop'] = new
     context['title'] = title
     context['workshop'] = workshop
     context['form'] = form
