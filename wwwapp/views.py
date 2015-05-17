@@ -231,3 +231,4 @@ def as_article(name):
     return page
 
 index = as_article("index")
+template_for_workshop_page = as_article("template_for_workshop_page")
