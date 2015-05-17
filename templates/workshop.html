@@ -6,7 +6,6 @@
 <div class="container">
     <article class="col-sm-12 maincontent">
         <h1>{{ title }}</h1>
-        {{ workshop.proposition_description|bleach }}
         {% if has_perm_to_edit %}
             <div role="tabpanel" aria-labelledby="headingOne">
                 <hr>
@@ -16,6 +15,8 @@
                     <button class="btn btn-default">Zapisz</button>
                 </form>
             </div>
+        {% else %}
+            {{ workshop.proposition_description|bleach }}
         {% endif %}
     </article>
 </div>
