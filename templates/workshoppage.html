@@ -17,12 +17,10 @@
                     </form>
                 </div>
             {% endif %}
+        {% elif workshop.page_content_is_public %}
+            {{ workshop.page_content|bleach }}
         {% else %}
-            {% if workshop.page_content_is_public %}
-                {{ workshop.page_content|bleach }}
-            {% else %}
-                Prowadzący warsztatów nie wstawił jeszcze opisu.
-            {% endif %}
+            Prowadzący warsztatów nie wstawił jeszcze opisu.
         {% endif %}
     </article>
 </div>
