@@ -29,6 +29,7 @@ $(document).ready( function () {
                 <th>Prowadzący</th>
                 <th>Kategorie</th>
                 <th>Rodzaj</th>
+                <th>Status</th>
             </tr>
             </thead>
             <tbody>
@@ -47,6 +48,9 @@ $(document).ready( function () {
                 </td>
                 <td>
                     <p>{{ workshop.type.name }}</p>
+                </td>
+                <td>
+                    <p>{{ workshop.get_status_display|default_if_none:"Brak" }}</p>
                 </td>
             </tr>
             {% endfor %}
