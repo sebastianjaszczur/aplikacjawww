@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% load bleach_tags %}
+
+{% block content %}
+<div class="container">
+    <article class="col-sm-12 maincontent">
+        <h1>{{ title }}</h1>
+        {% if has_perm_to_edit %}
+            {% if has_perm_to_edit %}
+                <div role="tabpanel" aria-labelledby="headingOne">
+                    <hr>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button class="btn btn-default">Zapisz</button>
+                    </form>
+                </div>
+            {% endif %}
+        {% else %}
+            {% if workshop.page_content_is_public %}
+                {{ workshop.page_content|bleach }}
+            {% else %}
+                Prowadzący warsztatów nie wstawił jeszcze opisu.
+            {% endif %}
+        {% endif %}
+    </article>
+</div>
+{% endblock %}
