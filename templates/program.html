@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% block content %}
+
+
+{% if workshops %}
+<script src="{% static 'js/jquery.bdt.js' %}"></script>
+<link href="{% static 'css/jquery.bdt.css' %}" rel="stylesheet">
+<script src="{% static 'js/jquery.sortelements.js' %}"></script>
+
+<script>
+$(document).ready( function () {
+  $('#workshop_list').bdt();
+});
+</script>
+{% endif %}
+
+
+
+<div class="container">
+    <article class="col-sm-12 maincontent">
+        <h1> {{ title }}</h1>
+        {% if workshops %}
+        <table id="workshop_list" class="table table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>Warsztaty</th>
+                <th>Prowadzący</th>
+                <th>Kategorie</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for workshop in workshops %}
+            <tr>
+                <td>{%if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name%}">{{ workshop.title }}</a>{% else %}<p>{{ workshop.title }}</p>{% endif %}</td>
+                <td>
+                {% for lecturer in workshop.lecturer.all %}
+                    <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</a><br/>
+                {% endfor %}
+                </td>
+                <td>
+                {% for category in workshop.category.all %}
+                    {{ category.name }}<br/>
+                {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+            Warsztaty pojawią się w odpowiednim momencie.
+        {% endif %}
+    </article>
+</div>
+{% endblock %}
