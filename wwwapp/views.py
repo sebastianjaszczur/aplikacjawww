@@ -27,6 +27,13 @@ def get_context(request):
     return context
 
 
+def program(request):  #  Not so sure about 'program' - maybe 'agenda' is better
+    context = get_context(request)
+    context['title'] = 'Program WWW11'
+    context['workshops'] = Workshop.objects.filter(status='Z')
+    return render(request, 'program.html', context)
+
+
 def set_form_readonly(form):
     for field in form:
         form.fields[field.name].widget.attrs['disabled'] = 'True'

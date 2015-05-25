@@ -26,5 +26,6 @@ urlpatterns = patterns('',
     url(r'^allWorkshops/$', views.all_workshops, name='allWorkshops'),
     url(r'^emails/$', views.emails, name='emails'),
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page, name='template_for_workshop_page'),
+    url(r'^program/$', views.program, name='program'),
     url(r'^$', views.index, name='index'),
 )
