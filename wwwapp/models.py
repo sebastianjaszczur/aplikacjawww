@@ -105,6 +105,8 @@ class Workshop(models.Model):
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
     
+    qualification_problems = models.FileField(null=True, upload_to="qualification")
+    
     class Meta:
         permissions = (('see_all_workshops', u'Can see all workshops'),)
     
