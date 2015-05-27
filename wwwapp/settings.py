@@ -186,7 +186,7 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 if 'OPENSHIFT_DATA_DIR' in os.environ:
-    MEDIA_ROOT = os.path.join(os.environ.get('OPENSHIFT_DATA_DIR'), 'media')
+    MEDIA_ROOT = os.environ.get('OPENSHIFT_DATA_DIR', '')
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, *MEDIA_URL.strip("/").split("/"))
 
