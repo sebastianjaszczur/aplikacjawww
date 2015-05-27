@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from wwwapp import views
+from wwwapp import settings
 from wwwapp.auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
 
 urlpatterns = patterns('',
@@ -28,4 +29,9 @@ urlpatterns = patterns('',
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page, name='template_for_workshop_page'),
     url(r'^program/$', views.program, name='program'),
     url(r'^$', views.index, name='index'),
+)
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes':True}),
 )
