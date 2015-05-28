@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
-                         WorkshopPageForm, WorkshopProblemsForm
+                         WorkshopPageForm
 
 
 def get_context(request):

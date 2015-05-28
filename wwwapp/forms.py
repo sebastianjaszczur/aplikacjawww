@@ -103,7 +103,7 @@ class WorkshopPageForm(ModelForm):
             'qualification_problems': FileInput(),
         }
         labels = {
-            'qualification_problems': u'Zadania kwalifikacyjne (pdf):',
+            'qualification_problems': u'Zadania kwalifikacyjne w PDF:',
             'page_content': u'Strona warsztatów',
             'page_content_is_public': u'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
         }
