@@ -188,7 +188,7 @@ MEDIA_URL = '/media/'
 if 'OPENSHIFT_DATA_DIR' in os.environ:
     MEDIA_ROOT = os.path.join(os.environ.get('OPENSHIFT_DATA_DIR', ''), 'media')
 else:
-    MEDIA_ROOT = os.path.join(STATIC_ROOT, *MEDIA_URL.strip("/").split("/"))
+    MEDIA_ROOT = os.path.join(BASE_DIR, *MEDIA_URL.strip("/").split("/"))
 
 
 TEMPLATE_DIRS = (
