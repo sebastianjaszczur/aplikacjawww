@@ -23,6 +23,7 @@ urlpatterns = patterns('',
     url(r'^addArticle/$', views.article, name='addArticle'),
     url(r'^workshop/priv/(?P<name>[a-zA-Z0-9\-_]+)/$', views.workshop, name='workshop'),
     url(r'^workshop/(?P<name>[a-zA-Z0-9\-_]+)/$', views.workshop_page, name='workshop_page'),
+    url(r'^qualProblems/(?P<workshop_name>[a-zA-Z0-9\-_]+)/$', views.qualification_problems, name='qualification_problems'),
     url(r'^addWorkshop/$', views.workshop, name='addWorkshop'),
     url(r'^yourWorkshops/$', views.your_workshops, name='yourWorkshops'),
     url(r'^allWorkshops/$', views.all_workshops, name='allWorkshops'),
@@ -31,5 +32,3 @@ urlpatterns = patterns('',
     url(r'^program/$', views.program, name='program'),
     url(r'^$', views.index, name='index'),
 )
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

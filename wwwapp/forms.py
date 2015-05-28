@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-from django.forms import ModelForm
+from django.forms import ModelForm, FileInput, FileField
 from django.contrib.auth.models import User
 
 from crispy_forms.helper import FormHelper
@@ -97,11 +97,13 @@ class WorkshopForm(ModelForm):
 class WorkshopPageForm(ModelForm):
     class Meta:
         model = Workshop
-        fields = ['page_content_is_public', 'page_content']
+        fields = ['qualification_problems', 'page_content_is_public', 'page_content']
         widgets = {
-            'page_content': RichTextarea()
+            'page_content': RichTextarea(),
+            'qualification_problems': FileInput(),
         }
         labels = {
+            'qualification_problems': u'Zadania kwalifikacyjne (pdf):',
             'page_content': u'Strona warsztatów',
             'page_content_is_public': u'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
         }

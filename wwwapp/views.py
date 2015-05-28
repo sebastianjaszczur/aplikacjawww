@@ -1,12 +1,14 @@
 #-*- coding: utf-8 -*-
+import os
 from django.conf import settings
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, Http404
+from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
-                         WorkshopPageForm
+                         WorkshopPageForm, WorkshopProblemsForm
 
 
 def get_context(request):
@@ -162,7 +164,7 @@ def workshop_page(request, name):
     
     if has_perm_to_edit:
         if request.method == 'POST':
-            form = WorkshopPageForm(request.POST, instance=workshop)
+            form = WorkshopPageForm(request.POST, request.FILES, instance=workshop)
             if form.is_valid():
                 workshop = form.save(commit=False)
                 workshop.save()
@@ -186,6 +188,16 @@ def workshop_page(request, name):
     context['has_perm_to_edit'] = has_perm_to_edit
 
     return render(request, 'workshoppage.html', context)
+
+
+def qualification_problems(request, workshop_name):
+    workshop = get_object_or_404(Workshop, name=workshop_name)
+    filename = workshop.qualification_problems.path
+    
+    wrapper = FileWrapper(file(filename))
+    response = HttpResponse(wrapper, content_type='application/pdf')
+    response['Content-Length'] = os.path.getsize(filename)
+    return response
 
 
 def article(request, name = None):

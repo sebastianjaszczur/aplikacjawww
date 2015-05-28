@@ -8,15 +8,26 @@
         <h1>{{ title }}</h1>
         {% if has_perm_to_edit %}
             <a href="{% url 'workshop' workshop.name%}">Edycja zgłoszenia</a>
+            <hr>
+            {% if workshop.qualification_problems %}
+                Twoje zadania kwalifikacyjne są <a href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
+            {% else %}
+                Nie wstawiłeś jeszcze zadań kwalifikacyjnych!
+            {% endif %}
             <div role="tabpanel" aria-labelledby="headingOne">
-                <hr>
-                <form action="" method="post">
+                
+                <form action="" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button class="btn btn-default">Zapisz</button>
                 </form>
             </div>
         {% elif workshop.page_content_is_public %}
+            {% if workshop.qualification_problems %}
+                Zadania kwalifikacyjne są <a href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
+            {% else %}
+                Nie ma jeszcze zadań kwalifikacyjnych.
+            {% endif %}
             {{ workshop.page_content|bleach }}
         {% else %}
             Prowadzący warsztatów nie wstawił jeszcze opisu.
