@@ -74,6 +74,7 @@ INSTALLED_APPS = (
     'django_select2',
     'django_bleach',
     'wwwapp',
+    'django_cleanup',
 )
 
 MIDDLEWARE_CLASSES = (
