@@ -4,9 +4,10 @@
 # before the deploy step.  This script gets executed directly, so it
 # could be python, php, ruby, etc.
 
+#!/bin/bash
 if [ ! -d $OPENSHIFT_DATA_DIR/media ]; then
-mkdir $OPENSHIFT_DATA_DIR/media
+    mkdir $OPENSHIFT_DATA_DIR/media
 fi
 
-ln -sf ${OPENSHIFT_DATA_DIR}media ${OPENSHIFT_REPO_DIR}media
+ln -sf ${OPENSHIFT_DATA_DIR}media ${OPENSHIFT_REPO_DIR}wsgi/static/media
 
