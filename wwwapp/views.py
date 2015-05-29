@@ -32,7 +32,7 @@ def get_context(request):
 def program(request):  #  Not so sure about 'program' - maybe 'agenda' is better
     context = get_context(request)
     context['title'] = 'Program WWW11'
-    context['workshops'] = Workshop.objects.filter(status='Z')
+    context['workshops'] = Workshop.objects.filter(status='Z').order_by('title')
     return render(request, 'program.html', context)
 
 
