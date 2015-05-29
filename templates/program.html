@@ -3,52 +3,86 @@
 {% load staticfiles %}
 {% block content %}
 
+<style>
+    .btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
+.btn-circle.btn-lg {
+  width: 60px;
+  height: 60px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 30px;
+}
+.btn-circle.btn-xl {
+  width: 70px;
+  height: 70px;
+  padding: 10px 16px;
+  font-size: 24px;
+  line-height: 1.33;
+  border-radius: 35px;
+}
 
-{% if workshops %}
-<script src="{% static 'js/jquery.bdt.js' %}"></script>
-<link href="{% static 'css/jquery.bdt.css' %}" rel="stylesheet">
-<script src="{% static 'js/jquery.sortelements.js' %}"></script>
-
-<script>
-$(document).ready( function () {
-  $('#workshop_list').bdt();
-});
-</script>
-{% endif %}
-
+</style>
 
 
 <div class="container">
     <article class="col-sm-12 maincontent">
-        <h1> {{ title }}</h1>
         {% if workshops %}
-        <table id="workshop_list" class="table table-striped table-bordered table-condensed">
-            <thead>
-            <tr>
-                <th>Warsztaty</th>
-                <th>Prowadzący</th>
-                <th>Kategorie</th>
-            </tr>
-            </thead>
-            <tbody>
+        <h1>{{ title }}</h1>
+        <div class="panel-group">
             {% for workshop in workshops %}
-            <tr>
-                <td>{%if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name%}">{{ workshop.title }}</a>{% else %}<p>{{ workshop.title }}</p>{% endif %}</td>
-                <td>
-                {% for lecturer in workshop.lecturer.all %}
-                    <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</a><br/>
-                {% endfor %}
-                </td>
-                <td>
-                {% for category in workshop.category.all %}
-                    {{ category.name }}<br/>
-                {% endfor %}
-                </td>
-            </tr>
+                <div class="panel panel-info">
+                    <div class="panel-heading" style="font-size: 18pt;">
+                        {% if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }} </a>{% else %} {{ workshop.title }} {% endif %}
+                        {% for lecturer in workshop.lecturer.all %}
+                        <span class="pull-right">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-sm-2">
+                            <div class="well">
+                                <img class="center-block" style="width: 100%; max-width: 128px;" src="http://www.i2clipart.com/cliparts/5/4/6/a/clipart-nuclear-explosion-546a.png" />
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <table class="table table-condensed" >
+                                <tr style="border-top: none;">
+                                    <td class="col-sm-2" style="border: none; height: 80px;">Krótki opis</td>
+                                    <td class="col-sm-10" style="border: none; height: 80px;"> Krótki opis (trzeba dodać pole w modelu) </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-sm-2" style="border: none; height: 35px;">Rodzaj</td>
+                                    <td class="col-sm-10" style="border: none; height: 35px;">
+                                        <span class="badge">{{ workshop.type.name }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-sm-2" style="border: none; height: 34px;">Kategorie</td>
+                                    <td class="col-sm-10" style="border: none; height: 34px;">
+                                        {% for category in workshop.category.all %}
+                                        <span class="badge">{{ category.name }}</span>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-sm-2 text-center">
+                                <br/>
+                                <button class="btn btn-info btn-circle btn-xl" type="button"><i class="glyphicon glyphicon-plus"></i></button><br/>
+                                <h3 class="text-info">Dołącz</h4>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-            </tbody>
-        </table>
-
+            </div>
         {% else %}
             Warsztaty pojawią się w odpowiednim momencie.
         {% endif %}
