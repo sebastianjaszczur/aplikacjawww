@@ -30,4 +30,20 @@ class MainViewsTestCase(TestCase):
         self.client.logout()
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(r'[{"workshopname": "WarsztatyKow", "email": "jan@kowalski.com", "name": "Jan Kowalski"}]' in resp.content)
-        
+    
+    def test_add_workshops(self):
+        User.objects.create_superuser("admin", "admin@admin.com", "admin")
+        self.client.login(username="admin", password="admin")
+        resp = self.client.get('/addWorkshop/')
+        self.client.logout()
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(r'Zapisz' in resp.content)
+        self.assertTrue(r'</form>' in resp.content)
+    
+    def test_program(self):
+        resp = self.client.get('/program/')
+        self.client.logout()
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(r'Program WWW' in resp.content)
+        print resp.content
+        self.assertTrue(r'WarsztatyKow' in resp.content)        
