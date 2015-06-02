@@ -13,6 +13,14 @@
   line-height: 1.428571429;
   border-radius: 15px;
 }
+.btn-circle.btn-m {
+  width: 50px;
+  height: 50px;
+  padding: 8px 12px;
+  font-size: 20px;
+  line-height: 1.2;
+  border-radius: 23px;
+}
 .btn-circle.btn-lg {
   width: 60px;
   height: 60px;
@@ -44,40 +52,38 @@
         {% if workshops %}
         <h1>{{ title }}</h1>
         <div class="panel-group">
-            {% for workshop in workshops %}
+            {% for workshop, registered in workshops %}
                 <div class="panel panel-default">
-                    <div class="panel-heading" style="font-size: 18pt;">
-                        {% if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }} </a>{% else %} {{ workshop.title }} {% endif %}
+                    <div class="panel-heading" style="font-size: 16pt;">
+                        {% if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name %}"><big>{{ workshop.title }}</big></a>{% else %}<big>{{ workshop.title }}</big>{% endif %}
                         {% for lecturer in workshop.lecturer.all %}
-                        <span class="pull-right">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</span>
+                        <span class="pull-right"><small>Prowadzący: </small><big>{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</big></span>
                         {% endfor %}
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body" style="margin-bottom: -20px">
                         <div class="col-sm-2">
                             <div class="well">
-                                <img class="center-block" style="width: 100%; max-width: 128px;" src="http://www.i2clipart.com/cliparts/5/4/6/a/clipart-nuclear-explosion-546a.png" />
+                                <img class="center-block " style="width: 50%; max-width: 128px;" src="http://www.i2clipart.com/cliparts/5/4/6/a/clipart-nuclear-explosion-546a.png" />
                             </div>
                         </div>
                         <div class="col-sm-8">
                             <table class="table table-condensed" style="table-layout: fixed;">
-                                <tr style="border-top: none;">
-                                    <td class="col-sm-3" style="border: none; height: 38px;">Krótki opis</td>
-                                    <td class="col-sm-9 ellipsis" style="border: none; height: 38px; white-space: nowrap; overflow: hidden;"><span class="scroll_on_hover">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident</span></td>
-                                </tr>
+                                {% if workshop.short_description %}
+                                    <tr>
+                                        <td class="col-sm-3" style="border: none; height: 38px;">Krótki opis:</td>
+                                        <td class="col-sm-9" style="border: none; height: 38px;">
+                                            {{ workshop.short_description }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
                                 <tr>
-                                    <td class="col-sm-3" style="border: none; height: 38px;">Zadania kwalifikacyjne</td>
+                                    <td class="col-sm-3" style="border: none; height: 38px;">Zadania kwalifikacyjne:</td>
                                     <td class="col-sm-9" style="border: none; height: 38px;">
                                         {% if workshop.qualification_problems %} <a href="{% url 'qualification_problems' workshop.name %}"> Link </a> {% else %} Pojawią się wkrótce {% endif %}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="col-sm-3" style="border: none; height: 38px;">Rodzaj</td>
-                                    <td class="col-sm-9" style="border: none; height: 38px;">
-                                        <span class="badge">{{ workshop.type.name }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-sm-3" style="border: none; height: 38px;">Kategorie</td>
+                                    <td class="col-sm-3" style="border: none; height: 38px;">Kategorie:</td>
                                     <td class="col-sm-9" style="border: none; height: 38px;">
                                         {% for category in workshop.category.all %}
                                         <span class="badge">{{ category.name }}</span>
@@ -87,9 +93,17 @@
                             </table>
                         </div>
                         <div class="col-sm-2 text-center">
-                                <br/>
-                                <button class="btn btn-default btn-circle btn-xl" type="button"><i class="glyphicon glyphicon-plus"></i></button><br/>
-                                <h3 class="text-default">Dołącz</h4>
+                            {% if registered %}
+                                <a href="{% url 'unregister_from_workshop' workshop.name %}">
+                                    <button class="btn btn-warning btn-circle btn-m" type="button"><i class="glyphicon glyphicon-minus"></i></button></br>
+                                    <h4 class="text-default">Wypisz się</h4>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'register_to_workshop' workshop.name %}">
+                                    <button class="btn btn-success btn-circle btn-m" type="button"><i class="glyphicon glyphicon-plus"></i></button></br>
+                                    <h4 class="text-default">Zapisz się</h4>
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

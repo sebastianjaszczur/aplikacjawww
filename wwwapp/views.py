@@ -32,7 +32,14 @@ def get_context(request):
 def program(request):  #  Not so sure about 'program' - maybe 'agenda' is better
     context = get_context(request)
     context['title'] = 'Program WWW11'
-    context['workshops'] = Workshop.objects.filter(status='Z').order_by('title')
+    
+    if request.user.is_authenticated():
+        user_participation = set(Workshop.objects.filter(participants__user=request.user).all())
+    else:
+        user_participation = set()
+    context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
+                            in Workshop.objects.filter(status='Z').order_by('title')]
+    
     return render(request, 'program.html', context)
 
 
@@ -188,6 +195,26 @@ def workshop_page(request, name):
     context['has_perm_to_edit'] = has_perm_to_edit
 
     return render(request, 'workshoppage.html', context)
+
+def register_to_workshop(request, workshop_name):
+    if not request.user.is_authenticated():
+        return redirect('login')
+    workshop = get_object_or_404(Workshop, name=workshop_name)
+    
+    workshop.participants.add(UserProfile.objects.get(user=request.user))
+    workshop.save()
+    
+    return redirect('program')
+
+def unregister_from_workshop(request, workshop_name):
+    if not request.user.is_authenticated():
+        return redirect('login')
+    workshop = get_object_or_404(Workshop, name=workshop_name)
+    
+    workshop.participants.remove(UserProfile.objects.get(user=request.user))
+    workshop.save()
+    
+    return redirect('program')
 
 
 def qualification_problems(request, workshop_name):
