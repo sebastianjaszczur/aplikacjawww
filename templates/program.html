@@ -19,23 +19,7 @@
   padding: 8px 12px;
   font-size: 20px;
   line-height: 1.2;
-  border-radius: 23px;
-}
-.btn-circle.btn-lg {
-  width: 60px;
-  height: 60px;
-  padding: 10px 16px;
-  font-size: 24px;
-  line-height: 1.33;
-  border-radius: 30px;
-}
-.btn-circle.btn-xl {
-  width: 70px;
-  height: 70px;
-  padding: 10px 16px;
-  font-size: 24px;
-  line-height: 1.33;
-  border-radius: 35px;
+  border-radius: 28px;
 }
 
     .ellipsis {
@@ -45,19 +29,17 @@
 
 </style>
 
-
-
 <div class="container">
     <article class="col-sm-12 maincontent">
         {% if workshops %}
         <h1>{{ title }}</h1>
         <div class="panel-group">
             {% for workshop, registered in workshops %}
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="{{ workshop.name }}">
                     <div class="panel-heading" style="font-size: 16pt;">
                         {% if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name %}"><big>{{ workshop.title }}</big></a>{% else %}<big>{{ workshop.title }}</big>{% endif %}
                         {% for lecturer in workshop.lecturer.all %}
-                        <span class="pull-right"><small>Prowadzący: </small><big>{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</big></span>
+                        <span class="pull-right"><big>{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</big></span>
                         {% endfor %}
                     </div>
                     <div class="panel-body" style="margin-bottom: -20px">
@@ -92,22 +74,48 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="col-sm-2 text-center">
-                            {% if registered %}
-                                <a href="{% url 'unregister_from_workshop' workshop.name %}">
-                                    <button class="btn btn-warning btn-circle btn-m" type="button"><i class="glyphicon glyphicon-minus"></i></button></br>
-                                    <h4 class="text-default">Wypisz się</h4>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'register_to_workshop' workshop.name %}">
-                                    <button class="btn btn-success btn-circle btn-m" type="button"><i class="glyphicon glyphicon-plus"></i></button></br>
-                                    <h4 class="text-default">Zapisz się</h4>
-                                </a>
-                            {% endif %}
-                        </div>
+                            {% include '_programworkshop.html' %}
                     </div>
                 </div>
             {% endfor %}
+            <script src="{% static 'js/ajax.requests.js' %}"></script>
+            <script>
+                function register(workshop_name_txt) {
+    // AJAX for posting
+    $.ajax({
+        url : "{% url 'register_to_workshop' %}", // the endpoint
+        type : "POST", // http method
+        data : { workshop_name : workshop_name_txt }, // data sent with the post request
+
+        // handle a successful response
+        success : function(json) {
+            if(json['redirect']){
+                window.location.href = json['redirect']; }
+            else {
+                console.log($("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']));
+            }
+        }
+    });
+};
+
+function unregister(workshop_name_txt) {
+    $.ajax({
+        url : "{% url 'unregister_from_workshop' %}", // the endpoint
+        type : "POST", // http method
+        data : { workshop_name : workshop_name_txt }, // data sent with the post request
+
+        // handle a successful response
+        success : function(json) {
+            if(json['redirect']){
+                window.location.href = json['redirect']; }
+            else {
+            console.log($("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']));
+
+            }
+        }
+    });
+}
+            </script>
             </div>
         {% else %}
             Warsztaty pojawią się w odpowiednim momencie.
