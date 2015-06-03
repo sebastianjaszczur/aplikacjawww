@@ -5,7 +5,7 @@ function csrfSafeMethod(method) {
 $.ajaxSetup({
     beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            var csrftoken = $.cookie('csrftoken');
+            var csrftoken = $('input', '#csrftoken').val();
             xhr.setRequestHeader("X-CSRFToken", csrftoken);
         }
     }
