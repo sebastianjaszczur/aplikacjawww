@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.conf.urls.static import static
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 from wwwapp import views
 from wwwapp import settings
 from wwwapp.auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
@@ -9,6 +11,13 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'wwwapp.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
+    url(
+        r'^favicon.ico$',
+        RedirectView.as_view(
+            url=staticfiles_storage.url('images/favicon.ico'),
+            permanent=False),
+        name="favicon"
+    ),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', loginView, name='login'),
