@@ -45,5 +45,4 @@ class MainViewsTestCase(TestCase):
         self.client.logout()
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(r'Program WWW' in resp.content)
-        print resp.content
         self.assertTrue(r'WarsztatyKow' in resp.content)        
