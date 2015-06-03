@@ -92,7 +92,7 @@
             if(json['redirect']){
                 window.location.href = json['redirect']; }
             else {
-                console.log($("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']));
+                $("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']);
             }
         }
     });
@@ -109,7 +109,7 @@ function unregister(workshop_name_txt) {
             if(json['redirect']){
                 window.location.href = json['redirect']; }
             else {
-            console.log($("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']));
+            $("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']);
 
             }
         }
