@@ -80,27 +80,18 @@
             {% endfor %}
             <script src="{% static 'js/ajax.requests.js' %}"></script>
             <script>
-                function register(workshop_name_txt) {
-    // AJAX for posting
-    $.ajax({
-        url : "{% url 'register_to_workshop' %}", // the endpoint
-        type : "POST", // http method
-        data : { workshop_name : workshop_name_txt }, // data sent with the post request
 
-        // handle a successful response
-        success : function(json) {
-            if(json['redirect']){
-                window.location.href = json['redirect']; }
-            else {
-                $("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']);
-            }
-        }
-    });
-};
 
-function unregister(workshop_name_txt) {
+function handle_registration_change(workshop_name_txt, register) {
+
+    if(register) {
+        proper_url = "{% url 'register_to_workshop' %}";
+    } else {
+        proper_url = "{% url 'unregister_from_workshop' %}";
+    }
+
     $.ajax({
-        url : "{% url 'unregister_from_workshop' %}", // the endpoint
+        url : proper_url, // the endpoint
         type : "POST", // http method
         data : { workshop_name : workshop_name_txt }, // data sent with the post request
 
@@ -112,7 +103,10 @@ function unregister(workshop_name_txt) {
             $("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']);
 
             }
-        }
+        },
+         error: function(xhr, errmsg, errcode) {
+            $("#"+workshop_name_txt).after('<div class="alert alert-danger fade in"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>Error!</strong> Wystąpił problem przy wysyłaniu danych ('+xhr.status+': '+errcode+').</div>'); // add the error to the dom
+         }
     });
 }
             </script>
