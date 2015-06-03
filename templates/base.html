@@ -117,6 +117,9 @@
     {% block content %}
     {% endblock %}
 
+    <div id="csrftoken" style="display: none;">
+        {% csrf_token %}
+    </div>
 	<script>
 		$('textarea[data-ckeditor-config]').each(function(){
 			CKEDITOR.replace(this, $(this).data('ckeditor-config'));
