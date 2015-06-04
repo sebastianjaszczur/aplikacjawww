@@ -38,9 +38,16 @@
                 <div class="panel panel-default" id="{{ workshop.name }}">
                     <div class="panel-heading" style="font-size: 16pt;">
                         {% if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name %}"><big>{{ workshop.title }}</big></a>{% else %}<big>{{ workshop.title }}</big>{% endif %}
-                        {% for lecturer in workshop.lecturer.all %}
-                        <span class="pull-right"><big>{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</big></span>
-                        {% endfor %}
+                        <span class="pull-right">
+                            <big>
+                                {% for lecturer in workshop.lecturer.all %}
+                                <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer }}</a>
+                                {% if forloop.counter != workshop.lecturer.all|length %}
+                                ,
+                                {% endif %}
+                                {% endfor %}
+                            </big>
+                        </span>
                     </div>
                     <div class="panel-body" style="margin-bottom: -20px">
                         <div class="col-sm-2">
