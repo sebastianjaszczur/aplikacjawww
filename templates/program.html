@@ -41,10 +41,7 @@
                         <span class="pull-right">
                             <big>
                                 {% for lecturer in workshop.lecturer.all %}
-                                <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer }}</a>
-                                {% if forloop.counter != workshop.lecturer.all|length %}
-                                ,
-                                {% endif %}
+                                    <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer }}</a>{% if not forloop.last %},{% endif %}
                                 {% endfor %}
                             </big>
                         </span>
