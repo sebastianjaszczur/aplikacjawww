@@ -5,47 +5,29 @@
 
 <style>
     .btn-circle {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  padding: 6px 0;
-  font-size: 12px;
-  line-height: 1.428571429;
-  border-radius: 15px;
-}
-.btn-circle.btn-m {
-  width: 50px;
-  height: 50px;
-  padding: 8px 12px;
-  font-size: 20px;
-  line-height: 1.2;
-  border-radius: 23px;
-}
-.btn-circle.btn-lg {
-  width: 60px;
-  height: 60px;
-  padding: 10px 16px;
-  font-size: 24px;
-  line-height: 1.33;
-  border-radius: 30px;
-}
-.btn-circle.btn-xl {
-  width: 70px;
-  height: 70px;
-  padding: 10px 16px;
-  font-size: 24px;
-  line-height: 1.33;
-  border-radius: 35px;
-}
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.428571429;
+    border-radius: 15px;
+    }
+    .btn-circle.btn-m {
+    width: 50px;
+    height: 50px;
+    padding: 8px 12px;
+    font-size: 20px;
+    line-height: 1.2;
+    border-radius: 28px;
+    }
 
     .ellipsis {
 
-        text-overflow: ellipsis;
+    text-overflow: ellipsis;
     }
 
 </style>
-
-
 
 <div class="container">
     <article class="col-sm-12 maincontent">
@@ -53,64 +35,91 @@
         <h1>{{ title }}</h1>
         <div class="panel-group">
             {% for workshop, registered in workshops %}
-                <div class="panel panel-default">
-                    <div class="panel-heading" style="font-size: 16pt;">
-                        {% if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name %}"><big>{{ workshop.title }}</big></a>{% else %}<big>{{ workshop.title }}</big>{% endif %}
-                        {% for lecturer in workshop.lecturer.all %}
-                        <span class="pull-right"><small>Prowadzący: </small><big>{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</big></span>
-                        {% endfor %}
-                    </div>
-                    <div class="panel-body" style="margin-bottom: -20px">
-                        <div class="col-sm-2">
-                            <div class="well">
-                                <img class="center-block " style="width: 66%; max-width: 128px;" src="{% static 'images/logo_w.png' %}" />
-                            </div>
-                        </div>
-                        <div class="col-sm-8">
-                            <table class="table table-condensed" style="table-layout: fixed;">
-                                {% if workshop.short_description %}
-                                    <tr>
-                                        <td class="col-sm-3" style="border: none; height: 38px;">Krótki opis:</td>
-                                        <td class="col-sm-9" style="border: none; height: 38px;">
-                                            {{ workshop.short_description }}
-                                        </td>
-                                    </tr>
+            <div class="panel panel-default" id="{{ workshop.name }}">
+                <div class="panel-heading" style="font-size: 16pt;">
+                    {% if workshop.page_content_is_public %}<a href="{% url 'workshop_page' workshop.name %}"><big>{{ workshop.title }}</big></a>{% else %}<big>{{ workshop.title }}</big>{% endif %}
+                        <span class="pull-right">
+                            <big>
+                                {% for lecturer in workshop.lecturer.all %}
+                                <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer }}</a>
+                                {% if forloop.counter != workshop.lecturer.all|length %}
+                                ,
                                 {% endif %}
-                                <tr>
-                                    <td class="col-sm-3" style="border: none; height: 38px;">Zadania kwalifikacyjne:</td>
-                                    <td class="col-sm-9" style="border: none; height: 38px;">
-                                        {% if workshop.qualification_problems %} <a href="{% url 'qualification_problems' workshop.name %}"> Link </a> {% else %} Pojawią się wkrótce {% endif %}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-sm-3" style="border: none; height: 38px;">Kategorie:</td>
-                                    <td class="col-sm-9" style="border: none; height: 38px;">
-                                        {% for category in workshop.category.all %}
-                                        <span class="badge">{{ category.name }}</span>
-                                        {% endfor %}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col-sm-2 text-center">
-                            {% if registered %}
-                                <a href="{% url 'unregister_from_workshop' workshop.name %}">
-                                    <button class="btn btn-warning btn-circle btn-m" type="button"><i class="glyphicon glyphicon-minus"></i></button></br>
-                                    <h4 class="text-default">Wypisz się</h4>
-                                </a>
-                            {% else %}
-                                <a href="{% url 'register_to_workshop' workshop.name %}">
-                                    <button class="btn btn-success btn-circle btn-m" type="button"><i class="glyphicon glyphicon-plus"></i></button></br>
-                                    <h4 class="text-default">Zapisz się</h4>
-                                </a>
-                            {% endif %}
+                                {% endfor %}
+                            </big>
+                        </span>
+                </div>
+                <div class="panel-body" style="margin-bottom: -20px">
+                    <div class="col-sm-2">
+                        <div class="well">
+                            <img class="center-block " style="width: 66%; max-width: 128px;" src="{% static 'images/logo_w.png' %}" />
                         </div>
                     </div>
+                    <div class="col-sm-8">
+                        <table class="table table-condensed" style="table-layout: fixed;">
+                            {% if workshop.short_description %}
+                            <tr>
+                                <td class="col-sm-3" style="border: none; height: 38px;">Krótki opis:</td>
+                                <td class="col-sm-9" style="border: none; height: 38px;">
+                                    {{ workshop.short_description }}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td class="col-sm-3" style="border: none; height: 38px;">Zadania kwalifikacyjne:</td>
+                                <td class="col-sm-9" style="border: none; height: 38px;">
+                                    {% if workshop.qualification_problems %} <a href="{% url 'qualification_problems' workshop.name %}"> Link </a> {% else %} Pojawią się wkrótce {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-sm-3" style="border: none; height: 38px;">Kategorie:</td>
+                                <td class="col-sm-9" style="border: none; height: 38px;">
+                                    {% for category in workshop.category.all %}
+                                    <span class="badge">{{ category.name }}</span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    {% include '_programworkshop.html' %}
                 </div>
-            {% endfor %}
             </div>
+            {% endfor %}
+            <script src="{% static 'js/ajax.requests.js' %}"></script>
+            <script>
+
+
+function handle_registration_change(workshop_name_txt, register) {
+
+    if(register) {
+        proper_url = "{% url 'register_to_workshop' %}";
+    } else {
+        proper_url = "{% url 'unregister_from_workshop' %}";
+    }
+
+    $.ajax({
+        url : proper_url, // the endpoint
+        type : "POST", // http method
+        data : { workshop_name : workshop_name_txt }, // data sent with the post request
+
+        // handle a successful response
+        success : function(json) {
+            if(json['redirect']){
+                window.location.href = json['redirect']; }
+            else {
+            $("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']);
+
+            }
+        },
+         error: function(xhr, errmsg, errcode) {
+            $("#"+workshop_name_txt).after('<div class="alert alert-danger fade in"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>Error!</strong> Wystąpił problem przy wysyłaniu danych ('+xhr.status+': '+errcode+').</div>'); // add the error to the dom
+         }
+    });
+}
+            </script>
+        </div>
         {% else %}
-            Warsztaty pojawią się w odpowiednim momencie.
+        Warsztaty pojawią się w odpowiednim momencie.
         {% endif %}
     </article>
 </div>
