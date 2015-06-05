@@ -1,10 +1,11 @@
 #-*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
 import os
 from django.conf import settings
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.servers.basehttp import FileWrapper
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
@@ -196,25 +197,35 @@ def workshop_page(request, name):
 
     return render(request, 'workshoppage.html', context)
 
-def register_to_workshop(request, workshop_name):
+def register_to_workshop(request):
+    workshop_name = request.POST['workshop_name']
+    data = {}
     if not request.user.is_authenticated():
-        return redirect('login')
+        data['redirect'] = reverse('login')
+        return JsonResponse(data)
     workshop = get_object_or_404(Workshop, name=workshop_name)
-    
     workshop.participants.add(UserProfile.objects.get(user=request.user))
     workshop.save()
-    
-    return redirect('program')
+    context = get_context(request)
+    context['workshop'] = workshop
+    context['registered'] = True
+    data['content'] = render_to_response('_programworkshop.html', context).content
+    return JsonResponse(data)
 
-def unregister_from_workshop(request, workshop_name):
+def unregister_from_workshop(request):
+    workshop_name = request.POST['workshop_name']
+    data = {}
     if not request.user.is_authenticated():
-        return redirect('login')
+        data['redirect'] = reverse('login')
+        return JsonResponse(data)
     workshop = get_object_or_404(Workshop, name=workshop_name)
-    
     workshop.participants.remove(UserProfile.objects.get(user=request.user))
     workshop.save()
-    
-    return redirect('program')
+    context = get_context(request)
+    context['workshop'] = workshop
+    context['registered'] = False
+    data['content'] = render_to_response('_programworkshop.html', context).content
+    return JsonResponse(data)
 
 
 def qualification_problems(request, workshop_name):

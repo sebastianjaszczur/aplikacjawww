@@ -39,6 +39,7 @@
 	<script src="{% static 'js/headroom.min.js' %}"></script>
 	<script src="{% static 'js/jQuery.headroom.min.js' %}"></script>
 	<script src="{% static 'js/template.js' %}"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}"></script>
 	<script src="{% static 'ckeditor/ckeditor.js' %}"></script>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -116,6 +117,9 @@
     {% block content %}
     {% endblock %}
 
+    <div id="csrftoken" style="display: none;">
+        {% csrf_token %}
+    </div>
 	<script>
 		$('textarea[data-ckeditor-config]').each(function(){
 			CKEDITOR.replace(this, $(this).data('ckeditor-config'));
