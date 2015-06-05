@@ -29,7 +29,7 @@ class MainViewsTestCase(TestCase):
         resp = self.client.get('/emails/')
         self.client.logout()
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(r'[{"workshopname": "WarsztatyKow", "email": "jan@kowalski.com", "name": "Jan Kowalski"}]' in resp.content)
+        self.assertTrue('[{"workshopname": "WarsztatyKow", "email": "jan@kowalski.com", "name": "Jan Kowalski-\u0104\u0119"}]' in resp.content)
     
     def test_add_workshops(self):
         User.objects.create_superuser("admin", "admin@admin.com", "admin")
