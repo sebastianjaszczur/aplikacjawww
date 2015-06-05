@@ -16,7 +16,7 @@ class UserProfile(models.Model):
     profile_page = models.TextField(max_length=100000, blank=True, default="")
 
     def __unicode__(self):
-        return "{0.first_name} {0.last_name}".format(self.user)
+        return u"{0.first_name} {0.last_name}".format(self.user)
     
     class Meta:
         permissions = (('see_all_users', u'Can see all users'),)
