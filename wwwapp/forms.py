@@ -95,12 +95,12 @@ class WorkshopForm(ModelForm):
 
 
 class WorkshopPageForm(ModelForm):
+    qualification_problems = FileField(required=False, widget=FileInput())
     class Meta:
         model = Workshop
         fields = ['qualification_problems', 'page_content_is_public', 'page_content']
         widgets = {
             'page_content': RichTextarea(),
-            'qualification_problems': FileInput(),
         }
         labels = {
             'qualification_problems': u'Zadania kwalifikacyjne w PDF:',
