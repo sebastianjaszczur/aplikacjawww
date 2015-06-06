@@ -10,7 +10,7 @@
             <a href="{% url 'workshop' workshop.name%}">Edycja zgłoszenia</a>
             <hr>
             {% if workshop.qualification_problems %}
-                Twoje zadania kwalifikacyjne są <a href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
+                Twoje zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
             {% else %}
                 Nie wstawiłeś jeszcze zadań kwalifikacyjnych!
             {% endif %}
@@ -24,7 +24,7 @@
             </div>
         {% elif workshop.page_content_is_public %}
             {% if workshop.qualification_problems %}
-                Zadania kwalifikacyjne są <a href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
+                Zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
             {% else %}
                 Nie ma jeszcze zadań kwalifikacyjnych.
             {% endif %}
