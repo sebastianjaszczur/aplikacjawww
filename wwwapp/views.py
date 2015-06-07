@@ -14,7 +14,7 @@ from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, U
 
 def get_context(request):
     context = {}
-    
+
     articles_on_menubar = Article.objects.filter(on_menubar=True).all()
     if not request.user.is_authenticated():
         has_workshops = False
@@ -26,21 +26,21 @@ def get_context(request):
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     context['has_workshops'] = has_workshops
-    
+
     return context
 
 
 def program(request):  #  Not so sure about 'program' - maybe 'agenda' is better
     context = get_context(request)
     context['title'] = 'Program WWW11'
-    
+
     if request.user.is_authenticated():
         user_participation = set(Workshop.objects.filter(participants__user=request.user).all())
     else:
         user_participation = set()
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
                             in Workshop.objects.filter(status='Z').order_by('title')]
-    
+
     return render(request, 'program.html', context)
 
 
@@ -59,7 +59,7 @@ def profile(request, user_id):  # Can't get printing gender right :(
     if not request.user.has_perm('wwwapp.see_all_users'):
         # it should show page like "you don't have permission", probably
         return redirect('login')
-    
+
     context = get_context(request)
     user_id = int(user_id)
     user = get_object_or_404(User, pk=user_id)
@@ -131,7 +131,7 @@ def workshop(request, name=None):
             has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
         else:
             has_perm_to_edit = False
-    
+
     if has_perm_to_edit:
         if request.method == 'POST':
             form = WorkshopForm(request.POST, instance=workshop)
@@ -147,7 +147,7 @@ def workshop(request, name=None):
             form = WorkshopForm(instance=workshop)
     else:
         form = None
-    
+
     context['addWorkshop'] = new
     context['title'] = title
     context['workshop'] = workshop
@@ -159,17 +159,14 @@ def workshop(request, name=None):
 
 def workshop_page(request, name):
     context = get_context(request)
-    
+
     workshop = get_object_or_404(Workshop, name=name)
     if workshop.status != 'Z': # Zaakceptowane
         raise Http404("Warsztaty nie zostały zaakceptowane")
-    
+
     title = workshop.title
-    if request.user.is_authenticated():
-        has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
-    else:
-        has_perm_to_edit = False
-    
+    has_perm_to_edit = can_edit_workshop(workshop, request.user)
+
     if has_perm_to_edit:
         if request.method == 'POST':
             form = WorkshopPageForm(request.POST, request.FILES, instance=workshop)
@@ -189,13 +186,35 @@ def workshop_page(request, name):
             form = WorkshopPageForm(instance=workshop)
     else:
         form = None
-    
+
     context['title'] = title
     context['workshop'] = workshop
     context['form'] = form
     context['has_perm_to_edit'] = has_perm_to_edit
 
     return render(request, 'workshoppage.html', context)
+
+def can_edit_workshop(workshop, user):
+    if user.is_authenticated():
+        return Workshop.objects.filter(id=workshop.id, lecturer__user=user).exists()
+    else:
+        return False
+
+def workshop_participants(request, name):
+    workshop = get_object_or_404(Workshop, name=name)
+
+    can_see_all = not request.user.has_perm('wwwapp.see_all_workshops')
+    can_see_this = can_edit_workshop(workshop, request.user)
+
+    if not can_see_all and not can_see_this:
+        return redirect('login')
+
+    context = get_context(request)
+
+    context['title'] = workshop.title
+    context['participants'] = workshop.participants.all().select_related('user')
+
+    return render(request, 'workshopparticipants.html', context)
 
 def register_to_workshop(request):
     workshop_name = request.POST['workshop_name']
@@ -231,7 +250,7 @@ def unregister_from_workshop(request):
 def qualification_problems(request, workshop_name):
     workshop = get_object_or_404(Workshop, name=workshop_name)
     filename = workshop.qualification_problems.path
-    
+
     wrapper = FileWrapper(file(filename))
     response = HttpResponse(wrapper, content_type='application/pdf')
     response['Content-Length'] = os.path.getsize(filename)
@@ -249,7 +268,7 @@ def article(request, name = None):
         art = Article.objects.get(name=name)
         title = art.title
         has_perm = request.user.has_perm('wwwapp.change_article')
-    
+
     if has_perm:
         if request.method == 'POST':
             form = ArticleForm(request.user, request.POST, instance=art)
@@ -263,7 +282,7 @@ def article(request, name = None):
             form = ArticleForm(request.user, instance=art)
     else:
         form = None
-    
+
     context['addArticle'] = new
     context['title'] = title
     context['article'] = art
@@ -281,11 +300,11 @@ def your_workshops(request):
     if not request.user.is_authenticated():
         return redirect('login')
     context = get_context(request)
-    
+
     workshops = Workshop.objects.filter(lecturer__user=request.user)
     context['workshops'] = workshops
     context['title'] = u'Twoje warsztaty'
-    
+
     return render(request, 'workshoplist.html', context)
 
 
@@ -294,11 +313,11 @@ def all_workshops(request):
         # it should show page like "you don't have permission", probably
         return redirect('login')
     context = get_context(request)
-    
+
     workshops = Workshop.objects.all()
     context['workshops'] = workshops
     context['title'] = u'Wszystkie warsztaty'
-    
+
     return render(request, 'workshoplist.html', context)
 
 
@@ -307,24 +326,24 @@ def emails(request):
     if not request.user.has_perm('wwwapp.see_all_workshops'):
         # it should show page like "you don't have permission", probably
         return redirect('login')
-    
+
     workshops = Workshop.objects.all()
-    
+
     result = []
     for workshop in workshops:
         lecturer = workshop.lecturer.all()[0]
         email = lecturer.user.email
         name = lecturer.user.first_name + " " + lecturer.user.last_name
-        
+
         to_append = {'workshopname': workshop.title, 'email': email, 'name': name}
         result.append(to_append)
-    
+
     return JsonResponse(result, safe=False)
 
 def as_article(name):
     # make sure that article with this name exists
     art = Article.objects.get_or_create(name=name)
-    
+
     def page(request):
         return article(request, name)
     return page
