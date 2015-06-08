@@ -203,7 +203,7 @@ def can_edit_workshop(workshop, user):
 def workshop_participants(request, name):
     workshop = get_object_or_404(Workshop, name=name)
 
-    can_see_all = not request.user.has_perm('wwwapp.see_all_workshops')
+    can_see_all = request.user.has_perm('wwwapp.see_all_workshops')
     can_see_this = can_edit_workshop(workshop, request.user)
 
     if not can_see_all and not can_see_this:
