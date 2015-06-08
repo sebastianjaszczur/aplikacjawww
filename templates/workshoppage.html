@@ -7,7 +7,8 @@
     <article class="col-sm-12 maincontent">
         <h1>{{ title }}</h1>
         {% if has_perm_to_edit %}
-            <a href="{% url 'workshop' workshop.name%}">Edycja zgłoszenia</a>
+            <a href="{% url 'workshop' workshop.name %}">Edycja zgłoszenia</a> |
+            <a href="{% url 'workshop_participants' workshop.name %}">Uczestnicy</a>
             <hr>
             {% if workshop.qualification_problems %}
                 Twoje zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
@@ -15,7 +16,7 @@
                 Nie wstawiłeś jeszcze zadań kwalifikacyjnych!
             {% endif %}
             <div role="tabpanel" aria-labelledby="headingOne">
-                
+
                 <form action="" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}

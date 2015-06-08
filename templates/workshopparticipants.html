@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load bleach_tags %}
+
+{% block content %}
+<div class="container">
+    <article class="col-sm-12 maincontent">
+        <h1>{{ title }} &dash; uczestnicy</h1>
+        <table class="table">
+          <thead>
+            <th>Name</th>
+            <th>Email</th>
+          </thead>
+          <tbody>
+            {% for participant in participants %}
+            <tr>
+              <td>
+                <a href="{% url 'profile' participant.user.id %}">
+                  {{ participant.user.get_full_name }}
+                </a>
+              </td>
+              <td>
+                {{ participant.user.email }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </article>
+</div>
+{% endblock %}
