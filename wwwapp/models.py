@@ -97,7 +97,7 @@ class Workshop(models.Model):
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
     title = models.CharField(max_length=50, null=True, blank=False)
     proposition_description = models.TextField(max_length=100000, blank=True)
-    type = models.ForeignKey(WorkshopType, null=True, default=None)
+    type = models.ForeignKey(WorkshopType, null=True, blank=True, default=None)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10, choices=[('Z', u'Zaakceptowane'), ('O', u'Odrzucone'),],
@@ -105,7 +105,7 @@ class Workshop(models.Model):
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
     
-    qualification_problems = models.FileField(null=True, upload_to="qualification")
+    qualification_problems = models.FileField(null=True, blank=True, upload_to="qualification")
     participants = models.ManyToManyField(UserProfile, blank=True, related_name='+')
     
     class Meta:
