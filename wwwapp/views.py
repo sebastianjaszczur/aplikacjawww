@@ -43,13 +43,6 @@ def program(request):  #  Not so sure about 'program' - maybe 'agenda' is better
 
     return render(request, 'program.html', context)
 
-
-def set_form_readonly(form):
-    for field in form:
-        form.fields[field.name].widget.attrs['disabled'] = 'True'
-    return form
-
-
 def profile(request, user_id):
     """
     This function allows to view other people's profile by id.
@@ -58,17 +51,18 @@ def profile(request, user_id):
     context = get_context(request)
     user_id = int(user_id)
     user = get_object_or_404(User, pk=user_id)
-    if request.user == user:
-        return redirect('myProfile')
 
     profile = UserProfile.objects.get(user=user)
     profile_page = profile.profile_page
 
+    is_my_profile = (request.user == user)
+    can_see_all_users = request.user.has_perm('wwwapp.see_all_users')
+
     context['title'] = u"{0.first_name} {0.last_name}".format(user)
     context['profile_page'] = profile_page
-    context['myProfile'] = False
+    context['is_my_profile'] = is_my_profile
 
-    if request.user.has_perm('wwwapp.see_all_users'):
+    if can_see_all_users or is_my_profile:
         context['profile'] = profile
 
     return render(request, 'profile.html', context)
@@ -79,13 +73,13 @@ def update_profile_page(request):
         return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
+
         if request.method == "POST":
             user_profile_page_form = UserProfilePageForm(request.POST, instance=user_profile)
             if user_profile_page_form.is_valid():
                 user_profile_page_form.save()
-            return redirect('myProfile')
-        else:
-            return redirect('myProfile')
+
+        return redirect(reverse('profile', args=[request.user.id]))
 
 
 def my_profile(request):
@@ -100,10 +94,11 @@ def my_profile(request):
             if user_form.is_valid() and user_profile_form.is_valid():
                 user_form.save()
                 user_profile_form.save()
-            return redirect('myProfile')
+
+            return redirect(reverse('profile', args=[request.user.id]))
         else:
-            user_form = set_form_readonly(UserForm(instance=request.user))
-            user_profile_form = set_form_readonly(UserProfileForm(instance=user_profile))
+            user_form = UserForm(instance=request.user)
+            user_profile_form = UserProfileForm(instance=user_profile)
             user_form.helper.form_tag = False
             user_profile_form.helper.form_tag = False
             context['user_form'] = user_form
@@ -111,6 +106,7 @@ def my_profile(request):
             context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
             context['myProfile'] = True
             context['title'] = u'Mój profil'
+
             return render(request, 'profile.html', context)
 
 
