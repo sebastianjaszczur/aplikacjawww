@@ -6,13 +6,13 @@
 {% block content %}
 
 <div class="container">
-    <div id="profile_content" class="col-sm-12 maincontent" style="display: block;">
-        <h1>{{ title }}</h1>
+  <div id="profile_content" class="col-sm-12 maincontent" style="display: block;">
+    <h1>{{ title }}</h1>
 
-{% if myProfile %}
-    <script src="{% static 'js/jquery.content_pagination.js' %}"></script>
+    {% if myProfile %}
+      <script src="{% static 'js/jquery.content_pagination.js' %}"></script>
 
-    <div id="pagination_content">
+      <div id="pagination_content">
         <div title="Dane" id="data">
           <form id="profile_data_form" action="" method="post" class="form-horizontal">
             {% crispy user_form %}
@@ -34,74 +34,71 @@
             <button class="btn btn-default pull-right big-button">Zapisz</button>
           </form>
         </div>
-    </div>
-    </div>
-    <script>
-        $(document).ready(function() {
-           paginate_content("pagination_content");
-        });
-    </script>
-
-
-{% else %}
-
-{% if profile %}
-
-    <table class=table>
-      <tbody>
-        <tr>
-          <th>Email:</th>
-          <td>{{ profile.user.email }}
-        </tr>
-        <tr>
-          <th>Płeć:</th>
-          <td>{{ profile.get_gender_display }}
-        </tr>
-        <tr>
-          <th>Szkoła lub uniwersytet:</th>
-          <td>{{ profile.school }}
-        </tr>
-        <tr>
-          <th>Rok matury:</th>
-          <td>{{ profile.matura_exam_year }}
-        </tr>
-
-        <tr>
-          <th>Skąd wie o WWW:</th>
-          <td>{{ profile.how_do_you_know_about }}
-        </tr>
-      </tbody>
-    </table>
-
-    {% if is_my_profile %}
-      <a class="btn btn-default pull-right big-button" role=button href="{% url 'myProfile' %}">
-        Edytuj
-      </a>
-    {% endif %}
-
-    {% if profile.cover_letter %}
-      <hr />
-      <h3>List motywacyjny</h3>
-      {{ profile.cover_letter | bleach }}
-    {% endif %}
-
-    {% if profile_page %}
-      <hr />
-      <h3>Strona profilowa</h3>
-    {% endif %}
-    {% endif %}
-
-    {{ profile_page | bleach }}
-    <hr />
-
-    {% if is_my_profile %}
-    <p>
-      <em>Twoje szczegółowe dane oraz list motywacyjny są widoczne tylko dla administratorów. Strona profilowa jest publiczna.</em>
-    </p>
-    {% endif %}
-
-{% endif %}
       </div>
+      </div>
+      <script>
+          $(document).ready(function() {
+             paginate_content("pagination_content");
+          });
+      </script>
+    {% else %}
+
+      {% if profile %}
+        <table class=table>
+          <tbody>
+            <tr>
+              <th>Email:</th>
+              <td>{{ profile.user.email }}
+            </tr>
+            <tr>
+              <th>Płeć:</th>
+              <td>{{ profile.get_gender_display }}
+            </tr>
+            <tr>
+              <th>Szkoła lub uniwersytet:</th>
+              <td>{{ profile.school }}
+            </tr>
+            <tr>
+              <th>Rok matury:</th>
+              <td>{{ profile.matura_exam_year }}
+            </tr>
+
+            <tr>
+              <th>Skąd wie o WWW:</th>
+              <td>{{ profile.how_do_you_know_about }}
+            </tr>
+          </tbody>
+        </table>
+
+        {% if is_my_profile %}
+          <a class="btn btn-default pull-right big-button" role=button href="{% url 'myProfile' %}">
+            Edytuj
+          </a>
+        {% endif %}
+
+        {% if profile.cover_letter %}
+          <hr />
+          <h3>List motywacyjny</h3>
+          {{ profile.cover_letter | bleach }}
+        {% endif %}
+
+        {% if profile_page %}
+          <hr />
+          <h3>Strona profilowa</h3>
+        {% endif %}
+      {% endif %}
+
+      {{ profile_page | bleach }}
+      <hr />
+
+      {% if is_my_profile %}
+        <p>
+          <em>Twoje szczegółowe dane oraz list motywacyjny są widoczne tylko dla administratorów. Strona profilowa jest publiczna.</em>
+        </p>
+      {% endif %}
+
+    {% endif %}
+  </div>
 </div>
 
 {% endblock %}
