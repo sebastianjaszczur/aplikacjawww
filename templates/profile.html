@@ -14,22 +14,25 @@
 
     <div id="pagination_content">
         <div title="Dane" id="data">
-
-        <form id="profile_data_form" action="" method="post" class="form-horizontal">
+          <form id="profile_data_form" action="" method="post" class="form-horizontal">
             {% crispy user_form %}
             {% crispy user_profile_form %}
-            <button id="profile_data_form_submit_button" class="btn btn-default pull-right big-button">
-              Zapisz
-            </button>
-        </form>
-
+            <button class="btn btn-default pull-right big-button">Zapisz</button>
+          </form>
         </div>
         <div title="Strona profilowa" id="profile_page">
-            <form id="profile_page_form" action="{% url 'updateProfilePage' %}" method="post" class="form">
-              {% csrf_token %}
-              {{ user_profile_page_form.profile_page }}
-              <button id="profile_page_form_submit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
-            </form>
+          <form action="{% url 'update_profile_page' %}" method="post" class="form">
+            {% csrf_token %}
+            {{ user_profile_page_form.profile_page }}
+            <button class="btn btn-default pull-right big-button">Zapisz</button>
+          </form>
+        </div>
+        <div title="List motywacyjny" id="cover_letter">
+          <form action="{% url 'update_cover_letter' %}" method="post" class="form">
+            {% csrf_token %}
+            {{ user_cover_letter_form.cover_letter }}
+            <button class="btn btn-default pull-right big-button">Zapisz</button>
+          </form>
         </div>
     </div>
     </div>
@@ -43,6 +46,7 @@
 {% else %}
 
 {% if profile %}
+
 <table class=table>
 <tbody>
   <tr>
@@ -68,15 +72,36 @@
   </tr>
 </tbody>
 </table>
+
 {% if is_my_profile %}
 <a class="btn btn-default pull-right big-button" role=button href="{% url 'myProfile' %}">
   Edytuj
 </a>
 {% endif %}
+
+{% if profile.cover_letter %}
 <hr />
+<h3>List motywacyjny</h3>
+{{ profile.cover_letter | bleach }}
+{% endif %}
+
+
+{% if profile_page %}
+<hr />
+<h3>Strona profilowa</h3>
 {% endif %}
 
 {{ profile_page | bleach }}
+{% endif %}
+
+<hr />
+
+{% if is_my_profile %}
+<p>
+  <em>Twoje szczegółowe dane oraz list motywacyjny są widoczne tylko dla administratorów. Strona profilowa jest publiczna.</em>
+</p>
+{% endif %}
+
 
 {% endif %}
 

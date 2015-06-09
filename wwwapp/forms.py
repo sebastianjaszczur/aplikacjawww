@@ -17,6 +17,12 @@ class UserProfilePageForm(ModelForm):
         labels = {'profile_page': u"Strona profilowa"}
         widgets = {'profile_page': RichTextarea()}
 
+class UserCoverLetterForm(ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['cover_letter']
+        labels = {'cover_letter': u"List motywacyjny"}
+        widgets = {'cover_letter': RichTextarea()}
 
 class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -66,7 +72,7 @@ class ArticleForm(ModelForm):
         widgets = {
             'content': RichTextarea()
         }
-    
+
     def __init__(self, user, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
         if not user.has_perm('wwwapp.can_put_on_menubar'):
@@ -74,11 +80,11 @@ class ArticleForm(ModelForm):
 
 
 class WorkshopForm(ModelForm):
-    category = ModelSelect2MultipleField(label="Kategorie", queryset=WorkshopCategory.objects, required=False, 
+    category = ModelSelect2MultipleField(label="Kategorie", queryset=WorkshopCategory.objects, required=False,
                                          widget=Select2MultipleWidget(select2_options={'width': '200px',})
                                          )
     category.help_text = "" # this removes annoying message ' Hold down "Control", or "Command" (..) '
-    type = ModelSelect2Field(label="Rodzaj zajęć", queryset=WorkshopType.objects, required=False, 
+    type = ModelSelect2Field(label="Rodzaj zajęć", queryset=WorkshopType.objects, required=False,
                              widget=Select2Widget(select2_options={'width': '200px',})
                              )
     class Meta:
