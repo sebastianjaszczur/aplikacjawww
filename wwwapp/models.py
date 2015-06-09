@@ -107,7 +107,7 @@ class Workshop(models.Model):
     page_content_is_public = models.BooleanField(default=False)
 
     qualification_problems = models.FileField(null=True, blank=True, upload_to="qualification")
-    participants = models.ManyToManyField(UserProfile, blank=True, related_name='+')
+    participants = models.ManyToManyField(UserProfile, blank=True, related_name='workshops')
 
     class Meta:
         permissions = (('see_all_workshops', u'Can see all workshops'),)

@@ -227,6 +227,21 @@ def workshop_participants(request, name):
 
     return render(request, 'workshopparticipants.html', context)
 
+def participants(request):
+    can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
+
+    if not can_see_users:
+        return redirect('login')
+
+    participants = UserProfile.objects.all().prefetch_related('workshops')
+
+    context = get_context(request)
+    context['title'] = 'Uczestnicy'
+    context['participants'] = participants
+
+    return render(request, 'participants.html', context)
+
+
 def register_to_workshop(request):
     workshop_name = request.POST['workshop_name']
     data = {}
