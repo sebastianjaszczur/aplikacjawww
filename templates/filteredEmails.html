@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<script>
+    function use_filter() {
+        var selected = document.forms['filter_methods'].elements['selected_method']
+        document.location = '/filterEmails/' + selected[selected.selectedIndex].value
+    }
+</script>
+
+<div class="container">
+    {% if filtered_users %}
+        <div>
+            <h2 class="heading">Filtr "{{ filter_name }}"</h2>
+            <input class="form-control" value="{% for user in filtered_users %}{{ user.email }}, {% endfor %}" />
+        </div>
+    {% endif %}
+
+
+    <div>
+        <form id="filter_methods">
+            <h2 class="heading">Wybierz metodę filtrowania: </h2>
+            <select name="selected_method">
+                {% for filter_id, filter_name in filter_methods %}
+                    <option value="{{ filter_id }}">{{ filter_name }}</option>
+                {% endfor %}
+            </select>
+            <br/><br/>
+            <button type="button" class="btn btn-default" onclick="use_filter()">Filtruj</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
