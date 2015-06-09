@@ -90,6 +90,35 @@
 
 {% else %}
 
+{% if profile %}
+<table class=table>
+<tbody>
+  <tr>
+    <th>Email:</th>
+    <td>{{ profile.user.email }}
+  </tr>
+  <tr>
+    <th>Płeć:</th>
+    <td>{{ profile.get_gender_display }}
+  </tr>
+  <tr>
+    <th>Szkoła lub uniwersytet:</th>
+    <td>{{ profile.school }}
+  </tr>
+  <tr>
+    <th>Rok matury:</th>
+    <td>{{ profile.matura_exam_year }}
+  </tr>
+
+  <tr>
+    <th>Skąd wie o WWW:</th>
+    <td>{{ profile.how_do_you_know_about }}
+  </tr>
+</tbody>
+</table>
+<hr />
+{% endif %}
+
 {{ profile_page | bleach }}
 
 {% endif %}

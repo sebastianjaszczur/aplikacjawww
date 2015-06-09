@@ -50,22 +50,26 @@ def set_form_readonly(form):
     return form
 
 
-def profile(request, user_id):  # Can't get printing gender right :(
+def profile(request, user_id):
     """
     This function allows to view other people's profile by id.
     However, to view them easily some kind of resolver might be needed as we don't have usernames.
     """
-
     context = get_context(request)
     user_id = int(user_id)
     user = get_object_or_404(User, pk=user_id)
     if request.user == user:
         return redirect('myProfile')
-    profile_page = UserProfile.objects.get(user=user).profile_page
+
+    profile = UserProfile.objects.get(user=user)
+    profile_page = profile.profile_page
 
     context['title'] = u"{0.first_name} {0.last_name}".format(user)
     context['profile_page'] = profile_page
     context['myProfile'] = False
+
+    if request.user.has_perm('wwwapp.see_all_users'):
+        context['profile'] = profile
 
     return render(request, 'profile.html', context)
 
@@ -203,6 +207,7 @@ def workshop_participants(request, name):
     can_see_this = can_edit_workshop(workshop, request.user)
 
     if not can_see_all and not can_see_this:
+        # it should show page like "you don't have permission", probably
         return redirect('login')
 
     context = get_context(request)
