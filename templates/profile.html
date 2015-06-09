@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
@@ -15,82 +14,94 @@
 
     <div id="pagination_content">
         <div title="Dane" id="data">
-
-        <form id="profile_data_form" action="" method="post" class="form-horizontal">
+          <form id="profile_data_form" action="" method="post" class="form-horizontal">
             {% crispy user_form %}
             {% crispy user_profile_form %}
-            <button type="button" id="profile_data_form_edit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right" onclick='changeEdit("profile_data_form","profile_data_form_edit_button","profile_data_form_submit_button")'>Edytuj</button>
-            <button id="profile_data_form_submit_button" style="display: none; margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
-        </form>
-
+            <button class="btn btn-default pull-right big-button">Zapisz</button>
+          </form>
         </div>
         <div title="Strona profilowa" id="profile_page">
-            <div id="profile_page_view">
-                {{ user_profile_page_form.profile_page.value | bleach }}
-            </div>
-
-            <a id="profile_page_edit_button" onclick='SwapButtonNames("profile_page_edit_button","Edytuj","Anuluj")' style="margin: 10px 10px 10px 0px;" data-toggle="collapse" data-parent="#accordion" href="#profile_page_edit_collapse" aria-expanded="true" aria-controls="collapseOne" class="btn btn-default">Edytuj</a>
-            <div id="profile_page_edit_collapse" class="panel-collapse collapse out">
-                <form id="profile_page_form" action="{% url 'updateProfilePage' %}" method="post" class="form">
-                    {% csrf_token %}
-                    {{ user_profile_page_form.profile_page }}
-                    <button id="profile_page_form_submit_button" style="margin: 10px 10px 10px 10px;" class="btn btn-default pull-right">Zapisz</button>
-                </form>
-            </div>
+          <form action="{% url 'update_profile_page' %}" method="post" class="form">
+            {% csrf_token %}
+            {{ user_profile_page_form.profile_page }}
+            <button class="btn btn-default pull-right big-button">Zapisz</button>
+          </form>
+        </div>
+        <div title="List motywacyjny" id="cover_letter">
+          <form action="{% url 'update_cover_letter' %}" method="post" class="form">
+            {% csrf_token %}
+            {{ user_cover_letter_form.cover_letter }}
+            <button class="btn btn-default pull-right big-button">Zapisz</button>
+          </form>
         </div>
     </div>
-        <script src="{% static 'js/save_form_state.js' %}"></script>
-        <script type="text/javascript">
-            function SwapButtonNames(button, name1, name2)
-            {
-            var button = document.getElementById(button);
-            if(button.innerHTML==name1)
-            {
-                button.innerHTML = name2;
-            }
-            else
-            {
-                button.innerHTML = name1;
-            }
-            }
-
-            function changeEdit(form, edit_button, submit_button)
-            {
-
-            SwapButtonNames(edit_button, 'Edytuj', 'Anuluj');
-            var button = document.getElementById(edit_button);
-            if(button.innerHTML == 'Edytuj')
-            {
-                restoreForm(form);
-                $("#"+form+" input,select,textarea").attr('disabled', 'disabled');
-            } else
-            {
-                saveForm(form);
-                $("#"+form+" input,select,textarea").removeAttr('disabled');
-            }
-
-            var save = document.getElementById(submit_button);
-            if( save.style.display == "none" )
-            {
-            save.style.display = "block";
-            }
-            else
-            {
-            save.style.display = "none";
-            }
-
-            }
-        </script>
     </div>
     <script>
         $(document).ready(function() {
-                paginate_content("pagination_content");});
+           paginate_content("pagination_content");
+        });
     </script>
 
 
 {% else %}
 
+{% if profile %}
+
+<table class=table>
+<tbody>
+  <tr>
+    <th>Email:</th>
+    <td>{{ profile.user.email }}
+  </tr>
+  <tr>
+    <th>Płeć:</th>
+    <td>{{ profile.get_gender_display }}
+  </tr>
+  <tr>
+    <th>Szkoła lub uniwersytet:</th>
+    <td>{{ profile.school }}
+  </tr>
+  <tr>
+    <th>Rok matury:</th>
+    <td>{{ profile.matura_exam_year }}
+  </tr>
+
+  <tr>
+    <th>Skąd wie o WWW:</th>
+    <td>{{ profile.how_do_you_know_about }}
+  </tr>
+</tbody>
+</table>
+
+{% if is_my_profile %}
+<a class="btn btn-default pull-right big-button" role=button href="{% url 'myProfile' %}">
+  Edytuj
+</a>
+{% endif %}
+
+{% if profile.cover_letter %}
+<hr />
+<h3>List motywacyjny</h3>
+{{ profile.cover_letter | bleach }}
+{% endif %}
+
+
+{% if profile_page %}
+<hr />
+<h3>Strona profilowa</h3>
+{% endif %}
+
 {{ profile_page | bleach }}
+{% endif %}
+
+<hr />
+
+{% if is_my_profile %}
+<p>
+  <em>Twoje szczegółowe dane oraz list motywacyjny są widoczne tylko dla administratorów. Strona profilowa jest publiczna.</em>
+</p>
+{% endif %}
+
 
 {% endif %}
 

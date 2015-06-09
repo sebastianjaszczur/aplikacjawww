@@ -20,11 +20,10 @@ DEFAULT_CONFIG = {
     # flash,iframe are removed, because they're dangerous
     # templates are useless, unless someone defines better ones
     'extraPlugins': 'linklocal',
-    'disableNativeSpellChecker': False, # browser spellchecker is better
+    'disableNativeSpellChecker': False,  # browser spellchecker is better
     'linklocal_autocomplete': '/articleNameList',
     'linklocal_prefix': '/article/',
     'format_tags': 'p;h2;h3;h4',
-    'height': 1000
 }
 
 
@@ -36,7 +35,7 @@ class RichTextarea(Widget):
         if attrs:
             default_attrs.update(attrs)
         super(RichTextarea, self).__init__(default_attrs)
-    
+
     def render(self, name, value, attrs=None):
         if value is None:
             value = ''

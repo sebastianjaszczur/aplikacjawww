@@ -1,15 +1,14 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 import os
 from django.conf import settings
-from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
-                         WorkshopPageForm
+    WorkshopPageForm, UserCoverLetterForm
 
 
 def get_context(request):
@@ -30,7 +29,7 @@ def get_context(request):
     return context
 
 
-def program(request):  #  Not so sure about 'program' - maybe 'agenda' is better
+def program(request):
     context = get_context(request)
     context['title'] = 'Program WWW11'
 
@@ -44,28 +43,27 @@ def program(request):  #  Not so sure about 'program' - maybe 'agenda' is better
     return render(request, 'program.html', context)
 
 
-def set_form_readonly(form):
-    for field in form:
-        form.fields[field.name].widget.attrs['disabled'] = 'True'
-    return form
-
-
-def profile(request, user_id):  # Can't get printing gender right :(
+def profile(request, user_id):
     """
     This function allows to view other people's profile by id.
     However, to view them easily some kind of resolver might be needed as we don't have usernames.
     """
-
     context = get_context(request)
     user_id = int(user_id)
     user = get_object_or_404(User, pk=user_id)
-    if request.user == user:
-        return redirect('myProfile')
-    profile_page = UserProfile.objects.get(user=user).profile_page
+
+    profile = UserProfile.objects.get(user=user)
+    profile_page = profile.profile_page
+
+    is_my_profile = (request.user == user)
+    can_see_all_users = request.user.has_perm('wwwapp.see_all_users')
 
     context['title'] = u"{0.first_name} {0.last_name}".format(user)
     context['profile_page'] = profile_page
-    context['myProfile'] = False
+    context['is_my_profile'] = is_my_profile
+
+    if can_see_all_users or is_my_profile:
+        context['profile'] = profile
 
     return render(request, 'profile.html', context)
 
@@ -75,13 +73,26 @@ def update_profile_page(request):
         return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
+
         if request.method == "POST":
             user_profile_page_form = UserProfilePageForm(request.POST, instance=user_profile)
             if user_profile_page_form.is_valid():
                 user_profile_page_form.save()
-            return redirect('myProfile')
-        else:
-            return redirect('myProfile')
+
+        return redirect(reverse('profile', args=[request.user.id]))
+
+def update_cover_letter(request):
+    if not request.user.is_authenticated():
+        return redirect('login')
+    else:
+        user_profile = UserProfile.objects.get(user=request.user)
+
+        if request.method == "POST":
+            user_cover_letter_form = UserCoverLetterForm(request.POST, instance=user_profile)
+            if user_cover_letter_form.is_valid():
+                user_cover_letter_form.save()
+
+        return redirect(reverse('profile', args=[request.user.id]))
 
 
 def my_profile(request):
@@ -96,17 +107,20 @@ def my_profile(request):
             if user_form.is_valid() and user_profile_form.is_valid():
                 user_form.save()
                 user_profile_form.save()
-            return redirect('myProfile')
+
+            return redirect(reverse('profile', args=[request.user.id]))
         else:
-            user_form = set_form_readonly(UserForm(instance=request.user))
-            user_profile_form = set_form_readonly(UserProfileForm(instance=user_profile))
+            user_form = UserForm(instance=request.user)
+            user_profile_form = UserProfileForm(instance=user_profile)
             user_form.helper.form_tag = False
             user_profile_form.helper.form_tag = False
             context['user_form'] = user_form
             context['user_profile_form'] = user_profile_form
             context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
+            context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
             context['myProfile'] = True
             context['title'] = u'Mój profil'
+
             return render(request, 'profile.html', context)
 
 
@@ -203,6 +217,7 @@ def workshop_participants(request, name):
     can_see_this = can_edit_workshop(workshop, request.user)
 
     if not can_see_all and not can_see_this:
+        # it should show page like "you don't have permission", probably
         return redirect('login')
 
     context = get_context(request)
@@ -211,6 +226,21 @@ def workshop_participants(request, name):
     context['participants'] = workshop.participants.all().select_related('user')
 
     return render(request, 'workshopparticipants.html', context)
+
+def participants(request):
+    can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
+
+    if not can_see_users:
+        return redirect('login')
+
+    participants = UserProfile.objects.all().prefetch_related('workshops')
+
+    context = get_context(request)
+    context['title'] = 'Uczestnicy'
+    context['participants'] = participants
+
+    return render(request, 'participants.html', context)
+
 
 def register_to_workshop(request):
     workshop_name = request.POST['workshop_name']

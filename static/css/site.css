@@ -1,3 +1,7 @@
+.big-button {
+    margin: 10px 10px 10px 10px;
+}
+
 .main {
     max-width: 450px;
     padding: 19px 29px 29px;
@@ -33,7 +37,7 @@
 	http://zocial.smcllns.com
 	by Sam Collins (@smcllns)
 	License: http://opensource.org/licenses/mit-license.php
-	
+
 	You are free to use and modify, as long as you keep this license comment intact or link back to zocial.smcllns.com on your site.
 */
 
@@ -58,13 +62,13 @@ a.zocial {
 	text-decoration: none;
 	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
 	white-space: nowrap;
-	
+
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
-	
+
 	position: relative;
-	
+
 	-moz-border-radius: .3em;
 	-webkit-border-radius: .3em;
 	border-radius: .3em;
@@ -82,11 +86,11 @@ a.zocial {
 	text-align: center;
 	text-decoration: none;
 	text-transform: none;
-	
+
 	-moz-box-shadow: 0.075em 0 0 rgba(255,255,255,0.25);
 	-webkit-box-shadow: 0.075em 0 0 rgba(255,255,255,0.25);
 	box-shadow: 0.075em 0 0 rgba(255,255,255,0.25);
-	
+
 	-moz-font-smoothing: antialiased;
 	-webkit-font-smoothing: antialiased;
 	font-smoothing: antialiased;
@@ -110,7 +114,7 @@ a.zocial {
 	padding: 0;
 	width: 2em;
 	height: 2em;
-	
+
 	box-shadow: none;
 	border: none;
 }
@@ -499,4 +503,3 @@ button:-moz-focus-inner {
     font-weight: normal;
     font-style: normal;
 }
-    
