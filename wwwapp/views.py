@@ -55,10 +55,6 @@ def profile(request, user_id):  # Can't get printing gender right :(
     This function allows to view other people's profile by id.
     However, to view them easily some kind of resolver might be needed as we don't have usernames.
     """
-    # we don't want to make users' emails public - so we have to check for permission to view
-    if not request.user.has_perm('wwwapp.see_all_users'):
-        # it should show page like "you don't have permission", probably
-        return redirect('login')
 
     context = get_context(request)
     user_id = int(user_id)
