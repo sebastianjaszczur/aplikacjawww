@@ -2,7 +2,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
 
-from wwwapp.models import User
+from wwwapp.models import User, Workshop
 from wwwapp.views import get_context
 
 
@@ -18,14 +18,50 @@ def _register_as_email_filter(filter_id, name):
     return decorator
 
 
-@_register_as_email_filter('all', 'wszyscy')
-def _filter1():
+@_register_as_email_filter('all', u'wszyscy')
+def _all():
     return User.objects.all()
 
 
-@_register_as_email_filter('none', 'nikt')
-def _filter1():
+@_register_as_email_filter('none', u'nikt')
+def _none():
     return None
+
+
+def _get_user_objects_of_lecturers_of_workshops(workshops):
+    users = set()
+    for workshop in workshops:
+        for user_profile in workshop.lecturer.all():
+            users.add(user_profile.user)
+    return users
+
+
+@_register_as_email_filter('allLecturers', u'wszyscy prowadzący')
+def _all_lecturers():
+    all_workshops = Workshop.objects.all()
+    return _get_user_objects_of_lecturers_of_workshops(all_workshops)
+
+
+@_register_as_email_filter('acceptedLecturers', u'prowadzący zaakceptowanych warsztatów')
+def _accepted_lecturers():
+    accepted_workshops = Workshop.objects.filter(status='Z')
+    return _get_user_objects_of_lecturers_of_workshops(accepted_workshops)
+
+
+@_register_as_email_filter('deniedLecturers', u'prowadzący odrzuconych warsztatów')
+def _denied_lecturers():
+    denied_workshops = Workshop.objects.filter(status='O')
+    return _get_user_objects_of_lecturers_of_workshops(denied_workshops)
+
+
+@_register_as_email_filter('allParticipants', u'wszyscy uczestnicy zapisani na co najmniej jeden warsztat')
+def _all_participants():
+    all_workshops = Workshop.objects.all()
+    participants = set()
+    for workshop in all_workshops:
+        for participant in workshop.participants.all():
+            participants.add(participant.user)
+    return participants
 
 
 def filtered_emails(request, filter_id=''):
