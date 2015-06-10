@@ -1,3 +1,10 @@
+.profile-preview {
+    margin-top: 10px;
+    font-size: 105%;
+    margin-top: 1em;
+    display: inline-block;
+}
+
 .big-button {
     margin: 10px 10px 10px 10px;
 }

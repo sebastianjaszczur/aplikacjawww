@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
+from django.contrib import messages
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
@@ -68,6 +69,10 @@ def profile(request, user_id):
     return render(request, 'profile.html', context)
 
 
+def redirect_after_profile_save(request, target):
+    messages.info(request, u'Zapisano.')
+    return redirect(reverse('myProfile') + '#' + target)
+
 def update_profile_page(request):
     if not request.user.is_authenticated():
         return redirect('login')
@@ -79,7 +84,7 @@ def update_profile_page(request):
             if user_profile_page_form.is_valid():
                 user_profile_page_form.save()
 
-        return redirect(reverse('profile', args=[request.user.id]))
+        return redirect_after_profile_save(request, 'profile_page')
 
 def update_cover_letter(request):
     if not request.user.is_authenticated():
@@ -92,7 +97,7 @@ def update_cover_letter(request):
             if user_cover_letter_form.is_valid():
                 user_cover_letter_form.save()
 
-        return redirect(reverse('profile', args=[request.user.id]))
+        return redirect_after_profile_save(request, 'cover_letter')
 
 
 def my_profile(request):
@@ -108,7 +113,7 @@ def my_profile(request):
                 user_form.save()
                 user_profile_form.save()
 
-            return redirect(reverse('profile', args=[request.user.id]))
+            return redirect_after_profile_save(request, 'data')
         else:
             user_form = UserForm(instance=request.user)
             user_profile_form = UserProfileForm(instance=user_profile)
@@ -118,7 +123,7 @@ def my_profile(request):
             context['user_profile_form'] = user_profile_form
             context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
             context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
-            context['myProfile'] = True
+            context['is_editing_profile'] = True
             context['title'] = u'Mój profil'
 
             return render(request, 'profile.html', context)
