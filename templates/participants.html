@@ -15,7 +15,7 @@
             {% if participant.workshops.exists %}
             <tr>
               <td>
-                <a href="{% url 'profile' participant.id %}">
+                <a href="{% url 'profile' participant.user.id %}">
                   {{ participant.user.get_full_name }}
                 </a>
               </td>
