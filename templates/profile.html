@@ -9,7 +9,7 @@
   <div id="profile_content" class="col-sm-12 maincontent" style="display: block;">
     <h1>{{ title }}</h1>
 
-    {% if myProfile %}
+    {% if is_editing_profile %}
       <script src="{% static 'js/jquery.content_pagination.js' %}"></script>
 
       <div id="pagination_content">
@@ -17,28 +17,32 @@
           <form id="profile_data_form" action="" method="post" class="form-horizontal">
             {% crispy user_form %}
             {% crispy user_profile_form %}
-            <button class="btn btn-default pull-right big-button">Zapisz</button>
+            {% include "_profilesubmit.html" %}
           </form>
         </div>
         <div title="Strona profilowa" id="profile_page">
           <form action="{% url 'update_profile_page' %}" method="post" class="form">
             {% csrf_token %}
             {{ user_profile_page_form.profile_page }}
-            <button class="btn btn-default pull-right big-button">Zapisz</button>
+            {% include "_profilesubmit.html" %}
           </form>
         </div>
         <div title="List motywacyjny" id="cover_letter">
           <form action="{% url 'update_cover_letter' %}" method="post" class="form">
             {% csrf_token %}
             {{ user_cover_letter_form.cover_letter }}
-            <button class="btn btn-default pull-right big-button">Zapisz</button>
+            {% include "_profilesubmit.html" %}
           </form>
         </div>
       </div>
       </div>
       <script>
           $(document).ready(function() {
-             paginate_content("pagination_content");
+            paginate_content("pagination_content");
+
+            if(["#data", "#profile_page", "#cover_letter"].indexOf(location.hash) != -1) {
+              go_to_page("pagination_content_navigation", location.hash.slice(1));
+            }
           });
       </script>
     {% else %}

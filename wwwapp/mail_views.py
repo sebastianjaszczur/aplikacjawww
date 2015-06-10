@@ -65,7 +65,7 @@ def _all_participants():
 
 
 def filtered_emails(request, filter_id=''):
-    if not request.user.has_perm('user_profiles.can_see_all_users'):
+    if not request.user.has_perm('wwwapp.see_all_users'):
         return redirect('login')
 
     context = get_context(request)
