@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
 from wwwapp import views
+from wwwapp import mail_views
 from wwwapp import settings
 from wwwapp.auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
 
@@ -42,6 +43,7 @@ urlpatterns = patterns('',
     url(r'^allWorkshops/$', views.all_workshops, name='allWorkshops'),
     url(r'^participants/$', views.participants, name='participants'),
     url(r'^emails/$', views.emails, name='emails'),
+    url(r'^filterEmails/(?:(?P<filter_id>[a-zA-Z0-9\-_]+)/)?$', mail_views.filtered_emails, name='filter_emails'),
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page, name='template_for_workshop_page'),
     url(r'^program/$', views.program, name='program'),
     url(r'^$', views.index, name='index'),
