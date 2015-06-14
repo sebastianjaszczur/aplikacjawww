@@ -104,12 +104,13 @@ class WorkshopPageForm(ModelForm):
     qualification_problems = FileField(required=False, widget=FileInput())
     class Meta:
         model = Workshop
-        fields = ['qualification_problems', 'page_content_is_public', 'page_content']
+        fields = ['qualification_problems', 'is_qualifying', 'page_content_is_public', 'page_content']
         widgets = {
             'page_content': RichTextarea(),
         }
         labels = {
             'qualification_problems': u'Zadania kwalifikacyjne w PDF:',
+            'is_qualifying': u'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',
             'page_content': u'Strona warsztatów',
             'page_content_is_public': u'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
         }

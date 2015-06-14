@@ -105,7 +105,8 @@ class Workshop(models.Model):
                               null=True, default=None, blank=True)
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
-
+    
+    is_qualifying = models.BooleanField(default=True)
     qualification_problems = models.FileField(null=True, blank=True, upload_to="qualification")
     participants = models.ManyToManyField(UserProfile, blank=True, related_name='workshops')
 

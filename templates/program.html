@@ -65,7 +65,13 @@
                             <tr>
                                 <td class="col-sm-3" style="border: none; height: 38px;">Zadania kwalifikacyjne:</td>
                                 <td class="col-sm-9" style="border: none; height: 38px;">
-                                    {% if workshop.qualification_problems %} <a href="{% url 'qualification_problems' workshop.name %}"> Link </a> {% else %} Pojawią się wkrótce {% endif %}
+                                    {% if workshop.is_qualifying and workshop.qualification_problems %}
+                                        <a href="{% url 'qualification_problems' workshop.name %}"> Link </a>
+                                    {% elif workshop.is_qualifying %}
+                                        Pojawią się wkrótce
+                                    {% else %}
+                                        Na te warsztaty nie obowiązuje kwalifikacja.
+                                    {% endif %}
                                 </td>
                             </tr>
                             <tr>
