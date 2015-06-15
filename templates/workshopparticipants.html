@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
 {% load bleach_tags %}
+{% load staticfiles %}
 
 {% block content %}
+
+<script src="{% static 'clippy/jquery.clippy.min.js' %}" type="text/javascript"></script>
+
 <div class="container">
     <article class="col-sm-12 maincontent">
         <h1>{{ title }} &dash; uczestnicy</h1>
@@ -26,6 +30,21 @@
             {% endfor %}
           </tbody>
         </table>
+        <div class="containter-fluid">
+        <strong>Maile: </strong><input style="width: 40%; text-overflow: ellipsis;" type="text" value="{% for participant in participants %}{{ participant.user.email }} {% endfor %}" id="participants_emails" /><span id="participants_emails_clippy"></span>
+        </div>
+            <script>
+            $(document).ready(function(){
+
+            $("#participants_emails").change(function(){
+                $("#participants_emails_clippy").html('').clippy({
+                'text': $(this).val(),
+                clippy_path: "{% static 'clippy/clippy.swf' %}",
+                });
+            }).change(); // can someone change the size of it? I can't ~Kalmar
+
+            });
+        </script>
     </article>
 </div>
 {% endblock %}
