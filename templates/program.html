@@ -68,9 +68,9 @@
                                     {% if workshop.is_qualifying and workshop.qualification_problems %}
                                         <a href="{% url 'qualification_problems' workshop.name %}"> Link </a>
                                     {% elif workshop.is_qualifying %}
-                                        Pojawią się wkrótce
+                                        Pojawią się wkrótce.
                                     {% else %}
-                                        Na te warsztaty nie ma kwalifikacji Nie liczą się do puli wymaganych zgłoszeń
+                                        Na te warsztaty nie ma kwalifikacji. Nie liczą się do puli wymaganych zgłoszeń.
                                     {% endif %}
                                 </td>
                             </tr>
