@@ -36,15 +36,6 @@
         </div>
       </div>
       </div>
-      <script>
-          $(document).ready(function() {
-            paginate_content("pagination_content");
-
-            if(["#data", "#profile_page", "#cover_letter"].indexOf(location.hash) != -1) {
-              go_to_page("pagination_content_navigation", location.hash.slice(1));
-            }
-          });
-      </script>
     {% else %}
 
       {% if profile %}
@@ -104,5 +95,17 @@
     {% endif %}
   </div>
 </div>
+
+{% endblock %}
+{% block script %}
+<script>
+  $(document).ready(function() {
+      paginate_content("pagination_content");
+
+      if(["#data", "#profile_page", "#cover_letter"].indexOf(location.hash) != -1) {
+          go_to_page("pagination_content_navigation", location.hash.slice(1));
+      }
+  });
+</script>
 
 {% endblock %}
