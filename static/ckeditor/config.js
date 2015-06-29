@@ -5,6 +5,8 @@
 
 CKEDITOR.editorConfig = function( config ) {
 	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
+	config.language = 'pl';
 	// config.uiColor = '#AADC6E';
+	config.removePlugins='link';
+	config.extraPlugins='linklocal';
 };
