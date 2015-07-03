@@ -12,12 +12,16 @@
         <h1>{{ title }} &dash; uczestnicy</h1>
         <table class="table">
           <thead>
+            <th>Number</th>
             <th>Name</th>
             <th>Email</th>
           </thead>
           <tbody>
             {% for participant in participants %}
             <tr>
+              <td>
+                  {{ forloop.counter }}
+              </td>
               <td>
                 <a href="{% url 'profile' participant.user.id %}">
                   {{ participant.user.get_full_name }}
