@@ -105,13 +105,17 @@ class Workshop(models.Model):
                               null=True, default=None, blank=True)
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
-    
+
     is_qualifying = models.BooleanField(default=True)
     qualification_problems = models.FileField(null=True, blank=True, upload_to="qualification")
-    participants = models.ManyToManyField(UserProfile, blank=True, related_name='workshops')
+    participants = models.ManyToManyField(UserProfile, blank=True, related_name='workshops', through='WorkshopParticipant')
 
     class Meta:
         permissions = (('see_all_workshops', u'Can see all workshops'),)
 
     def __unicode__(self):
         return (self.status + ":" if self.status else "") + self.title
+
+class WorkshopParticipant(models.Model):
+    workshop = models.ForeignKey(Workshop)
+    participant = models.ForeignKey(UserProfile)
