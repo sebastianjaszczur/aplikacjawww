@@ -14,6 +14,7 @@
             <th>Imię i nazwisko</th>
             <th>Email</th>
             <th>Ilość punktów</th>
+            <th>Zakwalifikowano</th>
           </thead>
           <tbody>
             {% for workshop_participant in workshop_participants %}
@@ -35,6 +36,10 @@
                        class="points-input"
                        data-id="{{ workshop_participant.id }}">
                 <a href="#" class="save">Zapisz</a>
+              </td>
+              <td class="qualified-mark">
+                {% load wwwtags %}
+                {{ workshop_participant.is_qualified|qualified_mark }}
               </td>
             </tr>
             {% endfor %}

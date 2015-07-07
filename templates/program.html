@@ -5,6 +5,35 @@
 
 <div class="container">
     <article class="col-sm-12 maincontent">
+        {% if your_qualifications %}
+        <h1>Wyniki kwalifikacji</h1>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Warsztaty
+              <th>Punkty
+              <th>Zakwalifikowano
+            </tr>
+          </thead>
+          <tbody>
+            {% for workshop_participant in your_qualifications %}
+            <tr>
+              <td>
+                {{ workshop_participant.workshop.name }}
+              </td>
+              <td>
+                {{ workshop_participant.qualification_result|default_if_none:'?' }}
+              </td>
+              <td>
+                {% load wwwtags %}
+                {{ workshop_participant.is_qualified|qualified_mark }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
         {% if workshops %}
         <h1>{{ title }}</h1>
         <div class="panel-group">

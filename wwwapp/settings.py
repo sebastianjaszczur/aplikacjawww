@@ -78,6 +78,9 @@ INSTALLED_APPS = (
     'django_cleanup',
 )
 
+if DEBUG:
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

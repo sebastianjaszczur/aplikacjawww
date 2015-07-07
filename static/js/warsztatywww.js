@@ -30,6 +30,7 @@ $('.points-input').each(function() {
     var workshop_participant_id = elem.data('id');
     var save_btn = elem.parent().find('.save');
     var saved_value = elem.val();
+    var qualified_mark = elem.parent().parent().find('.qualified-mark');
 
     save_btn.addClass('invisibile').click(function() {
         $.ajax({
@@ -46,6 +47,7 @@ $('.points-input').each(function() {
                     saved_value = value.value;
                     elem.val(saved_value);
                     save_btn.addClass('invisibile');
+                    qualified_mark.html(value.mark);
                 }
             }
         });

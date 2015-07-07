@@ -124,5 +124,14 @@ class WorkshopParticipant(models.Model):
 
     qualification_result = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
 
+    def is_qualified(self):
+        threshold = self.workshop.qualification_threshold
+        if threshold is None or self.qualification_result is None:
+            return None
+        if self.qualification_result >= threshold:
+            return True
+        else:
+            return False
+
     class Meta:
         unique_together = [('workshop', 'participant')]

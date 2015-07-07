@@ -1,3 +1,16 @@
+.not-qualified {
+    color: red;
+}
+
+.maybe-qualified {
+    color: purple;
+    font-weight: bolder;
+}
+
+.qualified {
+    color: green;
+}
+
 .points-input {
     width: 4em;
 }

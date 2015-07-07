@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop, WorkshopParticipant
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
     WorkshopPageForm, UserCoverLetterForm
+from wwwapp.templatetags.wwwtags import qualified_mark
 
 def get_context(request):
     context = {}
@@ -39,8 +40,15 @@ def program(request):
         user_participation = set(Workshop.objects.filter(participants__user=request.user).all())
     else:
         user_participation = set()
+
+    workshops = Workshop.objects.filter(status='Z').order_by('title').prefetch_related('lecturer', 'lecturer__user', 'category')
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
-                            in Workshop.objects.filter(status='Z').order_by('title')]
+                            in workshops ]
+
+    qualifications = WorkshopParticipant.objects.filter(participant__user=request.user).prefetch_related('workshop')
+    if not any(qualification.qualification_result is not None for qualification in qualifications):
+        qualifications = None
+    context['your_qualifications'] = qualifications
 
     return render(request, 'program.html', context)
 
@@ -229,7 +237,8 @@ def workshop_participants(request, name):
     context = get_context(request)
 
     context['title'] = workshop.title
-    context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).select_related('participant', 'participant__user')
+    context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
+        'workshop', 'participant', 'participant__user')
 
     return render(request, 'workshopparticipants.html', context)
 
@@ -241,7 +250,9 @@ def save_points(request):
         return JsonResponse({'error': u'Brak uprawnień.'})
 
     try:
-        result = request.POST['points']
+        result = request.POST['points'].strip()
+        if result == '':
+            result = None
         workshop_participant.qualification_result = result
     except (ValidationError, ValueError):
         return JsonResponse({'error': u'Niepoprawny format liczby'})
@@ -249,7 +260,8 @@ def save_points(request):
     workshop_participant.save()
     workshop_participant = WorkshopParticipant.objects.get(id=workshop_participant.id)
 
-    return JsonResponse({'value': str(workshop_participant.qualification_result)})
+    return JsonResponse({'value': str(workshop_participant.qualification_result),
+                         'mark': qualified_mark(workshop_participant.is_qualified())})
 
 def participants(request):
     can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
