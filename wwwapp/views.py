@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 import os
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, Http404
+from django.core.exceptions import ValidationError
 from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib import messages
@@ -228,9 +229,27 @@ def workshop_participants(request, name):
     context = get_context(request)
 
     context['title'] = workshop.title
-    context['participants'] = workshop.participants.all().select_related('user')
+    context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).select_related('participant', 'participant__user')
 
     return render(request, 'workshopparticipants.html', context)
+
+def save_points(request):
+    workshop_participant = WorkshopParticipant.objects.get(id=request.POST['id'])
+    # can edit?
+    can_edit = can_edit_workshop(workshop_participant.workshop, request.user)
+    if not can_edit:
+        return JsonResponse({'error': u'Brak uprawnień.'})
+
+    try:
+        result = request.POST['points']
+        workshop_participant.qualification_result = result
+    except (ValidationError, ValueError):
+        return JsonResponse({'error': u'Niepoprawny format liczby'})
+
+    workshop_participant.save()
+    workshop_participant = WorkshopParticipant.objects.get(id=workshop_participant.id)
+
+    return JsonResponse({'value': str(workshop_participant.qualification_result)})
 
 def participants(request):
     can_see_users = request.user.has_perm('wwwapp.see_all_workshops')

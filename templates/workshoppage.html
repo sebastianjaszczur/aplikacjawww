@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load bleach_tags %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
@@ -8,7 +9,7 @@
         <h1>{{ title }}</h1>
         {% if has_perm_to_edit %}
             <a href="{% url 'workshop' workshop.name %}">Edycja zgłoszenia</a> |
-            <a href="{% url 'workshop_participants' workshop.name %}">Uczestnicy</a>
+            <a href="{% url 'workshop_participants' workshop.name %}">Uczestnicy i ocenianie</a>
             <hr>
             {% if workshop.is_qualifying and workshop.qualification_problems %}
                 Twoje zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
@@ -18,11 +19,10 @@
                 Na Twoje warsztaty nie obowiązuje kwalifikacja.
             {% endif %}
             <div role="tabpanel" aria-labelledby="headingOne">
-
                 <form action="" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button class="btn btn-default">Zapisz</button>
+                  {% csrf_token %}
+                  {{ form|crispy }}
+                  <button class="btn btn-default">Zapisz</button>
                 </form>
             </div>
         {% elif workshop.page_content_is_public %}

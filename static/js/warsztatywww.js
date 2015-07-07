@@ -25,7 +25,37 @@ if(editors.length !== 0) {
     });
 }
 
+$('.points-input').each(function() {
+    var elem = $(this);
+    var workshop_participant_id = elem.data('id');
+    var save_btn = elem.parent().find('.save');
+    var saved_value = elem.val();
 
+    save_btn.addClass('invisibile').click(function() {
+        $.ajax({
+            'url': '/savePoints/',
+            'data': {'points': elem.val(), 'id': workshop_participant_id},
+            'error': function(xhr, textStatus, errorThrown) {
+                alert('Błąd: ' + errorThrown);
+            },
+            'method': 'POST',
+            'success': function(value) {
+                if(value.error) {
+                    alert('Błąd: ' + errorThrown);
+                } else {
+                    saved_value = value.value;
+                    elem.val(saved_value);
+                    save_btn.addClass('invisibile');
+                }
+            }
+        });
+    });
+
+    elem.on('change keyup mouseup', function() {
+        if(elem.val() != saved_value)
+            save_btn.removeClass('invisibile');
+    });
+});
 
 function handle_registration_change(workshop_name_txt, register) {
     var proper_url;

@@ -1,3 +1,11 @@
+.points-input {
+    width: 4em;
+}
+
+.invisibile {
+    visibility: hidden;
+}
+
 .profile-preview {
     margin-top: 10px;
     font-size: 105%;
