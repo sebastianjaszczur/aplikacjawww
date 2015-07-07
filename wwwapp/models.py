@@ -101,7 +101,8 @@ class Workshop(models.Model):
     type = models.ForeignKey(WorkshopType, null=True, blank=True, default=None)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
-    status = models.CharField(max_length=10, choices=[('Z', u'Zaakceptowane'), ('O', u'Odrzucone'),],
+    status = models.CharField(max_length=10,
+                              choices=[('Z', u'Zaakceptowane'), ('O', u'Odrzucone')],
                               null=True, default=None, blank=True)
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
@@ -109,6 +110,7 @@ class Workshop(models.Model):
     is_qualifying = models.BooleanField(default=True)
     qualification_problems = models.FileField(null=True, blank=True, upload_to="qualification")
     participants = models.ManyToManyField(UserProfile, blank=True, related_name='workshops', through='WorkshopParticipant')
+    qualification_threshold = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
 
     class Meta:
         permissions = (('see_all_workshops', u'Can see all workshops'),)
@@ -119,3 +121,8 @@ class Workshop(models.Model):
 class WorkshopParticipant(models.Model):
     workshop = models.ForeignKey(Workshop)
     participant = models.ForeignKey(UserProfile)
+
+    qualification_result = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
+
+    class Meta:
+        unique_together = [('workshop', 'participant')]

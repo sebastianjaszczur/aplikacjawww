@@ -7,10 +7,9 @@ from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib import messages
 from django.contrib.auth.models import User
-from wwwapp.models import Article, UserProfile, Workshop
+from wwwapp.models import Article, UserProfile, Workshop, WorkshopParticipant
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
     WorkshopPageForm, UserCoverLetterForm
-
 
 def get_context(request):
     context = {}
@@ -23,6 +22,7 @@ def get_context(request):
             has_workshops = True
         else:
             has_workshops = False
+
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     context['has_workshops'] = has_workshops
@@ -249,18 +249,21 @@ def participants(request):
 
 def register_to_workshop(request):
     workshop_name = request.POST['workshop_name']
-    data = {}
+
     if not request.user.is_authenticated():
-        data['redirect'] = reverse('login')
-        return JsonResponse(data)
+        return JsonResponse({'redirect': reverse('login')})
+
     workshop = get_object_or_404(Workshop, name=workshop_name)
-    workshop.participants.add(UserProfile.objects.get(user=request.user))
-    workshop.save()
+
+    if workshop.qualification_threshold is not None:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
+
+    WorkshopParticipant(participant=UserProfile.objects.get(user=request.user), workshop=workshop).save()
+
     context = get_context(request)
     context['workshop'] = workshop
     context['registered'] = True
-    data['content'] = render_to_response('_programworkshop.html', context).content
-    return JsonResponse(data)
+    return JsonResponse({'content': render_to_response('_programworkshop.html', context).content})
 
 def unregister_from_workshop(request):
     workshop_name = request.POST['workshop_name']
@@ -268,9 +271,16 @@ def unregister_from_workshop(request):
     if not request.user.is_authenticated():
         data['redirect'] = reverse('login')
         return JsonResponse(data)
+
     workshop = get_object_or_404(Workshop, name=workshop_name)
-    workshop.participants.remove(UserProfile.objects.get(user=request.user))
-    workshop.save()
+    profile = UserProfile.objects.get(user=request.user)
+    workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
+
+    if workshop.qualification_threshold is not None or workshop_participant.qualification_result is not None:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona - nie możesz się wycofać.'})
+
+    workshop_participant.delete()
+
     context = get_context(request)
     context['workshop'] = workshop
     context['registered'] = False

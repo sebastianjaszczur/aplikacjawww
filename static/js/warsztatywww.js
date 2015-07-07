@@ -35,6 +35,13 @@ function handle_registration_change(workshop_name_txt, register) {
         proper_url = unregister_to_workshops_url;
     }
 
+    function error(message) {
+        var elem = $('<div class="alert alert-danger fade in"><a href="#" class="close" data-dismiss="alert">&times;</a>' +
+                     '<strong>Error!</strong> <span></span></div>');
+        elem.find('span').text(message);
+        $("#" + workshop_name_txt).after(elem); // add the error to the dom
+    }
+
     $.ajax({
         url : proper_url, // the endpoint
         type : "POST", // http method
@@ -42,14 +49,16 @@ function handle_registration_change(workshop_name_txt, register) {
 
         // handle a successful response
         success : function(json) {
-            if (json.redirect) {
+            if (json.error) {
+                error(json.error);
+            } else if (json.redirect) {
                 window.location.href = json.redirect;
             } else {
                 $("#" + workshop_name_txt).find(".button-div").replaceWith(json.content);
             }
         },
         error: function(xhr, errmsg, errcode) {
-            $("#"+workshop_name_txt).after('<div class="alert alert-danger fade in"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>Error!</strong> Wystąpił problem przy wysyłaniu danych ('+xhr.status+': '+errcode+').</div>'); // add the error to the dom
+            error('Wystąpił problem przy wysyłaniu danych (' + xhr.status + ': ' + errcode + ').');
         }
     });
 }
