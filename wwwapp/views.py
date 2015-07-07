@@ -269,11 +269,31 @@ def participants(request):
     if not can_see_users:
         return redirect('login')
 
-    participants = UserProfile.objects.all().prefetch_related('workshops')
+    participants = WorkshopParticipant.objects.all().prefetch_related('workshop', 'participant', 'participant__user')
+
+    people = {}
+
+    for participant in participants:
+        p_id = participant.participant.id
+        if p_id not in people:
+            cover_letter = participant.participant.cover_letter
+            people[p_id] = {
+                'user': participant.participant.user,
+                'accepted_workshop_count': 0,
+                'workshop_count': 0,
+                'has_letter': cover_letter and len(cover_letter) > 50
+            }
+
+        people[p_id]['workshop_count'] += 1
+        if participant.is_qualified():
+            people[p_id]['accepted_workshop_count'] += 1
+
+    people = people.values()
+    people.sort(key=lambda p: (-p['has_letter'], -p['accepted_workshop_count']))
 
     context = get_context(request)
     context['title'] = 'Uczestnicy'
-    context['participants'] = participants
+    context['people'] = people
 
     return render(request, 'participants.html', context)
 
