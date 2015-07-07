@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.auth.models import User
-from wwwapp.models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop, WorkshopType
+from wwwapp.models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant
 from django.contrib.auth.admin import UserAdmin
 
 admin.site.unregister(User)
@@ -22,7 +22,7 @@ class WorkshopAdmin(admin.ModelAdmin):
     def make_clear(modeladmin, request, queryset):
         queryset.update(status=None)
     make_clear.short_description = "Zmień status na Null"
-    
+
     actions = [make_acccepted, make_refused, make_clear]
 
 admin.site.register(User, UserProfileAdmin)
@@ -33,3 +33,4 @@ admin.site.register(ArticleContentHistory)
 admin.site.register(WorkshopCategory)
 admin.site.register(WorkshopType)
 admin.site.register(Workshop, WorkshopAdmin)
+admin.site.register(WorkshopParticipant)

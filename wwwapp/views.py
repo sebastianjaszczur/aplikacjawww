@@ -3,14 +3,15 @@ from django.core.urlresolvers import reverse
 import os
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, Http404
+from django.core.exceptions import ValidationError
 from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib import messages
 from django.contrib.auth.models import User
-from wwwapp.models import Article, UserProfile, Workshop
+from wwwapp.models import Article, UserProfile, Workshop, WorkshopParticipant
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
     WorkshopPageForm, UserCoverLetterForm
-
+from wwwapp.templatetags.wwwtags import qualified_mark
 
 def get_context(request):
     context = {}
@@ -23,6 +24,7 @@ def get_context(request):
             has_workshops = True
         else:
             has_workshops = False
+
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     context['has_workshops'] = has_workshops
@@ -38,8 +40,15 @@ def program(request):
         user_participation = set(Workshop.objects.filter(participants__user=request.user).all())
     else:
         user_participation = set()
+
+    workshops = Workshop.objects.filter(status='Z').order_by('title').prefetch_related('lecturer', 'lecturer__user', 'category')
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
-                            in Workshop.objects.filter(status='Z').order_by('title')]
+                            in workshops ]
+
+    qualifications = WorkshopParticipant.objects.filter(participant__user=request.user).prefetch_related('workshop')
+    if not any(qualification.qualification_result is not None for qualification in qualifications):
+        qualifications = None
+    context['your_qualifications'] = qualifications
 
     return render(request, 'program.html', context)
 
@@ -228,9 +237,31 @@ def workshop_participants(request, name):
     context = get_context(request)
 
     context['title'] = workshop.title
-    context['participants'] = workshop.participants.all().select_related('user')
+    context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
+        'workshop', 'participant', 'participant__user')
 
     return render(request, 'workshopparticipants.html', context)
+
+def save_points(request):
+    workshop_participant = WorkshopParticipant.objects.get(id=request.POST['id'])
+    # can edit?
+    can_edit = can_edit_workshop(workshop_participant.workshop, request.user)
+    if not can_edit:
+        return JsonResponse({'error': u'Brak uprawnień.'})
+
+    try:
+        result = request.POST['points'].strip()
+        if result == '':
+            result = None
+        workshop_participant.qualification_result = result
+    except (ValidationError, ValueError):
+        return JsonResponse({'error': u'Niepoprawny format liczby'})
+
+    workshop_participant.save()
+    workshop_participant = WorkshopParticipant.objects.get(id=workshop_participant.id)
+
+    return JsonResponse({'value': str(workshop_participant.qualification_result),
+                         'mark': qualified_mark(workshop_participant.is_qualified())})
 
 def participants(request):
     can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
@@ -238,29 +269,52 @@ def participants(request):
     if not can_see_users:
         return redirect('login')
 
-    participants = UserProfile.objects.all().prefetch_related('workshops')
+    participants = WorkshopParticipant.objects.all().prefetch_related('workshop', 'participant', 'participant__user')
+
+    people = {}
+
+    for participant in participants:
+        p_id = participant.participant.id
+        if p_id not in people:
+            cover_letter = participant.participant.cover_letter
+            people[p_id] = {
+                'user': participant.participant.user,
+                'accepted_workshop_count': 0,
+                'workshop_count': 0,
+                'has_letter': cover_letter and len(cover_letter) > 50
+            }
+
+        people[p_id]['workshop_count'] += 1
+        if participant.is_qualified():
+            people[p_id]['accepted_workshop_count'] += 1
+
+    people = people.values()
+    people.sort(key=lambda p: (-p['has_letter'], -p['accepted_workshop_count']))
 
     context = get_context(request)
     context['title'] = 'Uczestnicy'
-    context['participants'] = participants
+    context['people'] = people
 
     return render(request, 'participants.html', context)
 
 
 def register_to_workshop(request):
     workshop_name = request.POST['workshop_name']
-    data = {}
+
     if not request.user.is_authenticated():
-        data['redirect'] = reverse('login')
-        return JsonResponse(data)
+        return JsonResponse({'redirect': reverse('login')})
+
     workshop = get_object_or_404(Workshop, name=workshop_name)
-    workshop.participants.add(UserProfile.objects.get(user=request.user))
-    workshop.save()
+
+    if workshop.qualification_threshold is not None:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
+
+    WorkshopParticipant(participant=UserProfile.objects.get(user=request.user), workshop=workshop).save()
+
     context = get_context(request)
     context['workshop'] = workshop
     context['registered'] = True
-    data['content'] = render_to_response('_programworkshop.html', context).content
-    return JsonResponse(data)
+    return JsonResponse({'content': render_to_response('_programworkshop.html', context).content})
 
 def unregister_from_workshop(request):
     workshop_name = request.POST['workshop_name']
@@ -268,9 +322,16 @@ def unregister_from_workshop(request):
     if not request.user.is_authenticated():
         data['redirect'] = reverse('login')
         return JsonResponse(data)
+
     workshop = get_object_or_404(Workshop, name=workshop_name)
-    workshop.participants.remove(UserProfile.objects.get(user=request.user))
-    workshop.save()
+    profile = UserProfile.objects.get(user=request.user)
+    workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
+
+    if workshop.qualification_threshold is not None or workshop_participant.qualification_result is not None:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona - nie możesz się wycofać.'})
+
+    workshop_participant.delete()
+
     context = get_context(request)
     context['workshop'] = workshop
     context['registered'] = False

@@ -6,29 +6,38 @@
         <h1>Wszyscy uczestnicy</h1>
         <table class="table">
           <thead>
-            <th>Name</th>
+            <th>N.</th>
+            <th>Imię i nazwisko</th>
             <th>Email</th>
-            <th>Warsztaty</th>
+            <th>Sum. il. warsztatów</th>
+            <th>Il. zakw. warsztatów</th>
+            <th>List motywacyjny</th>
           </thead>
           <tbody>
-            {% for participant in participants %}
-            {% if participant.workshops.exists %}
+            {% for person in people %}
             <tr>
               <td>
-                <a href="{% url 'profile' participant.user.id %}">
-                  {{ participant.user.get_full_name }}
+                {{ forloop.counter }}
+              </td>
+              <td>
+                <a href="{% url 'profile' person.user.id %}">
+                  {{ person.user.get_full_name }}
                 </a>
               </td>
               <td>
-                {{ participant.user.email }}
+                {{ person.user.email }}
               </td>
               <td>
-                {% for workshop in participant.workshops.all %}
-                  {{ workshop.title }}{% if not forloop.last %},{% endif %}
-                {% endfor %}
+                {{ person.workshop_count }}
+              </td>
+              <td>
+                {{ person.accepted_workshop_count }}
+              </td>
+              <td>
+                {% load wwwtags %}
+                {{ person.has_letter|qualified_mark }}
               </td>
             </tr>
-            {% endif %}
             {% endfor %}
           </tbody>
         </table>

@@ -1,3 +1,24 @@
+.not-qualified {
+    color: red;
+}
+
+.maybe-qualified {
+    color: purple;
+    font-weight: bolder;
+}
+
+.qualified {
+    color: green;
+}
+
+.points-input {
+    width: 4em;
+}
+
+.invisibile {
+    visibility: hidden;
+}
+
 .profile-preview {
     margin-top: 10px;
     font-size: 105%;
@@ -34,6 +55,31 @@
     width: 80%;
     display: inline-block;
     margin: 5px auto;
+}
+
+/* Program */
+
+.btn-circle {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 12px;
+    line-height: 1.428571429;
+    border-radius: 15px;
+}
+
+.btn-circle.btn-m {
+    width: 50px;
+    height: 50px;
+    padding: 8px 12px;
+    font-size: 20px;
+    line-height: 1.2;
+    border-radius: 28px;
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
 }
 
 

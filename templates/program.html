@@ -3,34 +3,37 @@
 {% load staticfiles %}
 {% block content %}
 
-<style>
-    .btn-circle {
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    padding: 6px 0;
-    font-size: 12px;
-    line-height: 1.428571429;
-    border-radius: 15px;
-    }
-    .btn-circle.btn-m {
-    width: 50px;
-    height: 50px;
-    padding: 8px 12px;
-    font-size: 20px;
-    line-height: 1.2;
-    border-radius: 28px;
-    }
-
-    .ellipsis {
-
-    text-overflow: ellipsis;
-    }
-
-</style>
-
 <div class="container">
     <article class="col-sm-12 maincontent">
+        {% if your_qualifications %}
+        <h1>Wyniki kwalifikacji</h1>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Warsztaty
+              <th>Punkty
+              <th>Zakwalifikowano
+            </tr>
+          </thead>
+          <tbody>
+            {% for workshop_participant in your_qualifications %}
+            <tr>
+              <td>
+                {{ workshop_participant.workshop.name }}
+              </td>
+              <td>
+                {{ workshop_participant.qualification_result|default_if_none:'?' }}
+              </td>
+              <td>
+                {% load wwwtags %}
+                {{ workshop_participant.is_qualified|qualified_mark }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
         {% if workshops %}
         <h1>{{ title }}</h1>
         <div class="panel-group">
@@ -88,37 +91,7 @@
                 </div>
             </div>
             {% endfor %}
-            <script src="{% static 'js/ajax.requests.js' %}"></script>
             <script>
-
-
-function handle_registration_change(workshop_name_txt, register) {
-
-    if(register) {
-        proper_url = "{% url 'register_to_workshop' %}";
-    } else {
-        proper_url = "{% url 'unregister_from_workshop' %}";
-    }
-
-    $.ajax({
-        url : proper_url, // the endpoint
-        type : "POST", // http method
-        data : { workshop_name : workshop_name_txt }, // data sent with the post request
-
-        // handle a successful response
-        success : function(json) {
-            if(json['redirect']){
-                window.location.href = json['redirect']; }
-            else {
-            $("#"+workshop_name_txt).find(".button-div").replaceWith(json['content']);
-
-            }
-        },
-         error: function(xhr, errmsg, errcode) {
-            $("#"+workshop_name_txt).after('<div class="alert alert-danger fade in"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>Error!</strong> Wystąpił problem przy wysyłaniu danych ('+xhr.status+': '+errcode+').</div>'); // add the error to the dom
-         }
-    });
-}
             </script>
         </div>
         {% else %}
@@ -126,4 +99,8 @@ function handle_registration_change(workshop_name_txt, register) {
         {% endif %}
     </article>
 </div>
+<script>
+  var register_to_workshops_url = "{% url 'register_to_workshop' %}";
+  var unregister_to_workshops_url = "{% url 'unregister_from_workshop' %}";
+</script>
 {% endblock %}

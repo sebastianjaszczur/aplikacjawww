@@ -14,7 +14,8 @@
                 <hr>
                 <form action="" method="post">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {% load crispy_forms_tags %}
+                    {{ form|crispy }}
                     <button class="btn btn-default">Zapisz</button>
                 </form>
             </div>

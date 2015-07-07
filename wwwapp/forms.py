@@ -81,12 +81,12 @@ class ArticleForm(ModelForm):
 
 class WorkshopForm(ModelForm):
     category = ModelSelect2MultipleField(label="Kategorie", queryset=WorkshopCategory.objects, required=False,
-                                         widget=Select2MultipleWidget(select2_options={'width': '200px',})
-                                         )
-    category.help_text = "" # this removes annoying message ' Hold down "Control", or "Command" (..) '
+                                         widget=Select2MultipleWidget(select2_options={'width': '200px'}))
+
+    category.help_text = ""  # this removes annoying message ' Hold down "Control", or "Command" (..) '
     type = ModelSelect2Field(label="Rodzaj zajęć", queryset=WorkshopType.objects, required=False,
-                             widget=Select2Widget(select2_options={'width': '200px',})
-                             )
+                             widget=Select2Widget(select2_options={'width': '200px'}))
+
     class Meta:
         model = Workshop
         fields = ['title', 'name', 'type', 'category', 'proposition_description']
@@ -102,9 +102,10 @@ class WorkshopForm(ModelForm):
 
 class WorkshopPageForm(ModelForm):
     qualification_problems = FileField(required=False, widget=FileInput())
+
     class Meta:
         model = Workshop
-        fields = ['qualification_problems', 'is_qualifying', 'page_content_is_public', 'page_content']
+        fields = ['qualification_problems', 'is_qualifying', 'page_content_is_public', 'qualification_threshold', 'page_content']
         widgets = {
             'page_content': RichTextarea(),
         }
@@ -113,4 +114,5 @@ class WorkshopPageForm(ModelForm):
             'is_qualifying': u'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',
             'page_content': u'Strona warsztatów',
             'page_content_is_public': u'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
+            'qualification_threshold': u'Minimalna liczba punktów potrzeba do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)'
         }

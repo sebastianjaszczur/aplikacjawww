@@ -73,9 +73,13 @@ INSTALLED_APPS = (
     'crispy_forms',
     'django_select2',
     'django_bleach',
+    'compressor',
     'wwwapp',
     'django_cleanup',
 )
+
+if DEBUG:
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.BrokenLinkEmailsMiddleware',
@@ -100,7 +104,7 @@ if ON_PAAS and "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ:
     # determine if we are on MySQL or POSTGRESQL
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',  
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME':     os.environ['OPENSHIFT_APP_NAME'],
             'USER':     os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
             'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],
@@ -138,8 +142,8 @@ BLEACH_ALLOWED_ATTRIBUTES = [
 BLEACH_ALLOWED_STYLES = [
     'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
     'margin-left', 'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
-    'margin', 'padding-top', 'font-size', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color', 
-    'line-height', 'border-collapse', 'border-spacing', 'empty-cells', 
+    'margin', 'padding-top', 'font-size', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color',
+    'line-height', 'border-collapse', 'border-spacing', 'empty-cells',
     ]
 
 # Strip unknown tags if True, replace with HTML escaped characters if
@@ -185,6 +189,12 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR, os.pardir, 'static')
 STATIC_URL = '/static/'
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
+
 MEDIA_URL = '/media/'
 if 'OPENSHIFT_DATA_DIR' in os.environ:
     MEDIA_ROOT = os.path.join(os.environ.get('OPENSHIFT_DATA_DIR', ''), 'media')
@@ -209,6 +219,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'allaccess.context_processors.available_providers',
 )
+
+COMPRESS_ENABLED = True
 
 if ON_PAAS and not DEBUG:
     GOOGLE_ANALYTICS_KEY = 'UA-12926426-8'

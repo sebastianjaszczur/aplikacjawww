@@ -5,50 +5,49 @@
 
 {% block content %}
 
-<script src="{% static 'clippy/jquery.clippy.min.js' %}" type="text/javascript"></script>
-
 <div class="container">
     <article class="col-sm-12 maincontent">
         <h1>{{ title }} &dash; uczestnicy</h1>
         <table class="table">
           <thead>
-            <th>Number</th>
-            <th>Name</th>
+            <th>Numer</th>
+            <th>Imię i nazwisko</th>
             <th>Email</th>
+            <th>Ilość punktów</th>
+            <th>Zakwalifikowano</th>
           </thead>
           <tbody>
-            {% for participant in participants %}
+            {% for workshop_participant in workshop_participants %}
             <tr>
               <td>
                   {{ forloop.counter }}
               </td>
               <td>
-                <a href="{% url 'profile' participant.user.id %}">
-                  {{ participant.user.get_full_name }}
+                <a href="{% url 'profile' workshop_participant.participant.user.id %}">
+                  {{ workshop_participant.participant.user.get_full_name }}
                 </a>
               </td>
               <td>
-                {{ participant.user.email }}
+                {{ workshop_participant.participant.user.email }}
+              </td>
+              <td>
+                <input type=number step=0.1
+                       value="{{ workshop_participant.qualification_result|default_if_none:'' }}"
+                       class="points-input"
+                       data-id="{{ workshop_participant.id }}">
+                <a href="#" class="save">Zapisz</a>
+              </td>
+              <td class="qualified-mark">
+                {% load wwwtags %}
+                {{ workshop_participant.is_qualified|qualified_mark }}
               </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
         <div class="containter-fluid">
-        <strong>Maile: </strong><input style="width: 40%; text-overflow: ellipsis;" type="text" value="{% for participant in participants %}{{ participant.user.email }} {% endfor %}" id="participants_emails" /><span id="participants_emails_clippy"></span>
-        </div>
-            <script>
-            $(document).ready(function(){
-
-            $("#participants_emails").change(function(){
-                $("#participants_emails_clippy").html('').clippy({
-                'text': $(this).val(),
-                clippy_path: "{% static 'clippy/clippy.swf' %}",
-                });
-            }).change(); // can someone change the size of it? I can't ~Kalmar
-
-            });
-        </script>
+          Maile: <input type="text" value="{% for workshop_participant in workshop_participants %}{{ workshop_participant.participant.user.email }} {% endfor %}" id="participants_emails">
+</div>
     </article>
 </div>
 {% endblock %}
