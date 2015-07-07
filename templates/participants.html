@@ -6,7 +6,8 @@
         <h1>Wszyscy uczestnicy</h1>
         <table class="table">
           <thead>
-            <th>Name</th>
+            <th>N.</th>
+            <th>Imię i nazwisko</th>
             <th>Email</th>
             <th>Sum. il. warsztatów</th>
             <th>Il. zakw. warsztatów</th>
@@ -15,6 +16,9 @@
           <tbody>
             {% for person in people %}
             <tr>
+              <td>
+                {{ forloop.counter }}
+              </td>
               <td>
                 <a href="{% url 'profile' person.user.id %}">
                   {{ person.user.get_full_name }}
