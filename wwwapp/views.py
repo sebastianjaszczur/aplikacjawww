@@ -45,10 +45,11 @@ def program(request):
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
                             in workshops ]
 
-    qualifications = WorkshopParticipant.objects.filter(participant__user=request.user).prefetch_related('workshop')
-    if not any(qualification.qualification_result is not None for qualification in qualifications):
-        qualifications = None
-    context['your_qualifications'] = qualifications
+    if request.user.is_authenticated():
+        qualifications = WorkshopParticipant.objects.filter(participant__user=request.user).prefetch_related('workshop')
+        if not any(qualification.qualification_result is not None for qualification in qualifications):
+            qualifications = None
+        context['your_qualifications'] = qualifications
 
     return render(request, 'program.html', context)
 
