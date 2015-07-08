@@ -282,7 +282,7 @@ def participants(request):
                 'user': participant.participant.user,
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
-                'has_letter': cover_letter and len(cover_letter) > 50
+                'has_letter': bool(cover_letter and len(cover_letter) > 50)
             }
 
         people[p_id]['workshop_count'] += 1
