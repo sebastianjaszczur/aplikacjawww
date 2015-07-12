@@ -14,6 +14,7 @@
             <th>Imię i nazwisko</th>
             <th>Email</th>
             <th>Ilość punktów</th>
+            <th>Komentarz</th>
             <th>Zakwalifikowano</th>
           </thead>
           <tbody>
@@ -36,6 +37,13 @@
                        class="points-input"
                        data-id="{{ workshop_participant.id }}">
                 <a href="#" class="save">Zapisz</a>
+              </td>
+              <td>
+                <input type=text
+                       value="{{ workshop_participant.comment|default_if_none:'' }}"
+                       class="comment-input"
+                       data-id="{{ workshop_participant.id }}">
+                <a href="#" class="savec">Zapisz</a>
               </td>
               <td class="qualified-mark">
                 {% load wwwtags %}

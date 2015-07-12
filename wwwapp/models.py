@@ -123,6 +123,7 @@ class WorkshopParticipant(models.Model):
     participant = models.ForeignKey(UserProfile)
 
     qualification_result = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
+    comment = models.CharField(max_length=1000, null=True, default=None, blank=True)
 
     def is_qualified(self):
         threshold = self.workshop.qualification_threshold

@@ -250,14 +250,22 @@ def save_points(request):
     if not can_edit:
         return JsonResponse({'error': u'Brak uprawnień.'})
 
+    print "first"
     try:
-        result = request.POST['points'].strip()
-        if result == '':
-            result = None
-        workshop_participant.qualification_result = result
+        result_points = (request.POST['points'] if 'points' in request.POST else "").strip()
+        print "med"
+        result_comment = (request.POST['comment'] if 'comment' in request.POST else "").strip()
+        print "sthn"
+        if result_points:
+            workshop_participant.qualification_result = result_points
+        if result_comment:
+            workshop_participant.comment = result_comment
     except (ValidationError, ValueError):
         return JsonResponse({'error': u'Niepoprawny format liczby'})
-
+    except Exception as e:
+        print e
+        raise e
+    print "last"
     workshop_participant.save()
     workshop_participant = WorkshopParticipant.objects.get(id=workshop_participant.id)
 

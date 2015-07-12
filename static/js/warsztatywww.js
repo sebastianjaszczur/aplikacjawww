@@ -59,6 +59,40 @@ $('.points-input').each(function() {
     });
 });
 
+// really bad copy-paste ;_;
+
+$('.comment-input').each(function() {
+    var elem = $(this);
+    var workshop_participant_id = elem.data('id');
+    var save_btn = elem.parent().find('.savec');
+    var saved_value = elem.val();
+    var qualified_mark = elem.parent().parent().find('.qualified-mark');
+
+    save_btn.addClass('invisibile').click(function() {
+        $.ajax({
+            'url': '/savePoints/',
+            'data': {'comment': elem.val(), 'id': workshop_participant_id},
+            'error': function(xhr, textStatus, errorThrown) {
+                alert('Błąd: ' + errorThrown);
+            },
+            'method': 'POST',
+            'success': function(value) {
+                if(value.error) {
+                    alert('Błąd: ' + errorThrown);
+                } else {
+                    save_btn.addClass('invisibile');
+                    qualified_mark.html(value.mark);
+                }
+            }
+        });
+    });
+
+    elem.on('change keyup mouseup', function() {
+        if(elem.val() != saved_value)
+            save_btn.removeClass('invisibile');
+    });
+});
+
 function handle_registration_change(workshop_name_txt, register) {
     var proper_url;
     if(register) {
