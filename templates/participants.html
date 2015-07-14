@@ -13,6 +13,7 @@
             <th>Sum. il. warsztatów</th>
             <th>Il. zakw. warsztatów</th>
             <th>List motywacyjny</th>
+            <th>Status</th>
           </thead>
           <tbody>
             {% for person in people %}
@@ -40,6 +41,9 @@
               <td>
                 {% load wwwtags %}
                 {{ person.has_letter|qualified_mark }}
+              </td>
+              <td>
+                {{ person.status }}
               </td>
             </tr>
             {% endfor %}

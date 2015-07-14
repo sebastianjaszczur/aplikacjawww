@@ -15,6 +15,10 @@ class UserProfile(models.Model):
     how_do_you_know_about = models.CharField(max_length=1000, default="", blank=True)
     profile_page = models.TextField(max_length=100000, blank=True, default="")
     cover_letter = models.TextField(max_length=100000, blank=True, default="")
+    
+    status = models.CharField(max_length=10,
+                              choices=[('Z', u'Zaakceptowany'), ('O', u'Odrzucony')],
+                              null=True, default=None, blank=True)
 
     def __unicode__(self):
         return u"{0.first_name} {0.last_name}".format(self.user)
