@@ -10,9 +10,11 @@
             <th>Imię i nazwisko</th>
             <th>Email</th>
             <th>Szkoła</th>
-            <th>Sum. il. warsztatów</th>
-            <th>Il. zakw. warsztatów</th>
-            <th>List motywacyjny</th>
+            <th>Punkty</th>
+            <th>Sum. il. war.</th>
+            <th>Il.Zak.War.</th>
+            <th>Informacje</th>
+            <th>List mot.</th>
             <th>Status</th>
           </thead>
           <tbody>
@@ -30,13 +32,21 @@
                 {{ person.user.email }}
               </td>
               <td>
-                {{ person.workshop_count }}
-              </td>
-              <td>
                 {{ person.school }}
               </td>
               <td>
+                {{ person.points }}
+              </td>
+              <td>
+                {{ person.workshop_count }}
+              </td>
+              <td>
                 {{ person.accepted_workshop_count }}
+              </td>
+              <td>
+                {% for info in person.infos %}
+                  * {{ info }} <br>
+                {% endfor %}
               </td>
               <td>
                 {% load wwwtags %}

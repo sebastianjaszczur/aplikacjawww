@@ -290,9 +290,18 @@ def participants(request):
                 'user': participant.participant.user,
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
-                'has_letter': bool(cover_letter and len(cover_letter) > 50)
+                'has_letter': bool(cover_letter and len(cover_letter) > 50),
+                'status': participant.participant.status,
+                'school': participant.participant.school,
+                'points': 0.0,
+                'infos': [],
             }
-
+        
+        if participant.qualification_result:
+            people[p_id]['points'] += float(participant.qualification_result)
+        people[p_id]['infos'].append(participant.workshop.title
+                + " : " + (str(participant.qualification_result) if participant.qualification_result else "0.0")
+                + (" : " + participant.comment if participant.comment else ""))
         people[p_id]['workshop_count'] += 1
         if participant.is_qualified():
             people[p_id]['accepted_workshop_count'] += 1
