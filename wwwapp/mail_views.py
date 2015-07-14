@@ -63,6 +63,14 @@ def _all_participants():
             participants.add(participant.user)
     return participants
 
+@_register_as_email_filter('allQualified', u'wszyscy uczestnicy o statusie zakwalifikowanym')
+def _all_qualified():
+    return User.objects.filter(userprofile__status='Z')
+
+@_register_as_email_filter('allRefused', u'wszyscy uczestnicy o statusie odrzuconym')
+def _all_refused():
+    return User.objects.filter(userprofile__status='O')
+
 
 def filtered_emails(request, filter_id=''):
     if not request.user.has_perm('wwwapp.see_all_users'):
