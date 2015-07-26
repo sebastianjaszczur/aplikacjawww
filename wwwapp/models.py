@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
+    userinfo = models.OneToOneField('UserInfo')
 
     gender = models.CharField(max_length=10, choices=[('M', u'Mężczyzna'), ('F', u'Kobieta'),],
                               null=True, default=None, blank=True)
@@ -25,6 +26,43 @@ class UserProfile(models.Model):
 
     class Meta:
         permissions = (('see_all_users', u'Can see all users'),)
+
+# That's bad, one year design. I'm so sorry.
+POSSIBLE_DATES = [
+    ('no_idea', u'Nie ogarniam'),
+] + [(unicode(day_number), unicode(day_number) + u' sierpien') for day_number in xrange(17, 29)]
+
+# The same
+POSSIBLE_PLACES = [
+    ('no_idea', u'Nie ogarniam'),
+    ('wierchomla', u'Wierchomla Wielka'),
+    ('warsaw', u'Warszawa'),
+    ('cracow', u'Kraków')
+]
+
+POSSIBLE_TSHIRT_SIZES = [
+    ('no_idea', u'Nie ogarniam'),
+    ("XS", u"XS"),
+    ("S", u"S"),
+    ("M", u"M"),
+    ("L", u"L"),
+    ("XL", u"XL"),
+    ("XXL", u"XXL"),
+]
+
+class UserInfo(models.Model):
+    """Info needed for camp, not for qualification."""
+    pesel = models.CharField(max_length=20, blank=True, default="")
+    address = models.TextField(max_length=1000, blank=True, default="")
+    start_date = models.CharField(max_length=100, choices=POSSIBLE_DATES,
+                                  default='no_idea', blank=False, null=False)
+    end_date = models.CharField(max_length=100, choices=POSSIBLE_DATES,
+                                default='no_idea', blank=False, null=False)
+    meeting_point = models.CharField(max_length=100, choices=POSSIBLE_PLACES,
+                                     default='no_idea', blank=False, null=False)
+    tshirt_size = models.CharField(max_length=100, choices=POSSIBLE_TSHIRT_SIZES,
+                                     default='no_idea', blank=False, null=False)
+    comments = models.CharField(max_length=1000, blank=True, default="")
 
 
 class AlphaNumericField(models.CharField):
