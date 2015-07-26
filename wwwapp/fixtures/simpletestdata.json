@@ -22,8 +22,15 @@
     "model": "wwwapp.userprofile",
     "pk": 1,
     "fields": {
+      "userinfo": 1,
       "user": 1,
       "gender": "M"
+    }
+  },
+  {
+    "model": "wwwapp.userinfo",
+    "pk": 1,
+    "fields": {
     }
   },
   {
