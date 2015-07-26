@@ -6,7 +6,7 @@ from crispy_forms.helper import FormHelper
 
 from django_select2 import ModelSelect2MultipleField, Select2MultipleWidget, ModelSelect2Field, Select2Widget
 
-from wwwapp.models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType
+from wwwapp.models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType, UserInfo
 from wwwapp.widgets import RichTextarea
 
 
@@ -24,13 +24,34 @@ class UserCoverLetterForm(ModelForm):
         labels = {'cover_letter': u"List motywacyjny"}
         widgets = {'cover_letter': RichTextarea()}
 
+class UserInfoPageForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserInfoPageForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-lg-3'
+        self.helper.field_class = 'col-lg-9'
+    
+    class Meta:
+        model = UserInfo
+        fields = ['pesel', 'address', 'start_date', 'end_date', 'meeting_point',
+                  'tshirt_size', 'comments']
+        labels = {
+            'pesel': u'Pesel',
+            'address': u'Adres zameldowania (potrzebny nam do ubezpieczenia)',
+            'start_date': u'Data przyjazdu :-)',
+            'end_date': u'Data wyjazdju :-(',
+            'meeting_point': u'Miejsce zbiórki',
+            'tshirt_size': u'Rozmiar koszulki',
+            'comments': u'Dodatkowe uwagi (np. wegetarianin, uczulony na X, ale też inne)',
+        }
+
 class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-10'
-
+    
     class Meta:
         model = UserProfile
         fields = ['gender', 'school', 'matura_exam_year', 'how_do_you_know_about']

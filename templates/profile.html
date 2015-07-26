@@ -15,16 +15,16 @@
       <div id="pagination_content">
         <div title="Dane" id="data">
           <form id="profile_data_form" action="" method="post" class="form-horizontal">
+            {% include "_profilesubmit.html" %}
             {% crispy user_form %}
             {% crispy user_profile_form %}
-            {% include "_profilesubmit.html" %}
           </form>
         </div>
         <div title="Strona profilowa" id="profile_page">
           <form action="{% url 'update_profile_page' %}" method="post" class="form">
             {% csrf_token %}
-            {{ user_profile_page_form.profile_page }}
             {% include "_profilesubmit.html" %}
+            {{ user_profile_page_form.profile_page }}
           </form>
         </div>
         <div title="List motywacyjny" id="cover_letter">
@@ -57,8 +57,16 @@
           </p>
           <form action="{% url 'update_cover_letter' %}" method="post" class="form">
             {% csrf_token %}
+            <button class="btn btn-default big-button">Zapisz</button>
             {{ user_cover_letter_form.cover_letter }}
-            {% include "_profilesubmit.html" %}
+          </form>
+        </div>
+        <div title="Informacje" id="user_info">
+          <form action="{% url 'update_user_info' %}" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <button class="btn btn-default big-button">Zapisz</button>
+            {% crispy user_info_page_form %}
+            
           </form>
         </div>
       </div>
@@ -129,7 +137,7 @@
   $(document).ready(function() {
       paginate_content("pagination_content");
 
-      if(["#data", "#profile_page", "#cover_letter"].indexOf(location.hash) != -1) {
+      if(["#data", "#profile_page", "#cover_letter", "#user_info"].indexOf(location.hash) != -1) {
           go_to_page("pagination_content_navigation", location.hash.slice(1));
       }
   });

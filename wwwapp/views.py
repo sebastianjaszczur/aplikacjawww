@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from wwwapp.models import Article, UserProfile, Workshop, WorkshopParticipant
 from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
-    WorkshopPageForm, UserCoverLetterForm
+    WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
 from wwwapp.templatetags.wwwtags import qualified_mark
 
 def get_context(request):
@@ -109,6 +109,20 @@ def update_cover_letter(request):
 
         return redirect_after_profile_save(request, 'cover_letter')
 
+def update_user_info(request):
+    if not request.user.is_authenticated():
+        return redirect('login')
+    else:
+        user_profile = UserProfile.objects.get(user=request.user)
+        user_info = user_profile.userinfo
+
+        if request.method == "POST":
+            user_info_page_form = UserInfoPageForm(request.POST, instance=user_info)
+            if user_info_page_form.is_valid():
+                user_info_page_form.save()
+
+        return redirect_after_profile_save(request, 'user_info')
+
 
 def my_profile(request):
     context = get_context(request)
@@ -133,6 +147,7 @@ def my_profile(request):
             context['user_profile_form'] = user_profile_form
             context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
             context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
+            context['user_info_page_form'] = UserInfoPageForm(instance=user_profile.userinfo)
             context['is_editing_profile'] = True
             context['title'] = u'Mój profil'
 
