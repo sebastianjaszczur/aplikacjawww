@@ -63,6 +63,9 @@ class UserInfo(models.Model):
     tshirt_size = models.CharField(max_length=100, choices=POSSIBLE_TSHIRT_SIZES,
                                      default='no_idea', blank=False, null=False)
     comments = models.CharField(max_length=1000, blank=True, default="")
+    
+    class Meta:
+        permissions = (('see_user_info', u'Can see user info'),)
 
 
 class AlphaNumericField(models.CharField):
