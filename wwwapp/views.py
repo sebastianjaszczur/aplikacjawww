@@ -408,6 +408,55 @@ def unregister_from_workshop(request):
     return JsonResponse(data)
 
 
+def data_for_plan(request):
+    if not request.user.is_superuser:
+        return redirect('login')
+    data = {}
+    
+    user_profiles_raw = set([up for up in UserProfile.objects.filter(status='Z')])
+    
+    workshops_raw = Workshop.objects.filter(status='Z')
+    workshop_ids = set()
+    workshops = []
+    for workshop in workshops_raw:
+        record_to_add = dict()
+        record_to_add['wid'] = workshop.id
+        workshop_ids.add(workshop.id)
+        record_to_add['name'] = workshop.title
+        record_to_add['lecturers'] = [lect.id for lect in workshop.lecturer.all()]
+        for lect in workshop.lecturer.all():
+            if lect not in user_profiles_raw:
+                user_profiles_raw.add(lect)
+        workshops.append(record_to_add)
+    data['workshops'] = workshops
+    
+    
+    
+    users = []
+    user_ids = set()
+    for up in user_profiles_raw:
+        record_to_add = dict()
+        record_to_add['uid'] = up.id
+        user_ids.add(up.id)
+        record_to_add['name'] = up.user.get_full_name()
+        record_to_add['start'] = up.userinfo.start_date if up.userinfo.start_date != 'no_idea' else 1
+        record_to_add['end'] = up.userinfo.end_date if up.userinfo.end_date != 'no_idea' else 30
+        users.append(record_to_add)
+    data['users'] = users
+    
+    
+    participation = []
+    for wp in WorkshopParticipant.objects.all():
+        if wp.workshop.id in workshop_ids and wp.participant.id in user_ids:
+            participation.append({
+                'wid': wp.workshop.id,
+                'uid': wp.participant.id,
+            })
+    data['participation'] = participation
+    
+    return JsonResponse(data)
+
+
 def qualification_problems(request, workshop_name):
     workshop = get_object_or_404(Workshop, name=workshop_name)
     filename = workshop.qualification_problems.path
