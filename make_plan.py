@@ -34,9 +34,23 @@ for ws in workshops.values():
 wid_list = list(workshops.keys())
 
 class Plan(object):
-    def __init__(self):
-        self.blocks = [set() for i in xrange(6)]
-        self.workshops = dict()
+    def __init__(self, tab=None):
+        if tab is None:
+            self.blocks = [set() for i in xrange(6)]
+            self.workshops = dict()
+        else:
+            self.blocks = [set() for i in xrange(6)]
+            for i in xrange(6):
+                for wid in tab[i]:
+                    self.add(i, wid)
+    
+    def tab(self):
+        tab = []
+        for i in xrange(6):
+            tab.append([])
+            for wid in self.blocks[i]:
+                tab[i].append(wid)
+        return tab
     
     def add(self, block, wid):
         assert 0 <= block <= 5
@@ -83,6 +97,19 @@ class Plan(object):
         return plan
     
     def describe(self):
+        for uid in users.keys():
+            printed_user_already = False
+            for block in users[uid]['blocks']:
+                wids_on_block_for_user = [wid for wid in users[uid]['part'] if wid in self.blocks[block]]
+                if len(wids_on_block_for_user) > 1:
+                    if printed_user_already is False:
+                        print " *", users[uid]['name'], " registered for", len(users[uid]['part']), "workshops"
+                        printed_user_already = True
+                    print "  ", len(wids_on_block_for_user), "collisions:", [workshops[wid]['name'] for wid in wids_on_block_for_user]
+                    
+        
+        collision_sum = 0
+        collision_user_sum = 0
         for block in xrange(6):
             print "BLOCK", block
             for wid in self.blocks[block]:
@@ -102,8 +129,10 @@ class Plan(object):
                                 if wid2 in users[uid]['part']:
                                     if collided is False:
                                         collision_users += 1
+                                        collision_user_sum += 1
                                         collided = True
                                     collisions += 1
+                                    collision_sum += 1
                 print " *", wid, workshops[wid]['name']
                 print "   participants today/willing:", participants_today, "/", participants_willing_to
                 print "   collisions / user collisions:", collisions, "/", collision_users
@@ -119,6 +148,7 @@ class Plan(object):
                 raise KeyError("There is no wid", wid, all_wids)
         
         points = 0
+        points_col = 0
         
         for wid in all_wids:
             for lec_uid in workshops[wid]['lecturers']:
@@ -128,11 +158,19 @@ class Plan(object):
                         print "\tlec_uid={uid} wid={wid}".format(uid=lec_uid, wid=wid)
                     points -= 10**6
         
+        col_counter = {wid:0 for wid in all_wids}
         for uid in users.keys():
-            user_blocks = set()
+            user_blocks = dict()
             for wid in users[uid]['part']:
                 if self.workshops[wid] in users[uid]['blocks']:
-                    user_blocks.add(self.workshops[wid])
+                    if self.workshops[wid] not in user_blocks:
+                        user_blocks[self.workshops[wid]] = []
+                    user_blocks[self.workshops[wid]].append(wid)
+            for block in user_blocks.keys():
+                if len(user_blocks[block]) > 1:
+                    for wid in user_blocks[block]:
+                        col_counter[wid] += 1
+                    
             empty_blocks = min(len(users[uid]['blocks']), len(users[uid]['part'])) - len(user_blocks)
             assert empty_blocks >= 0
             #print empty_blocks, users[uid]['name']
@@ -143,7 +181,10 @@ class Plan(object):
                     print "\tuid={uid}".format(uid=uid)
             #points += len(user_blocks)
         
-        return points
+        for wid in col_counter.keys():
+            points_col -= col_counter[wid]**2
+        
+        return (points, points_col)
         
 
 #print workshops
@@ -199,3 +240,6 @@ for i in xrange(len(pnp)):
         pnp[i][0].describe()
         break
 
+print "points:", pnp[i][1]
+print "TAB for later use:"
+print pnp[i][0].tab()
