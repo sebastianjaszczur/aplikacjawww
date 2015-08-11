@@ -254,8 +254,11 @@ def workshop_participants(request, name):
 
     context['title'] = workshop.title
     context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
-        'workshop', 'participant', 'participant__user')
-
+            'workshop', 'participant', 'participant__user')
+    
+    context['workshop_participants'] = [wp for wp in context['workshop_participants']
+             if wp.participant.status=='Z' or Workshop.objects.filter(lecturer=wp.participant).exists()]
+    
     return render(request, 'workshopparticipants.html', context)
 
 def save_points(request):
