@@ -397,12 +397,12 @@ def unregister_from_workshop(request):
 
     workshop = get_object_or_404(Workshop, name=workshop_name)
     profile = UserProfile.objects.get(user=request.user)
-    # workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
+    workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
 
     # if workshop.qualification_threshold is not None or workshop_participant.qualification_result is not None:
     #     return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona - nie możesz się wycofać.'})
 
-    # workshop_participant.delete()
+    workshop_participant.delete()
 
     context = get_context(request)
     context['workshop'] = workshop
