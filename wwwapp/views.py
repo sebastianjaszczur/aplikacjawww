@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
+import sys
 from django.core.urlresolvers import reverse
 import os
 from django.conf import settings
+from django.db import OperationalError
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.exceptions import ValidationError
 from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib import messages
 from django.contrib.auth.models import User
-from wwwapp.models import Article, UserProfile, Workshop, WorkshopParticipant
-from wwwapp.forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
+from models import Article, UserProfile, Workshop, WorkshopParticipant
+from forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
     WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
-from wwwapp.templatetags.wwwtags import qualified_mark
+from templatetags.wwwtags import qualified_mark
+
 
 def get_context(request):
     context = {}
@@ -83,6 +86,7 @@ def redirect_after_profile_save(request, target):
     messages.info(request, u'Zapisano.')
     return redirect(reverse('myProfile') + '#' + target)
 
+
 def update_profile_page(request):
     if not request.user.is_authenticated():
         return redirect('login')
@@ -95,6 +99,7 @@ def update_profile_page(request):
                 user_profile_page_form.save()
 
         return redirect_after_profile_save(request, 'profile_page')
+
 
 def update_cover_letter(request):
     if not request.user.is_authenticated():
@@ -234,11 +239,13 @@ def workshop_page(request, name):
 
     return render(request, 'workshoppage.html', context)
 
+
 def can_edit_workshop(workshop, user):
     if user.is_authenticated():
         return Workshop.objects.filter(id=workshop.id, lecturer__user=user).exists()
     else:
         return False
+
 
 def workshop_participants(request, name):
     workshop = get_object_or_404(Workshop, name=name)
@@ -260,6 +267,7 @@ def workshop_participants(request, name):
              if wp.participant.status=='Z' or Workshop.objects.filter(lecturer=wp.participant).exists()]
     
     return render(request, 'workshopparticipants.html', context)
+
 
 def save_points(request):
     workshop_participant = WorkshopParticipant.objects.get(id=request.POST['id'])
@@ -289,6 +297,7 @@ def save_points(request):
 
     return JsonResponse({'value': str(workshop_participant.qualification_result),
                          'mark': qualified_mark(workshop_participant.is_qualified())})
+
 
 def participants(request):
     can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
@@ -333,6 +342,7 @@ def participants(request):
 
     return render(request, 'participants.html', context)
 
+
 def people_info(request):
     can_see_users = request.user.has_perm('wwwapp.see_user_info')
 
@@ -370,6 +380,7 @@ def people_info(request):
 
     return render(request, 'people_info.html', context)
 
+
 def register_to_workshop(request):
     workshop_name = request.POST['workshop_name']
 
@@ -387,6 +398,7 @@ def register_to_workshop(request):
     context['workshop'] = workshop
     context['registered'] = True
     return JsonResponse({'content': render_to_response('_programworkshop.html', context).content})
+
 
 def unregister_from_workshop(request):
     workshop_name = request.POST['workshop_name']
@@ -433,8 +445,6 @@ def data_for_plan(request):
         workshops.append(record_to_add)
     data['workshops'] = workshops
     
-    
-    
     users = []
     user_ids = set()
     for up in user_profiles_raw:
@@ -446,8 +456,7 @@ def data_for_plan(request):
         record_to_add['end'] = up.userinfo.end_date if up.userinfo.end_date != 'no_idea' else 30
         users.append(record_to_add)
     data['users'] = users
-    
-    
+
     participation = []
     for wp in WorkshopParticipant.objects.all():
         if wp.workshop.id in workshop_ids and wp.participant.id in user_ids:
@@ -552,6 +561,7 @@ def emails(request):
         result.append(to_append)
 
     return JsonResponse(result, safe=False)
+
 
 def as_article(name):
     # make sure that article with this name exists

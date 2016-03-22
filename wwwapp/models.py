@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+from django.core.exceptions import ValidationError
 from django.db import models
 
 import re
@@ -50,6 +51,7 @@ POSSIBLE_TSHIRT_SIZES = [
     ("XXL", u"XXL"),
 ]
 
+
 class UserInfo(models.Model):
     """Info needed for camp, not for qualification."""
     pesel = models.CharField(max_length=20, blank=True, default="")
@@ -85,7 +87,7 @@ class ArticleContentHistory(models.Model):
 
     def __unicode__(self):
         time = u'?'
-        if (self.time):
+        if self.time:
             time = self.time.strftime(u'%y-%m-%d %H:%M')
         return u'{} (v{} by {} at {})'.format(self.article.name, self.version, self.modified_by, time)
 
@@ -162,6 +164,7 @@ class Workshop(models.Model):
 
     def __unicode__(self):
         return (self.status + ":" if self.status else "") + self.title
+
 
 class WorkshopParticipant(models.Model):
     workshop = models.ForeignKey(Workshop)

@@ -2,8 +2,8 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
 
-from wwwapp.models import User, Workshop
-from wwwapp.views import get_context
+from models import User, Workshop
+from views import get_context
 
 
 _registered_filters = dict()
@@ -63,9 +63,11 @@ def _all_participants():
             participants.add(participant.user)
     return participants
 
+
 @_register_as_email_filter('allQualified', u'wszyscy uczestnicy o statusie zakwalifikowanym')
 def _all_qualified():
     return User.objects.filter(userprofile__status='Z')
+
 
 @_register_as_email_filter('allRefused', u'wszyscy uczestnicy o statusie odrzuconym')
 def _all_refused():
