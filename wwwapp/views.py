@@ -266,7 +266,7 @@ def workshop_participants(request, name):
             'workshop', 'participant', 'participant__user')
     
     context['workshop_participants'] = [wp for wp in context['workshop_participants']
-             if wp.participant.status=='Z' or Workshop.objects.filter(lecturer=wp.participant).exists()]
+             if wp.participant.status == 'Z' or Workshop.objects.filter(lecturer=wp.participant).exists()]
     
     return render(request, 'workshopparticipants.html', context)
 

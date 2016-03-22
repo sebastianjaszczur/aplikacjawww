@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.auth.models import User
-from models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant, UserInfo
+from models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant, UserInfo, WorkshopUserProfile
 from django.contrib.auth.admin import UserAdmin
 
 admin.site.unregister(User)
@@ -40,3 +40,4 @@ admin.site.register(WorkshopCategory)
 admin.site.register(WorkshopType)
 admin.site.register(Workshop, WorkshopAdmin)
 admin.site.register(WorkshopParticipant)
+admin.site.register(WorkshopUserProfile)

@@ -18,16 +18,34 @@ class UserProfile(models.Model):
     how_do_you_know_about = models.CharField(max_length=1000, default="", blank=True)
     profile_page = models.TextField(max_length=100000, blank=True, default="")
     cover_letter = models.TextField(max_length=100000, blank=True, default="")
-    
-    status = models.CharField(max_length=10,
-                              choices=[('Z', u'Zaakceptowany'), ('O', u'Odrzucony')],
-                              null=True, default=None, blank=True)
+
+    @property
+    def status(self):
+        return self.status_for(settings.CURRENT_YEAR)
+
+    def status_for(self, year):
+        try:
+            return self.workshop_profile.filter(year=year).get().status
+        except WorkshopUserProfile.DoesNotExist:
+            return None
 
     def __unicode__(self):
         return u"{0.first_name} {0.last_name}".format(self.user)
 
     class Meta:
         permissions = (('see_all_users', u'Can see all users'),)
+
+class WorkshopUserProfile(models.Model):
+    # for each year
+    user_profile = models.ForeignKey('UserProfile', null=True, related_name='workshop_profile')
+
+    year = models.IntegerField()
+    status = models.CharField(max_length=10,
+                              choices=[('Z', u'Zaakceptowany'), ('O', u'Odrzucony')],
+                              null=True, default=None, blank=True)
+
+    def __unicode__(self):
+        return u'%s: %s, %s' % (self.year, self.user_profile, self.status)
 
 # That's bad, one year design. I'm so sorry.
 POSSIBLE_DATES = [

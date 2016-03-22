@@ -2,7 +2,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect, render
 
-from models import User, Workshop
+from models import User, Workshop, UserProfile
 from views import get_context
 
 
@@ -66,12 +66,12 @@ def _all_participants():
 
 @_register_as_email_filter('allQualified', u'wszyscy uczestnicy o statusie zakwalifikowanym')
 def _all_qualified():
-    return User.objects.filter(userprofile__status='Z')
+    return [ profile.user for profile in UserProfile.objects.all() if profile.status == 'Z' ]
 
 
 @_register_as_email_filter('allRefused', u'wszyscy uczestnicy o statusie odrzuconym')
 def _all_refused():
-    return User.objects.filter(userprofile__status='O')
+    return [ profile.user for profile in UserProfile.objects.all() if profile.status == 'O' ]
 
 
 def filtered_emails(request, filter_id=''):
