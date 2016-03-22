@@ -564,8 +564,13 @@ def emails(request):
 
 
 def as_article(name):
-    # make sure that article with this name exists
-    art = Article.objects.get_or_create(name=name)
+    # We want to make sure that article with this name exists.
+    # try-except is needed because of some migration/initialization problems.
+    try:
+        Article.objects.get_or_create(name=name)
+    except OperationalError:
+        print>> sys.stderr, "WARNING: Couldn't create article named", name,\
+            "; This should happen only during migration."
 
     def page(request):
         return article(request, name)
