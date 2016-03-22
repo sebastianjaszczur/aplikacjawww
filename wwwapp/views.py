@@ -353,8 +353,8 @@ def people_info(request):
     if not can_see_users:
         return redirect('login')
 
-    users = UserProfile.objects.filter(status='Z').prefetch_related('user', 'userinfo')
-    users = list(users)
+    users = UserProfile.objects.prefetch_related('user', 'userinfo')
+    users = [ user for user in users if user.status == 'Z' ]
     accepted_workshops = Workshop.objects.filter(status='Z')
     for workshop in accepted_workshops:
         for user_profile in workshop.lecturer.all():
