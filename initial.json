@@ -154,11 +154,38 @@
     },
     {
         "fields": {
+            "app_label": "wwwapp",
+            "model": "workshopuserprofile",
+            "name": "workshop user profile"
+        },
+        "model": "contenttypes.contenttype",
+        "pk": 18
+    },
+    {
+        "fields": {
             "expire_date": "2016-04-05T16:54:36.813Z",
             "session_data": "ZGM0NzMyODcyYWI0NTEwODNjMzIxMWE1YWQ0NmRiOTUxOGY5ZWE5NTp7Il9hdXRoX3VzZXJfaGFzaCI6ImUyNTQxNjQxYzAzNmM5ZjM2NzU5ZjM5ZmI2NzViNmE5ZTljMmFhZTkiLCJfYXV0aF91c2VyX2JhY2tlbmQiOiJkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZCIsIl9hdXRoX3VzZXJfaWQiOjF9"
         },
         "model": "sessions.session",
         "pk": "vhxqaxxvko2v7i34mzmlmnaemio22un9"
+    },
+    {
+        "fields": {
+            "status": "O",
+            "user_profile": 1,
+            "year": 2015
+        },
+        "model": "wwwapp.workshopuserprofile",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "status": "Z",
+            "user_profile": 1,
+            "year": 2016
+        },
+        "model": "wwwapp.workshopuserprofile",
+        "pk": 2
     },
     {
         "fields": {
@@ -175,31 +202,51 @@
     },
     {
         "fields": {
-            "name": "Kategoria1"
+            "name": "Kategoria1",
+            "year": 2015
         },
         "model": "wwwapp.workshopcategory",
         "pk": 1
     },
     {
         "fields": {
-            "name": "Kategoria2"
+            "name": "Kategoria2",
+            "year": 2015
         },
         "model": "wwwapp.workshopcategory",
         "pk": 2
     },
     {
         "fields": {
-            "name": "Typ1"
+            "name": "Kategoria3",
+            "year": 2016
+        },
+        "model": "wwwapp.workshopcategory",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "name": "Typ1",
+            "year": 2015
         },
         "model": "wwwapp.workshoptype",
         "pk": 1
     },
     {
         "fields": {
-            "name": "Typ2"
+            "name": "Typ2",
+            "year": 2015
         },
         "model": "wwwapp.workshoptype",
         "pk": 2
+    },
+    {
+        "fields": {
+            "name": "Type3",
+            "year": 2016
+        },
+        "model": "wwwapp.workshoptype",
+        "pk": 3
     },
     {
         "fields": {
@@ -225,6 +272,50 @@
     },
     {
         "fields": {
+            "category": [
+                3
+            ],
+            "is_qualifying": true,
+            "lecturer": [
+                1
+            ],
+            "name": "wa2",
+            "page_content": "2016",
+            "page_content_is_public": true,
+            "proposition_description": "",
+            "qualification_problems": "",
+            "qualification_threshold": null,
+            "status": "Z",
+            "title": "Warsztaty 2",
+            "type": 3
+        },
+        "model": "wwwapp.workshop",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "category": [
+                3
+            ],
+            "is_qualifying": true,
+            "lecturer": [
+                1
+            ],
+            "name": "wa3",
+            "page_content": "",
+            "page_content_is_public": false,
+            "proposition_description": "<p>2016 x2</p>\r\n",
+            "qualification_problems": "",
+            "qualification_threshold": null,
+            "status": null,
+            "title": "Warsztaty 3",
+            "type": 3
+        },
+        "model": "wwwapp.workshop",
+        "pk": 3
+    },
+    {
+        "fields": {
             "comment": "hej",
             "participant": 1,
             "qualification_result": "5",
@@ -232,6 +323,16 @@
         },
         "model": "wwwapp.workshopparticipant",
         "pk": 1
+    },
+    {
+        "fields": {
+            "comment": null,
+            "participant": 1,
+            "qualification_result": null,
+            "workshop": 2
+        },
+        "model": "wwwapp.workshopparticipant",
+        "pk": 3
     },
     {
         "fields": {
@@ -730,6 +831,33 @@
     },
     {
         "fields": {
+            "codename": "add_workshopuserprofile",
+            "content_type": 18,
+            "name": "Can add workshop user profile"
+        },
+        "model": "auth.permission",
+        "pk": 56
+    },
+    {
+        "fields": {
+            "codename": "change_workshopuserprofile",
+            "content_type": 18,
+            "name": "Can change workshop user profile"
+        },
+        "model": "auth.permission",
+        "pk": 57
+    },
+    {
+        "fields": {
+            "codename": "delete_workshopuserprofile",
+            "content_type": 18,
+            "name": "Can delete workshop user profile"
+        },
+        "model": "auth.permission",
+        "pk": 58
+    },
+    {
+        "fields": {
             "name": "allUsers",
             "permissions": []
         },
@@ -804,7 +932,6 @@
             "matura_exam_year": null,
             "profile_page": "",
             "school": "",
-            "status": null,
             "user": 1,
             "userinfo": 1
         },
@@ -1021,5 +1148,109 @@
         },
         "model": "admin.logentry",
         "pk": 12
+    },
+    {
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2016-03-22T18:04:07.762Z",
+            "change_message": "",
+            "content_type": 14,
+            "object_id": "3",
+            "object_repr": "2016: Kategoria3",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 13
+    },
+    {
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2016-03-22T18:07:57.765Z",
+            "change_message": "Changed category.",
+            "content_type": 16,
+            "object_id": "1",
+            "object_repr": "2015:  (Z) Warsztaty 1",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 14
+    },
+    {
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2016-03-22T18:10:07.238Z",
+            "change_message": "Changed category.",
+            "content_type": 16,
+            "object_id": "1",
+            "object_repr": "2015:  (Z) Warsztaty 1",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 15
+    },
+    {
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2016-03-22T18:16:21.109Z",
+            "change_message": "",
+            "content_type": 15,
+            "object_id": "3",
+            "object_repr": "2016: Type3",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 16
+    },
+    {
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2016-03-22T18:16:48.001Z",
+            "change_message": "",
+            "content_type": 16,
+            "object_id": "2",
+            "object_repr": "2016:  (Z) Warsztaty 2",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 17
+    },
+    {
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2016-03-22T18:30:21.976Z",
+            "change_message": "Changed status for user profile \"Micha\u0142 Zieli\u0144ski\".",
+            "content_type": 4,
+            "object_id": "1",
+            "object_repr": "michal",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 18
+    },
+    {
+        "fields": {
+            "action_flag": 1,
+            "action_time": "2016-03-22T19:41:16.646Z",
+            "change_message": "",
+            "content_type": 18,
+            "object_id": "2",
+            "object_repr": "2016: Micha\u0142 Zieli\u0144ski, Z",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 19
+    },
+    {
+        "fields": {
+            "action_flag": 2,
+            "action_time": "2016-03-22T19:43:22.949Z",
+            "change_message": "Changed status.",
+            "content_type": 18,
+            "object_id": "1",
+            "object_repr": "2015: Micha\u0142 Zieli\u0144ski, O",
+            "user": 1
+        },
+        "model": "admin.logentry",
+        "pk": 20
     }
 ]
