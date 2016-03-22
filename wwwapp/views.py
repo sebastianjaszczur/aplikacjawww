@@ -303,6 +303,7 @@ def save_points(request):
 
 def participants(request, year):
     can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
+    year = int(year)
 
     if not can_see_users:
         return redirect('login')
@@ -321,7 +322,7 @@ def participants(request, year):
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
                 'has_letter': bool(cover_letter and len(cover_letter) > 50),
-                'status': participant.participant.status,
+                'status': participant.participant.status_for(year),
                 'school': participant.participant.school,
                 'points': 0.0,
                 'infos': [],
