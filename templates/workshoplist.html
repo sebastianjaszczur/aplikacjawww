@@ -47,7 +47,7 @@ $(document).ready( function () {
                 {% endfor %}
                 </td>
                 <td>
-                    <p>{{ workshop.type.name }}</p>
+                    <p>{{ workshop.type }}</p>
                 </td>
                 <td>
                     <p>{{ workshop.get_status_display|default_if_none:"Brak" }}</p>
