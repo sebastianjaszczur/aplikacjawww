@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 
+
 class AnimalTestCase(TestCase):
     def setUp(self):
         self.c = Client()

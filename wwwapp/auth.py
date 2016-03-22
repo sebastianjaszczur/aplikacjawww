@@ -6,21 +6,20 @@ import hashlib
 import re
 
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group, User
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 
 from allaccess.compat import smart_bytes, force_text
 from allaccess.models import Provider, AccountAccess
 from allaccess.views import OAuthRedirect, OAuthCallback
 
-from wwwapp.models import UserProfile
-from wwwapp.views import get_context
+from models import UserProfile
+from views import get_context
 
 
 def loginView(request):
@@ -90,6 +89,7 @@ class ScopedOAuthRedirect(OAuthRedirect):
             return {'scope': 'openid profile email'}
         return super(ScopedOAuthRedirect, self).get_additional_parameters(provider)
 
+
 # Extend django-all-access' OAuthCallback to detect and merge duplicates.
 class ScopedOAuthCallback(OAuthCallback):
     def handle_new_user(self, provider, access, info):
@@ -122,10 +122,9 @@ class ScopedOAuthCallback(OAuthCallback):
         if matchUsers:
             context['matches'] = []
             for matchUser in matchUsers:
-                match = {}
-                match['name'] = matchUser.first_name +' '+ matchUser.last_name
-                match['email'] = matchUser.email
-                match['providers'] = []
+                match = {'name': matchUser.first_name + ' ' + matchUser.last_name,
+                         'email': matchUser.email,
+                         'providers': []}
                 for matchAccess in AccountAccess.objects.filter(user=matchUser).all():
                     match['providers'].append(matchAccess.provider)
                 context['matches'].append(match)
@@ -192,7 +191,7 @@ def createUser(access, info):
 
 # The view called when a user decides not to merge into any suggested accounts.
 def createUserFromUnmergedAccess(request):
-    if not 'merge_access' in request.session:
+    if 'merge_access' not in request.session:
         raise ValidationError('No AccountAccess to create User from.')
     pk = request.session['merge_access']
     info = request.session['merge_access_info']

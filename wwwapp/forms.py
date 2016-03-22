@@ -6,8 +6,8 @@ from crispy_forms.helper import FormHelper
 
 from django_select2 import ModelSelect2MultipleField, Select2MultipleWidget, ModelSelect2Field, Select2Widget
 
-from wwwapp.models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType, UserInfo
-from wwwapp.widgets import RichTextarea
+from models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType, UserInfo
+from widgets import RichTextarea
 
 
 class UserProfilePageForm(ModelForm):
@@ -17,12 +17,14 @@ class UserProfilePageForm(ModelForm):
         labels = {'profile_page': u"Strona profilowa"}
         widgets = {'profile_page': RichTextarea()}
 
+
 class UserCoverLetterForm(ModelForm):
     class Meta:
         model = UserProfile
         fields = ['cover_letter']
         labels = {'cover_letter': u"List motywacyjny"}
         widgets = {'cover_letter': RichTextarea()}
+
 
 class UserInfoPageForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -44,6 +46,7 @@ class UserInfoPageForm(ModelForm):
             'tshirt_size': u'Rozmiar koszulki',
             'comments': u'Dodatkowe uwagi (np. wegetarianin, uczulony na X, ale też inne)',
         }
+
 
 class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):

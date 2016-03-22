@@ -1,7 +1,7 @@
 import random
 from copy import deepcopy
 
-#reads data in format of dataForPlan
+# Reads data in format of dataForPlan.
 data = eval(raw_input())
 
 workshops = {ws['wid']:ws for ws in data['workshops']}
@@ -32,6 +32,7 @@ for ws in workshops.values():
         users[lec_uid]['part'].add(ws['wid'])
 
 wid_list = list(workshops.keys())
+
 
 class Plan(object):
     def __init__(self, tab=None):
@@ -187,12 +188,14 @@ class Plan(object):
         return (points, points_col)
         
 
-#print workshops
-#print
-#print users
+# print workshops
+# print
+# print users
 
 it_wid = 0
 block = 0
+
+
 def improve(plan, points):
     global it_wid
     global block

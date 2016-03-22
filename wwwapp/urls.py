@@ -1,12 +1,10 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from django.conf.urls.static import static
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
-from wwwapp import views
-from wwwapp import mail_views
-from wwwapp import settings
-from wwwapp.auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
+import views
+import mail_views
+from auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
 
 urlpatterns = patterns('',
     # Examples:

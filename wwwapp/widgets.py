@@ -5,9 +5,6 @@ from django.forms.widgets import Widget
 from django.utils.html import format_html
 from django.utils.encoding import force_text
 
-from wwwapp.models import Article
-
-
 DEFAULT_CONFIG = {
     'language': 'pl',
     'removePlugins': 'link,scayt,contextmenu,liststyle,tabletools,forms,language,print,preview,newpage,bidi,flash,iframe,templates',
