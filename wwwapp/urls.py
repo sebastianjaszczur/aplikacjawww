@@ -2,9 +2,11 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
+from wwwapp.settings import CURRENT_YEAR
 import views
 import mail_views
 from auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
+from django.views.generic import RedirectView
 
 urlpatterns = patterns('',
     # Examples:
@@ -42,11 +44,13 @@ urlpatterns = patterns('',
     url(r'^yourWorkshops/$', views.your_workshops, name='yourWorkshops'),
     url(r'^allWorkshops/$', views.all_workshops, name='allWorkshops'),
     url(r'^dataForPlan/$', views.data_for_plan, name='dataForPlan'),
-    url(r'^participants/$', views.participants, name='participants'),
+    url(r'^participants/$', RedirectView.as_view(url='/%d/participants/' % CURRENT_YEAR), name='participants'),
+    url(r'^([0-9]+)/participants/$', views.participants, name='year_participants'),
     url(r'^peopleInfo/$', views.people_info, name='peopleInfo'),
     url(r'^emails/$', views.emails, name='emails'),
     url(r'^filterEmails/(?:(?P<filter_id>[a-zA-Z0-9\-_]+)/)?$', mail_views.filtered_emails, name='filter_emails'),
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page, name='template_for_workshop_page'),
-    url(r'^program/$', views.program, name='program'),
+    url(r'^program/$', RedirectView.as_view(url='/%d/program/' % CURRENT_YEAR), name='program'),
+    url(r'^([0-9]+)/program/$', views.program, name='year_program'),
     url(r'^$', views.index, name='index'),
 )

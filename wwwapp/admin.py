@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.auth.models import User
-from models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant
+from models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant, UserInfo
 from django.contrib.auth.admin import UserAdmin
 
 admin.site.unregister(User)
@@ -31,6 +31,7 @@ class WorkshopAdmin(admin.ModelAdmin):
     actions = [make_acccepted, make_refused, make_clear]
 
 admin.site.register(User, UserProfileAdmin)
+admin.site.register(UserInfo)
 
 admin.site.register(Article)
 admin.site.register(ArticleContentHistory)

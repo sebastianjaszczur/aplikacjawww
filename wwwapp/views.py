@@ -37,7 +37,7 @@ def get_context(request):
     return context
 
 
-def program(request):
+def program(request, year):
     context = get_context(request)
     context['title'] = 'Program WWW11'
 
@@ -46,12 +46,12 @@ def program(request):
     else:
         user_participation = set()
 
-    workshops = Workshop.objects.filter(status='Z').order_by('title').prefetch_related('lecturer', 'lecturer__user', 'category')
+    workshops = Workshop.objects.filter(status='Z', type__year=year).order_by('title').prefetch_related('lecturer', 'lecturer__user', 'category')
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
                             in workshops ]
 
     if request.user.is_authenticated():
-        qualifications = WorkshopParticipant.objects.filter(participant__user=request.user).prefetch_related('workshop')
+        qualifications = WorkshopParticipant.objects.filter(participant__user=request.user, workshop__type__year=year).prefetch_related('workshop')
         if not any(qualification.qualification_result is not None for qualification in qualifications):
             qualifications = None
         context['your_qualifications'] = qualifications
@@ -301,13 +301,14 @@ def save_points(request):
                          'mark': qualified_mark(workshop_participant.is_qualified())})
 
 
-def participants(request):
+def participants(request, year):
     can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
 
     if not can_see_users:
         return redirect('login')
 
-    participants = WorkshopParticipant.objects.all().prefetch_related('workshop', 'participant', 'participant__user')
+    participants = WorkshopParticipant.objects.all().filter(workshop__type__year=year)\
+                                                    .prefetch_related('workshop', 'participant', 'participant__user')
 
     people = {}
 
@@ -563,7 +564,6 @@ def emails(request):
         result.append(to_append)
 
     return JsonResponse(result, safe=False)
-
 
 def as_article(name):
     # We want to make sure that article with this name exists.

@@ -221,6 +221,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'allaccess.context_processors.available_providers',
 )
 
+CURRENT_YEAR = 2015
+
 COMPRESS_ENABLED = True
 
 if ON_PAAS and not DEBUG:

@@ -4,7 +4,7 @@ from django.db import models
 
 import re
 from django.contrib.auth.models import User
-
+from django.core.exceptions import ValidationError
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
@@ -128,17 +128,19 @@ class Article(models.Model):
 
 
 class WorkshopCategory(models.Model):
+    year = models.IntegerField(default=2015)
     name = models.CharField(max_length=100, blank=False, null=False, unique=True)
 
     def __unicode__(self):
-        return self.name
+        return '%d: %s' % (self.year, self.name)
 
 
 class WorkshopType(models.Model):
+    year = models.IntegerField(default=2015)
     name = models.CharField(max_length=100, blank=False, null=False, unique=True)
 
     def __unicode__(self):
-        return self.name
+        return '%d: %s' % (self.year, self.name)
 
 
 class Workshop(models.Model):
@@ -163,7 +165,7 @@ class Workshop(models.Model):
         permissions = (('see_all_workshops', u'Can see all workshops'),)
 
     def __unicode__(self):
-        return (self.status + ":" if self.status else "") + self.title
+        return str(self.type.year) + ': ' + (' (' + self.status + ') ' if self.status else '') + self.title
 
 
 class WorkshopParticipant(models.Model):
