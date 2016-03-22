@@ -578,5 +578,5 @@ def as_article(name):
         return article(request, name)
     return page
 
-index = lazy(lambda: as_article("index"))
-template_for_workshop_page = lazy(lambda: as_article("template_for_workshop_page"))
+index = as_article("index")
+template_for_workshop_page = as_article("template_for_workshop_page")
