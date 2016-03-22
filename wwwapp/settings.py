@@ -221,7 +221,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'allaccess.context_processors.available_providers',
 )
 
-CURRENT_YEAR = 2015
+CURRENT_YEAR = 2016
 
 COMPRESS_ENABLED = True
 

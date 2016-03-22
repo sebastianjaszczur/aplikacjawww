@@ -39,7 +39,7 @@ def get_context(request):
 
 def program(request, year):
     context = get_context(request)
-    context['title'] = 'Program WWW11'
+    context['title'] = 'Program WWW%d' % (int(year) % 100 - 4) # :)
 
     if request.user.is_authenticated():
         user_participation = set(Workshop.objects.filter(participants__user=request.user).all())
@@ -392,6 +392,9 @@ def register_to_workshop(request):
 
     workshop = get_object_or_404(Workshop, name=workshop_name)
 
+    if workshop.type.year != settings.CURRENT_YEAR:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została dawno zakończona.'})
+
     # if workshop.qualification_threshold is not None:
     #     return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
 
@@ -413,6 +416,9 @@ def unregister_from_workshop(request):
     workshop = get_object_or_404(Workshop, name=workshop_name)
     profile = UserProfile.objects.get(user=request.user)
     workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
+
+    if workshop.type.year != settings.CURRENT_YEAR:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została dawno zakończona.'})
 
     # if workshop.qualification_threshold is not None or workshop_participant.qualification_result is not None:
     #     return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona - nie możesz się wycofać.'})

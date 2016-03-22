@@ -5,6 +5,7 @@ from django.db import models
 import re
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from wwwapp import settings
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
@@ -160,6 +161,10 @@ class Workshop(models.Model):
     qualification_problems = models.FileField(null=True, blank=True, upload_to="qualification")
     participants = models.ManyToManyField(UserProfile, blank=True, related_name='workshops', through='WorkshopParticipant')
     qualification_threshold = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
+
+    def clean(self):
+        if self.type.year != settings.CURRENT_YEAR:
+            raise ValidationError('cannot edit workshops from previous years')
 
     class Meta:
         permissions = (('see_all_workshops', u'Can see all workshops'),)

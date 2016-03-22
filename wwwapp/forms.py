@@ -6,9 +6,10 @@ from crispy_forms.helper import FormHelper
 
 from django_select2 import ModelSelect2MultipleField, Select2MultipleWidget, ModelSelect2Field, Select2Widget
 
-from models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType, UserInfo
-from widgets import RichTextarea
+from .models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType, UserInfo
+from .widgets import RichTextarea
 
+from . import settings
 
 class UserProfilePageForm(ModelForm):
     class Meta:
@@ -104,11 +105,11 @@ class ArticleForm(ModelForm):
 
 
 class WorkshopForm(ModelForm):
-    category = ModelSelect2MultipleField(label="Kategorie", queryset=WorkshopCategory.objects, required=False,
-                                         widget=Select2MultipleWidget(select2_options={'width': '200px'}))
+    category = ModelSelect2MultipleField(label="Kategorie", queryset=WorkshopCategory.objects.filter(year=settings.CURRENT_YEAR),
+                                         required=False, widget=Select2MultipleWidget(select2_options={'width': '200px'}))
 
     category.help_text = ""  # this removes annoying message ' Hold down "Control", or "Command" (..) '
-    type = ModelSelect2Field(label="Rodzaj zajęć", queryset=WorkshopType.objects, required=False,
+    type = ModelSelect2Field(label="Rodzaj zajęć", queryset=WorkshopType.objects.filter(year=settings.CURRENT_YEAR), required=False,
                              widget=Select2Widget(select2_options={'width': '200px'}))
 
     class Meta:
