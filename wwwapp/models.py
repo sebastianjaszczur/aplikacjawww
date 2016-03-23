@@ -147,7 +147,7 @@ class Article(models.Model):
 
 
 class WorkshopCategory(models.Model):
-    year = models.IntegerField(default=2015)
+    year = models.IntegerField()
     name = models.CharField(max_length=100, blank=False, null=False)
 
     class Meta:
@@ -158,7 +158,7 @@ class WorkshopCategory(models.Model):
 
 
 class WorkshopType(models.Model):
-    year = models.IntegerField(default=2015)
+    year = models.IntegerField()
     name = models.CharField(max_length=100, blank=False, null=False)
 
     class Meta:
