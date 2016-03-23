@@ -148,7 +148,10 @@ class Article(models.Model):
 
 class WorkshopCategory(models.Model):
     year = models.IntegerField(default=2015)
-    name = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    name = models.CharField(max_length=100, blank=False, null=False)
+
+    class Meta:
+        unique_together = ('year', 'name',)
 
     def __unicode__(self):
         return '%d: %s' % (self.year, self.name)
@@ -156,7 +159,10 @@ class WorkshopCategory(models.Model):
 
 class WorkshopType(models.Model):
     year = models.IntegerField(default=2015)
-    name = models.CharField(max_length=100, blank=False, null=False, unique=True)
+    name = models.CharField(max_length=100, blank=False, null=False)
+
+    class Meta:
+        unique_together = ('year', 'name',)
 
     def __unicode__(self):
         return '%d: %s' % (self.year, self.name)
