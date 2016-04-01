@@ -16,7 +16,7 @@ DEFAULT_CONFIG = {
     # bidi is removed, because it's completely useless (it changes direction of text)
     # flash,iframe are removed, because they're dangerous
     # templates are useless, unless someone defines better ones
-    'extraPlugins': 'linklocal',
+    'extraPlugins': 'linklocal,footnotes',
     'disableNativeSpellChecker': False,  # browser spellchecker is better
     'linklocal_autocomplete': '/articleNameList',
     'linklocal_prefix': '/article/',
