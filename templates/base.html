@@ -8,6 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Wakacyjne Warsztaty Wielodyscyplinarne">
 
+    <meta property="og:image" content="{% static 'images/logo_transparent.png' %}">
+    <meta property="og:description"
+          content="Wakacyjne Warsztaty Wielodyscyplinarne to coroczna impreza organizowana przez studentów,
+          przeznaczona dla licealistów zainteresowanych matematyką, informatyką, fizyką lub astronomią.">
+
     <title>{% if title %}{{ title }} - WWW{% else %}Wakacyjne Warsztaty Wielodyscyplinarne{% endif %}</title>
 
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
@@ -42,7 +47,7 @@
             <div class="navbar-header">
                 <!-- Button for smallest screens -->
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-                <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'images/logo.png' %}" alt="Progressus HTML5 template"></a>
+                <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" alt="Wakacyjne Warsztaty Wielodyscyplinarne"></a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav pull-right">
