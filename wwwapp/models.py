@@ -5,11 +5,12 @@ from django.db import models
 import re
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+import annoying.fields
 from wwwapp import settings
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    userinfo = models.OneToOneField('UserInfo')
+    userinfo = annoying.fields.AutoOneToOneField('UserInfo')
 
     gender = models.CharField(max_length=10, choices=[('M', u'Mężczyzna'), ('F', u'Kobieta'),],
                               null=True, default=None, blank=True)
