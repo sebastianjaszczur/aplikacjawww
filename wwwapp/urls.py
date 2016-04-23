@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.views.generic.base import RedirectView
+from django.views.generic.base import RedirectView, TemplateView
 from wwwapp.settings import CURRENT_YEAR
 import views
 import mail_views
@@ -52,5 +52,6 @@ urlpatterns = patterns('',
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page, name='template_for_workshop_page'),
     url(r'^program/$', RedirectView.as_view(url='/%d/program/' % CURRENT_YEAR, permanent=False), name='program'),
     url(r'^([0-9]+)/program/$', views.program, name='year_program'),
+    url(r'^robots\.txt/$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     url(r'^$', views.index, name='index'),
 )
