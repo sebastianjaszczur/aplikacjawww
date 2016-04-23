@@ -18,7 +18,7 @@ from allaccess.compat import smart_bytes, force_text
 from allaccess.models import Provider, AccountAccess
 from allaccess.views import OAuthRedirect, OAuthCallback
 
-from models import UserProfile
+from models import UserProfile, UserInfo
 from views import get_context
 
 
@@ -42,7 +42,9 @@ def loginView(request):
             context['info'] = user_info
             
             user = request.user
-            user_profile, just_created = UserProfile.objects.get_or_create(user=user)
+            new_user_info = UserInfo()
+            new_user_info.save()
+            user_profile, just_created = UserProfile.objects.get_or_create(user=user, user_info=new_user_info)
             
             if just_created:
                 standarize_user_info(user_info)
