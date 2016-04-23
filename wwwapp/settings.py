@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Django settings for wwwapp project.
 
@@ -46,10 +48,14 @@ else:
 # E-mail settings
 
 ADMINS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
-          ('Marcin Wrochna', 'mwrochna+django@gmail.com'))
+          ('Marcin Wrochna', 'mwrochna+django@gmail.com'),
+          ('Michał Zieliński', 'michal@zielinscy.org.pl'),
+          )
 
 MANAGERS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
-            ('Marcin Wrochna', 'mwrochna+django@gmail.com'))
+            ('Marcin Wrochna', 'mwrochna+django@gmail.com'),
+            ('Michał Zieliński', 'michal@zielinscy.org.pl'),
+            )
 
 if ON_PAAS:
     if 'GMAIL_ADDRESS' in os.environ and 'GMAIL_PASSWORD' in os.environ:
@@ -80,7 +86,7 @@ INSTALLED_APPS = (
 )
 
 if DEBUG:
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar', )
+    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar',)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.BrokenLinkEmailsMiddleware',
@@ -97,7 +103,6 @@ ROOT_URLCONF = 'wwwapp.urls'
 
 WSGI_APPLICATION = 'wwwapp.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
@@ -106,11 +111,11 @@ if ON_PAAS and "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME':     os.environ['OPENSHIFT_APP_NAME'],
-            'USER':     os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
+            'NAME': os.environ['OPENSHIFT_APP_NAME'],
+            'USER': os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
             'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],
-            'HOST':     os.environ['OPENSHIFT_POSTGRESQL_DB_HOST'],
-            'PORT':     os.environ['OPENSHIFT_POSTGRESQL_DB_PORT'],
+            'HOST': os.environ['OPENSHIFT_POSTGRESQL_DB_HOST'],
+            'PORT': os.environ['OPENSHIFT_POSTGRESQL_DB_PORT'],
         }
     }
 else:
@@ -130,13 +135,13 @@ SELECT2_BOOTSTRAP = True
 BLEACH_ALLOWED_TAGS = [
     'p', 'b', 'i', 'u', 'em', 'strong', 'a', 'pre', 'div', 'strong', 'sup', 'sub', 'ol', 'ul', 'li', 'address',
     'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'table', 'tbody', 'tr', 'td', 'hr', 'img',
-    ]
+]
 
 # Which HTML attributes are allowed
 BLEACH_ALLOWED_ATTRIBUTES = [
     'href', 'title', 'style', 'alt', 'src', 'dir', 'class', 'border', 'cellpadding', 'cellspacing', 'id',
     'name', 'align',
-    ]
+]
 
 # Which CSS properties are allowed in 'style' attributes (assuming
 # style is an allowed attribute)
@@ -145,7 +150,7 @@ BLEACH_ALLOWED_STYLES = [
     'margin-left', 'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
     'margin', 'padding-top', 'font-size', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color',
     'line-height', 'border-collapse', 'border-spacing', 'empty-cells',
-    ]
+]
 
 # Strip unknown tags if True, replace with HTML escaped characters if
 # False
@@ -178,7 +183,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 STATICFILES_DIRS = (
@@ -201,7 +205,6 @@ if 'OPENSHIFT_DATA_DIR' in os.environ:
     MEDIA_ROOT = os.path.join(os.environ.get('OPENSHIFT_DATA_DIR', ''), 'media')
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, *MEDIA_URL.strip("/").split("/"))
-
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
