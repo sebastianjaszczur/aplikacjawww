@@ -121,7 +121,7 @@ def update_user_info(request):
         return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
-        user_info = user_profile.userinfo
+        user_info = user_profile.user_info
 
         if request.method == "POST":
             user_info_page_form = UserInfoPageForm(request.POST, instance=user_info)
@@ -154,7 +154,7 @@ def my_profile(request):
             context['user_profile_form'] = user_profile_form
             context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
             context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
-            context['user_info_page_form'] = UserInfoPageForm(instance=user_profile.userinfo)
+            context['user_info_page_form'] = UserInfoPageForm(instance=user_profile.user_info)
             context['is_editing_profile'] = True
             context['title'] = u'Mój profil'
 
@@ -353,7 +353,7 @@ def people_info(request):
     if not can_see_users:
         return redirect('login')
 
-    users = UserProfile.objects.prefetch_related('user', 'userinfo')
+    users = UserProfile.objects.prefetch_related('user', 'user_info')
     users = [ user for user in users if user.status == 'Z' ]
     accepted_workshops = Workshop.objects.filter(status='Z')
     for workshop in accepted_workshops:
@@ -366,13 +366,13 @@ def people_info(request):
         p_id = user.id
         people[p_id] = {
             'user': user.user,
-            'pesel': user.userinfo.pesel,
-            'address': user.userinfo.address,
-            'start_date': user.userinfo.start_date,
-            'end_date': user.userinfo.end_date,
-            'meeting_point': user.userinfo.meeting_point,
-            'tshirt_size': user.userinfo.tshirt_size,
-            'comments': user.userinfo.comments,
+            'pesel': user.user_info.pesel,
+            'address': user.user_info.address,
+            'start_date': user.user_info.start_date,
+            'end_date': user.user_info.end_date,
+            'meeting_point': user.user_info.meeting_point,
+            'tshirt_size': user.user_info.tshirt_size,
+            'comments': user.user_info.comments,
         }
 
     people = people.values()
@@ -462,8 +462,8 @@ def data_for_plan(request):
         record_to_add['uid'] = up.id
         user_ids.add(up.id)
         record_to_add['name'] = up.user.get_full_name()
-        record_to_add['start'] = up.userinfo.start_date if up.userinfo.start_date != 'no_idea' else 1
-        record_to_add['end'] = up.userinfo.end_date if up.userinfo.end_date != 'no_idea' else 30
+        record_to_add['start'] = up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1
+        record_to_add['end'] = up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
         users.append(record_to_add)
     data['users'] = users
 
