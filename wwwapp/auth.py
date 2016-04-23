@@ -40,18 +40,22 @@ def loginView(request):
             client = access.api_client
             user_info = client.get_profile_info(raw_token=access.access_token)
             context['info'] = user_info
-            
+
             user = request.user
-            new_user_info = UserInfo()
-            new_user_info.save()
-            user_profile, just_created = UserProfile.objects.get_or_create(user=user, user_info=new_user_info)
-            
-            if just_created:
-                standarize_user_info(user_info)
-                if 'gender' in user_info:
-                    user_profile.gender = user_info['gender']
-                user.save()
-                user_profile.save()
+            try:
+                user_profile = UserProfile.objects.get(user=user)
+            except UserProfile.DoesNotExist:
+                new_user_info = UserInfo()
+                new_user_info.save()
+                user_profile, just_created = UserProfile.objects.get_or_create(user=user, user_info=new_user_info)
+
+                # I'm not sure if this condition is necessary.
+                if just_created:
+                    standarize_user_info(user_info)
+                    if 'gender' in user_info:
+                        user_profile.gender = user_info['gender']
+                    user.save()
+                    user_profile.save()
     return render(request, 'login.html', context)
 
 
