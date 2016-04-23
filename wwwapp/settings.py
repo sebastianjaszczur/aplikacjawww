@@ -232,3 +232,12 @@ if ON_PAAS and not DEBUG:
     GOOGLE_ANALYTICS_KEY = 'UA-12926426-8'
 else:
     GOOGLE_ANALYTICS_KEY = None
+
+if ON_PAAS:
+    INSTALLED_APPS = INSTALLED_APPS + (
+        'raven.contrib.django.raven_compat',
+    )
+
+    RAVEN_CONFIG = {
+        'dsn': 'https://4709ef020c9f4ab5b69d5b910829ca88:23aca2a24534495893f31c96cd893b74@sentry.civsync.com/11',
+    }
