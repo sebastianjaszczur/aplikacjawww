@@ -531,24 +531,28 @@ def article_name_list(request):
 def your_workshops(request):
     if not request.user.is_authenticated():
         return redirect('login')
-    context = get_context(request)
 
     workshops = Workshop.objects.filter(lecturer__user=request.user)
-    context['workshops'] = workshops
-    context['title'] = u'Twoje warsztaty'
-
-    return render(request, 'workshoplist.html', context)
-
+    return render_workshops(request, u'Twoje warsztaty', workshops)
 
 def all_workshops(request):
     if not request.user.has_perm('wwwapp.see_all_workshops'):
         # it should show page like "you don't have permission", probably
         return redirect('login')
-    context = get_context(request)
 
     workshops = Workshop.objects.all()
-    context['workshops'] = workshops
-    context['title'] = u'Wszystkie warsztaty'
+    return render_workshops(request, u'Wszystkie warsztaty', workshops)
+
+def render_workshops(request, title, workshops):
+    context = get_context(request)
+
+    years = set( workshop.type.year for workshop in workshops )
+    years = list(reversed(sorted(years)))
+    context['workshops'] = [
+        {'year': year,
+         'workshops': [ workshop for workshop in workshops if workshop.type.year == year ]}
+        for year in years ]
+    context['title'] = title
 
     return render(request, 'workshoplist.html', context)
 
