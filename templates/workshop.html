@@ -20,7 +20,9 @@
                 </form>
             </div>
         {% else %}
-            <a href="{% url 'workshop_page' workshop.name%}">Link do głównej strony warsztatów</a>
+            {% if workshop.status = 'Z' %}
+                <a href="{% url 'workshop_page' workshop.name%}">Link do głównej strony warsztatów</a>
+            {% endif %}
             {{ workshop.proposition_description|bleach }}
         {% endif %}
     </article>
