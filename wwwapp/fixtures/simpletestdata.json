@@ -28,6 +28,14 @@
     }
   },
   {
+    "model": "wwwapp.workshopparticipant",
+    "pk": 1,
+    "fields": {
+      "participant": 1,
+      "workshop": 1
+    }
+  },
+  {
     "model": "wwwapp.userinfo",
     "pk": 1,
     "fields": {
@@ -40,9 +48,17 @@
       "name": "warkow",
       "title": "WarsztatyKow",
       "status": "Z",
+      "type": 1,
       "lecturer": [1],
       "page_content": "example workshop page content",
       "page_content_is_public": false
+    }
+  },
+  {
+    "model": "wwwapp.workshoptype",
+    "pk": 1,
+    "fields": {
+      "year": 2016
     }
   }
 ]

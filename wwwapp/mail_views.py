@@ -1,8 +1,9 @@
 #-*- coding: utf-8 -*-
+from datetime import date
 from django.contrib import messages
 from django.shortcuts import redirect, render
 
-from models import User, Workshop, UserProfile
+from models import Workshop, WorkshopUserProfile
 from views import get_context
 
 
@@ -18,14 +19,9 @@ def _register_as_email_filter(filter_id, name):
     return decorator
 
 
-@_register_as_email_filter('all', u'wszyscy')
-def _all():
-    return User.objects.all()
-
-
-@_register_as_email_filter('none', u'nikt')
-def _none():
-    return None
+@_register_as_email_filter('all', u'wszyscy (uczestnicy zapisani na co najmniej jeden warsztat oraz prowadzący)')
+def _all(year):
+    return _all_participants(year) | _all_lecturers(year)
 
 
 def _get_user_objects_of_lecturers_of_workshops(workshops):
@@ -37,26 +33,26 @@ def _get_user_objects_of_lecturers_of_workshops(workshops):
 
 
 @_register_as_email_filter('allLecturers', u'wszyscy prowadzący')
-def _all_lecturers():
-    all_workshops = Workshop.objects.all()
+def _all_lecturers(year):
+    all_workshops = Workshop.objects.filter(type__year=year)
     return _get_user_objects_of_lecturers_of_workshops(all_workshops)
 
 
 @_register_as_email_filter('acceptedLecturers', u'prowadzący zaakceptowanych warsztatów')
-def _accepted_lecturers():
-    accepted_workshops = Workshop.objects.filter(status='Z')
+def _accepted_lecturers(year):
+    accepted_workshops = Workshop.objects.filter(status='Z', type__year=year)
     return _get_user_objects_of_lecturers_of_workshops(accepted_workshops)
 
 
 @_register_as_email_filter('deniedLecturers', u'prowadzący odrzuconych warsztatów')
-def _denied_lecturers():
-    denied_workshops = Workshop.objects.filter(status='O')
+def _denied_lecturers(year):
+    denied_workshops = Workshop.objects.filter(status='O', type__year=year)
     return _get_user_objects_of_lecturers_of_workshops(denied_workshops)
 
 
 @_register_as_email_filter('allParticipants', u'wszyscy uczestnicy zapisani na co najmniej jeden warsztat')
-def _all_participants():
-    all_workshops = Workshop.objects.all()
+def _all_participants(year):
+    all_workshops = Workshop.objects.filter(type__year=year)
     participants = set()
     for workshop in all_workshops:
         for participant in workshop.participants.all():
@@ -65,31 +61,36 @@ def _all_participants():
 
 
 @_register_as_email_filter('allQualified', u'wszyscy uczestnicy o statusie zakwalifikowanym')
-def _all_qualified():
-    return [ profile.user for profile in UserProfile.objects.all() if profile.status == 'Z' ]
+def _all_qualified(year):
+    return [profile.user_profile.user for profile in
+            WorkshopUserProfile.objects.filter(year=year) if profile.status == 'Z']
 
 
 @_register_as_email_filter('allRefused', u'wszyscy uczestnicy o statusie odrzuconym')
-def _all_refused():
-    return [ profile.user for profile in UserProfile.objects.all() if profile.status == 'O' ]
+def _all_refused(year):
+    return [profile.user_profile.user for profile in
+            WorkshopUserProfile.objects.filter(year=year) if profile.status == 'O']
 
 
-def filtered_emails(request, filter_id=''):
+def filtered_emails(request, year='0', filter_id=''):
     if not request.user.has_perm('wwwapp.see_all_users'):
         return redirect('login')
 
+    year = int(year)
     context = get_context(request)
     context['title'] = u'Filtrowane emaile użytkowników'
     context['filtered_users'] = None
     if filter_id in _registered_filters:
         method, name = _registered_filters[filter_id]
-        context['filter_name'] = name
-        context['filtered_users'] = method()
+        context['chosen_filter_name'] = name
+        context['chosen_year'] = year
+        context['filtered_users'] = method(year)
         if not context['filtered_users']:
             messages.info(request, u'Nie znaleziono użytkowników spełniających kryteria!')
 
     context['filter_methods'] = [
         (filter_id, _registered_filters[filter_id][1]) for filter_id in _registered_filters.iterkeys()
     ]
+    context['years'] = range(2015, date.today().year + 1)  # TODO use Edition model when it's done (ticket #79)
 
     return render(request, 'filteredEmails.html', context)

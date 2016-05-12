@@ -48,10 +48,10 @@ class MainViewsTestCase(TestCase):
         # self.assertTrue(r'WarsztatyKow' in resp.content)        
 
     def test_email_filter(self):
-        resp = self.client.get('/filterEmails/all/')
+        resp = self.client.get('/filterEmails/2016/all/')
         self.assertEqual(resp.status_code, 302)
 
         User.objects.create_superuser("admin", "admin@admin.com", "admin")
         self.client.login(username="admin", password="admin")
-        resp = self.client.get('/filterEmails/all/')
+        resp = self.client.get('/filterEmails/2016/all/')
         self.assertTrue('jan@kowalski.com' in resp.content)
