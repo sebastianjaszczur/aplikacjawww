@@ -2,6 +2,7 @@
 from datetime import date
 from django.contrib import messages
 from django.shortcuts import redirect, render
+from django.conf import settings
 
 from models import Workshop, WorkshopUserProfile
 from views import get_context
@@ -76,7 +77,7 @@ def filtered_emails(request, year='0', filter_id=''):
     if not request.user.has_perm('wwwapp.see_all_users'):
         return redirect('login')
 
-    year = int(year)
+    year = int(year or settings.CURRENT_YEAR)
     context = get_context(request)
     context['title'] = u'Filtrowane emaile użytkowników'
     context['filtered_users'] = None
@@ -91,6 +92,6 @@ def filtered_emails(request, year='0', filter_id=''):
     context['filter_methods'] = [
         (filter_id, _registered_filters[filter_id][1]) for filter_id in _registered_filters.iterkeys()
     ]
-    context['years'] = range(2015, date.today().year + 1)  # TODO use Edition model when it's done (ticket #79)
+    context['years'] = range(2015, settings.CURRENT_YEAR + 1)
 
     return render(request, 'filteredEmails.html', context)
