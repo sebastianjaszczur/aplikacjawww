@@ -265,9 +265,6 @@ def workshop_participants(request, name):
     context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
             'workshop', 'participant', 'participant__user')
     
-    context['workshop_participants'] = [wp for wp in context['workshop_participants']
-                                        if Workshop.objects.filter(lecturer=wp.participant).exists()]
-    
     return render(request, 'workshopparticipants.html', context)
 
 
