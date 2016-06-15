@@ -1,7 +1,7 @@
 Aplikacja WWW
 =============
 
-Django-based application to manage registration of people for [scientific summer school](http://warsztatywww.wikidot.com/) (link soon to be deprecated).
+Django-based application to manage registration of people for [scientific summer school](http://warsztatywww.pl/).
 
 ### Build:
 - install `virtualenv` and `pip`
