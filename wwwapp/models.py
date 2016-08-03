@@ -49,7 +49,10 @@ class WorkshopUserProfile(models.Model):
 # That's bad, one year design. I'm so sorry.
 POSSIBLE_DATES = [
     ('no_idea', u'Nie ogarniam'),
-] + [(unicode(day_number), unicode(day_number) + u' sierpien') for day_number in xrange(17, 29)]
+] + [
+    (unicode(day_number), unicode(day_number) + u' sierpien')
+    for day_number in xrange(16, 28)
+] + [(unicode(28), u'Wybierz inną datę')]
 
 # The same
 POSSIBLE_PLACES = [
@@ -83,7 +86,7 @@ class UserInfo(models.Model):
     tshirt_size = models.CharField(max_length=100, choices=POSSIBLE_TSHIRT_SIZES,
                                      default='no_idea', blank=False, null=False)
     comments = models.CharField(max_length=1000, blank=True, default="")
-    
+
     class Meta:
         permissions = (('see_user_info', u'Can see user info'),)
 
