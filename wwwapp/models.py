@@ -51,8 +51,8 @@ POSSIBLE_DATES = [
     ('no_idea', u'Nie ogarniam'),
 ] + [
     (unicode(day_number), unicode(day_number) + u' sierpien')
-    for day_number in xrange(16, 29)
-]
+    for day_number in xrange(16, 28)
+] + [(unicode(28), u'Wybierz inną datę')]
 
 # The same
 POSSIBLE_PLACES = [
