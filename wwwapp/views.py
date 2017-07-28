@@ -307,6 +307,11 @@ def participants(request, year):
 
     participants = WorkshopParticipant.objects.all().filter(workshop__type__year=year)\
                                                     .prefetch_related('workshop', 'participant', 'participant__user')
+    workshops = Workshop.objects.filter(type__year=year).prefetch_related('lecturer', 'lecturer__user')
+    lecturers_ids = set()
+    for workshop in workshops:
+        for l in workshop.lecturer.all():
+            lecturers_ids.add(l.user.id)
 
     people = {}
 
@@ -314,8 +319,12 @@ def participants(request, year):
         p_id = participant.participant.id
         if p_id not in people:
             cover_letter = participant.participant.cover_letter
+            if participant.participant.user.id in lecturers_ids:
+                continue
+
             people[p_id] = {
                 'user': participant.participant.user,
+                'birth': participant.participant.user_info.pesel[:6],
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
                 'has_letter': bool(cover_letter and len(cover_letter) > 50),

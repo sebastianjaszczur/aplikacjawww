@@ -40,7 +40,7 @@ class UserInfoPageForm(ModelForm):
                   'tshirt_size', 'comments']
         labels = {
             'pesel': u'Pesel',
-            'address': u'Adres zameldowania (potrzebny nam do ubezpieczenia)',
+            'address': u'Adres zameldowania',
             'start_date': u'Data przyjazdu :-)',
             'end_date': u'Data wyjazdju :-(',
             'meeting_point': u'Miejsce zbiórki',
