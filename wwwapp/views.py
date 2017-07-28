@@ -10,7 +10,7 @@ from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib import messages
 from django.contrib.auth.models import User
-from models import Article, UserProfile, Workshop, WorkshopParticipant
+from models import Article, UserProfile, Workshop, WorkshopParticipant, WorkshopUserProfile
 from forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
     WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
 from wwwapp.templatetags.wwwtags import qualified_mark
@@ -444,9 +444,9 @@ def data_for_plan(request):
         return redirect('login')
     data = {}
     
-    user_profiles_raw = set([up for up in UserProfile.objects.filter(status='Z')])
+    user_profiles_raw = set( up for up in UserProfile.objects.all() if WorkshopUserProfile.objects.filter(user_profile=up, year=settings.CURRENT_YEAR, status='Z').exists() )
     
-    workshops_raw = Workshop.objects.filter(status='Z')
+    workshops_raw = Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR)
     workshop_ids = set()
     workshops = []
     for workshop in workshops_raw:

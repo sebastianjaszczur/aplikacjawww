@@ -18,6 +18,9 @@ class UserProfile(models.Model):
     profile_page = models.TextField(max_length=100000, blank=True, default="")
     cover_letter = models.TextField(max_length=100000, blank=True, default="")
 
+    def is_participating_in(self, year):
+        return self.status_for(year) == 'Z' or Workshop.objects.filter(type__year=year, lecturer=self, status='Z').exists()
+    
     @property
     def status(self):
         return self.status_for(settings.CURRENT_YEAR)
