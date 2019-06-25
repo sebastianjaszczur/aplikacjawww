@@ -1,37 +1,47 @@
 import random
 from copy import deepcopy
+import json
+import sys
+import time
+
+if len(sys.argv) != 2:
+    print "Usage {file} data.json".format(file=sys.argv[0])
+    sys.exit(1)
 
 # Reads data in format of dataForPlan.
-data = eval(raw_input())
+with open(sys.argv[1]) as f:
+    data = json.load(f)
 
 workshops = {ws['wid']:ws for ws in data['workshops']}
+workshops_per_block = len(workshops) / 6
+
+points_not_allowed = 10**3
+points_wrong_workshops_per_block = 10**4
+
+verbose = False
 
 users = {u['uid']: u for u in data['users']}
 for uid in users.keys():
     users[uid]['part'] = set()
     users[uid]['blocks'] = set()
-    start = int(users[uid]['start'])
-    end = int(users[uid]['end'])
     del users[uid]['start']
     del users[uid]['end']
-    if start<=18<20<=end:
-        users[uid]['blocks'].add(0)
-        users[uid]['blocks'].add(1)
-    if start<=21<23<=end:
-        users[uid]['blocks'].add(2)
-        users[uid]['blocks'].add(3)
-    if start<=25<27<=end:
-        users[uid]['blocks'].add(4)
-        users[uid]['blocks'].add(5)
+    users[uid]['blocks'].add(0)
+    users[uid]['blocks'].add(1)
+    users[uid]['blocks'].add(2)
+    users[uid]['blocks'].add(3)
+    users[uid]['blocks'].add(4)
+    users[uid]['blocks'].add(5)
+
+wid_list = list(workshops.keys())
 
 for part in data['participation']:
-    users[part['uid']]['part'].add(part['wid'])
+    if part['wid'] in wid_list:
+        users[part['uid']]['part'].add(part['wid'])
 
 for ws in workshops.values():
     for lec_uid in ws['lecturers']:
         users[lec_uid]['part'].add(ws['wid'])
-
-wid_list = list(workshops.keys())
 
 
 class Plan(object):
@@ -134,11 +144,12 @@ class Plan(object):
                                         collided = True
                                     collisions += 1
                                     collision_sum += 1
-                print " *", wid, workshops[wid]['name']
+                print " *", wid, workshops[wid]['name'], "-", [users[lid]['name'] for lid in workshops[wid]['lecturers']][0]
                 print "   participants today/willing:", participants_today, "/", participants_willing_to
                 print "   collisions / user collisions:", collisions, "/", collision_users
             print "-------"
-    
+        print "colisions total = {sum}, colision users total = {users}".format(sum=collision_sum, users=collision_user_sum)
+
     def evaluate(self, verbose=False):
         all_wids = set()
         for widset in self.blocks:
@@ -158,7 +169,22 @@ class Plan(object):
                         print "COLLISION OF LECTURER"
                         print "\tlec_uid={uid} wid={wid}".format(uid=lec_uid, wid=wid)
                     points -= 10**6
-        
+
+        for wid in all_wids:
+            for disallowed_block in workshops[wid]['disallowed_blocks']:
+                if wid in self.blocks[disallowed_block]:
+                    if verbose:
+                        print "DISALLOWED BLOCK"
+                        print "\twid={wid} block={block}".format(wid=wid, block=disallowed_block), workshops[wid]['name']
+                    points -= points_not_allowed
+
+        for block in self.blocks:
+            if abs(workshops_per_block - len(block)) > 0.9:
+                if verbose:
+                    print "WRONG NUMBER OF WORKSHOPS IN BLOCK {block}".format(block=block)
+            points -= abs(workshops_per_block - len(block)) * points_wrong_workshops_per_block
+
+
         col_counter = {wid:0 for wid in all_wids}
         for uid in users.keys():
             user_blocks = dict()
@@ -185,7 +211,7 @@ class Plan(object):
         for wid in col_counter.keys():
             points_col -= col_counter[wid]**2
         
-        return (points, points_col)
+        return points * 1 + points_col
         
 
 # print workshops
@@ -217,10 +243,12 @@ def improve(plan, points):
         points = points2
     return plan, points
 
-pnp = [Plan.make_random_plan() for i in xrange(17)]
+
+pnp = [Plan.make_random_plan() for i in xrange(1000)]
 pnp = [(plan, plan.evaluate()) for plan in pnp]
 
 BEST = pnp[0][1]
+last_print_time = 0
 
 try:
     while True:
@@ -228,21 +256,20 @@ try:
             pnp[i] = improve(pnp[i][0], pnp[i][1])
             if pnp[i][1] > BEST:
                 BEST = pnp[i][1]
-            print BEST, pnp[i][1]
+            if verbose:
+                print BEST, pnp[i][1]
+        if last_print_time < time.time() - 1.0:
+            print BEST
+            last_print_time = time.time()
         
 except KeyboardInterrupt:
-    print "ABORTED"    
-
-max_value = pnp[0][1]
-for i in xrange(len(pnp)):
-    max_value = max(pnp[i][1], max_value)
+    print "ABORTED"
 
 for i in xrange(len(pnp)):
-    if pnp[i][1] == max_value:
+    if pnp[i][1] == BEST:
         pnp[i][0].evaluate(True)
         pnp[i][0].describe()
+        print "points:", pnp[i][1]
+        print "TAB for later use:"
+        print pnp[i][0].tab()
         break
-
-print "points:", pnp[i][1]
-print "TAB for later use:"
-print pnp[i][0].tab()
