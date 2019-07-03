@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     user_info = models.OneToOneField('UserInfo')
 
-    gender = models.CharField(max_length=10, choices=[('M', u'Mężczyzna'), ('F', u'Kobieta'),],
+    gender = models.CharField(max_length=10, choices=[('M', 'Mężczyzna'), ('F', 'Kobieta'),],
                               null=True, default=None, blank=True)
     school = models.CharField(max_length=100, default="", blank=True)
     matura_exam_year = models.PositiveSmallIntegerField(null=True, default=None, blank=True)
@@ -31,11 +31,11 @@ class UserProfile(models.Model):
         except WorkshopUserProfile.DoesNotExist:
             return None
 
-    def __unicode__(self):
-        return u"{0.first_name} {0.last_name}".format(self.user)
+    def __str__(self):
+        return "{0.first_name} {0.last_name}".format(self.user)
 
     class Meta:
-        permissions = (('see_all_users', u'Can see all users'),)
+        permissions = (('see_all_users', 'Can see all users'),)
 
 class WorkshopUserProfile(models.Model):
     # for each year
@@ -43,36 +43,36 @@ class WorkshopUserProfile(models.Model):
 
     year = models.IntegerField()
     status = models.CharField(max_length=10,
-                              choices=[('Z', u'Zaakceptowany'), ('O', u'Odrzucony')],
+                              choices=[('Z', 'Zaakceptowany'), ('O', 'Odrzucony')],
                               null=True, default=None, blank=True)
 
-    def __unicode__(self):
-        return u'%s: %s, %s' % (self.year, self.user_profile, self.status)
+    def __str__(self):
+        return '%s: %s, %s' % (self.year, self.user_profile, self.status)
 
 # That's bad, one year design. I'm so sorry.
 POSSIBLE_DATES = [
-    ('no_idea', u'Nie ogarniam'),
+    ('no_idea', 'Nie ogarniam'),
 ] + [
-    (unicode(day_number), unicode(day_number) + u' sierpien')
-    for day_number in xrange(16, 28)
-] + [(unicode(28), u'Wybierz inną datę')]
+    (str(day_number), str(day_number) + ' sierpien')
+    for day_number in range(16, 28)
+] + [(str(28), 'Wybierz inną datę')]
 
 # The same
 POSSIBLE_PLACES = [
-    ('no_idea', u'Nie ogarniam'),
-    ('wierchomla', u'Wierchomla Wielka'),
-    ('warsaw', u'Warszawa'),
-    ('cracow', u'Kraków')
+    ('no_idea', 'Nie ogarniam'),
+    ('wierchomla', 'Wierchomla Wielka'),
+    ('warsaw', 'Warszawa'),
+    ('cracow', 'Kraków')
 ]
 
 POSSIBLE_TSHIRT_SIZES = [
-    ('no_idea', u'Nie ogarniam'),
-    ("XS", u"XS"),
-    ("S", u"S"),
-    ("M", u"M"),
-    ("L", u"L"),
-    ("XL", u"XL"),
-    ("XXL", u"XXL"),
+    ('no_idea', 'Nie ogarniam'),
+    ("XS", "XS"),
+    ("S", "S"),
+    ("M", "M"),
+    ("L", "L"),
+    ("XL", "XL"),
+    ("XXL", "XXL"),
 ]
 
 
@@ -91,7 +91,7 @@ class UserInfo(models.Model):
     comments = models.CharField(max_length=1000, blank=True, default="")
 
     class Meta:
-        permissions = (('see_user_info', u'Can see user info'),)
+        permissions = (('see_user_info', 'Can see user info'),)
 
 
 class AlphaNumericField(models.CharField):
@@ -109,11 +109,11 @@ class ArticleContentHistory(models.Model):
     modified_by = models.ForeignKey(User, null=True, default=None)
     time = models.DateTimeField(auto_now_add=True, null=True, editable=False)
 
-    def __unicode__(self):
-        time = u'?'
+    def __str__(self):
+        time = '?'
         if self.time:
-            time = self.time.strftime(u'%y-%m-%d %H:%M')
-        return u'{} (v{} by {} at {})'.format(self.article.name, self.version, self.modified_by, time)
+            time = self.time.strftime('%y-%m-%d %H:%M')
+        return '{} (v{} by {} at {})'.format(self.article.name, self.version, self.modified_by, time)
 
     class Meta:
         unique_together = ('version', 'article',)
@@ -134,13 +134,13 @@ class Article(models.Model):
     on_menubar = models.BooleanField(default=False)
 
     class Meta:
-        permissions = (('can_put_on_menubar', u'Can put on menubar'),)
+        permissions = (('can_put_on_menubar', 'Can put on menubar'),)
 
     def content_history(self):
         return ArticleContentHistory.objects.filter(article=self).order_by('-version')
 
-    def __unicode__(self):
-        return u'{} "{}"'.format(self.name, self.title)
+    def __str__(self):
+        return '{} "{}"'.format(self.name, self.title)
 
     def save(self, *args, **kwargs):
         super(Article, self).save(*args, **kwargs)
@@ -158,7 +158,7 @@ class WorkshopCategory(models.Model):
     class Meta:
         unique_together = ('year', 'name',)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%d: %s' % (self.year, self.name)
 
 
@@ -169,7 +169,7 @@ class WorkshopType(models.Model):
     class Meta:
         unique_together = ('year', 'name',)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%d: %s' % (self.year, self.name)
 
 
@@ -181,7 +181,7 @@ class Workshop(models.Model):
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10,
-                              choices=[('Z', u'Zaakceptowane'), ('O', u'Odrzucone')],
+                              choices=[('Z', 'Zaakceptowane'), ('O', 'Odrzucone')],
                               null=True, default=None, blank=True)
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
@@ -196,9 +196,9 @@ class Workshop(models.Model):
             raise ValidationError('cannot edit workshops from previous years')
 
     class Meta:
-        permissions = (('see_all_workshops', u'Can see all workshops'),)
+        permissions = (('see_all_workshops', 'Can see all workshops'),)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.type.year) + ': ' + (' (' + self.status + ') ' if self.status else '') + self.title
 
 

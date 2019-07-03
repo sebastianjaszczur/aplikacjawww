@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 import base64
 import hashlib
@@ -14,12 +14,12 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.shortcuts import render, redirect
 
-from allaccess.compat import smart_bytes, force_text
+from django.utils.encoding import smart_bytes, force_text
 from allaccess.models import Provider, AccountAccess
 from allaccess.views import OAuthRedirect, OAuthCallback
 
-from models import UserProfile, UserInfo
-from views import get_context
+from .models import UserProfile, UserInfo
+from .views import get_context
 
 
 def loginView(request):

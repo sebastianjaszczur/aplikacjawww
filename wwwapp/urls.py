@@ -1,14 +1,15 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView, TemplateView
-from wwwapp.settings import CURRENT_YEAR
-import views
-import mail_views
-from auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
+from wwwapp.settings import CURRENT_YEAR, DEBUG
+from . import views
+from . import mail_views
+from .auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
 from django.views.generic import RedirectView
+from django.contrib.auth.views import logout_then_login
 
-urlpatterns = patterns('',
+urlpatterns = [
     # Examples:
     # url(r'^$', 'wwwapp.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
@@ -19,7 +20,7 @@ urlpatterns = patterns('',
             permanent=False),
         name="favicon"
     ),
-    url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
+    url(r'^logout/$', logout_then_login, name='logout'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', loginView, name='login'),
     url(r'^accounts/login/(?P<provider>(\w|-)+)/$', ScopedOAuthRedirect.as_view(), name='scopedallaccess-login'),
@@ -54,4 +55,10 @@ urlpatterns = patterns('',
     url(r'^([0-9]+)/program/$', views.program, name='year_program'),
     url(r'^robots\.txt/$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     url(r'^$', views.index, name='index'),
-)
+]
+
+if DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

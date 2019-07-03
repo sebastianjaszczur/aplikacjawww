@@ -38,8 +38,6 @@ DEBUG = DEBUG or 'DEBUG' in os.environ
 if ON_PAAS and DEBUG:
     print("*** Warning - Debug mode is on ***")
 
-TEMPLATE_DEBUG = True
-
 if ON_PAAS:
     ALLOWED_HOSTS = [os.environ['OPENSHIFT_APP_DNS'], socket.gethostname(), 'warsztatywww.pl', 'www.warsztatywww.pl']
 else:
@@ -65,7 +63,7 @@ if ON_PAAS:
         EMAIL_USE_TLS = True
         EMAIL_HOST_PASSWORD = os.environ['GMAIL_PASSWORD']
     else:
-        print "ERROR: There is no Gmail credentials!"
+        print("ERROR: There is no Gmail credentials!")
 
 # Application definition
 
@@ -99,6 +97,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+if DEBUG:
+	MIDDLEWARE_CLASSES = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE_CLASSES
+
 ROOT_URLCONF = 'wwwapp.urls'
 
 WSGI_APPLICATION = 'wwwapp.wsgi.application'
@@ -124,7 +125,7 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'www',
-            'USER': 'michal',
+            'USER': 'krzys_h',
         }
     }
 
@@ -207,25 +208,27 @@ if 'OPENSHIFT_DATA_DIR' in os.environ:
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, *MEDIA_URL.strip("/").split("/"))
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(BASE_DIR, 'templates'),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+		        'django.contrib.auth.context_processors.auth',
+		        'django.contrib.messages.context_processors.messages',
+		        'django.template.context_processors.request',
+		        'django.template.context_processors.debug',
+		        'django.template.context_processors.media',
+		        'django.template.context_processors.i18n',
+		        'django.template.context_processors.static',
+		        'allaccess.context_processors.available_providers',
+            ],
+        },
+    },
+]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.media',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.static',
-    'allaccess.context_processors.available_providers',
-)
-
-CURRENT_YEAR = 2016
+CURRENT_YEAR = 2019
 
 COMPRESS_ENABLED = True
 
@@ -242,3 +245,7 @@ if ON_PAAS:
     RAVEN_CONFIG = {
         'dsn': 'https://4709ef020c9f4ab5b69d5b910829ca88:23aca2a24534495893f31c96cd893b74@sentry.civsync.com/11',
     }
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

@@ -3,19 +3,19 @@ import sys
 from django.core.urlresolvers import reverse
 import os
 from django.conf import settings
-from django.db import OperationalError
+from django.db import OperationalError, ProgrammingError
 from django.http import JsonResponse, HttpResponse, Http404
 from django.core.exceptions import ValidationError
-from django.core.servers.basehttp import FileWrapper
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib import messages
 from django.contrib.auth.models import User
-from models import Article, UserProfile, Workshop, WorkshopParticipant, WorkshopUserProfile
-from forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
+from .models import Article, UserProfile, Workshop, WorkshopParticipant, WorkshopUserProfile
+from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
     WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
 from wwwapp.templatetags.wwwtags import qualified_mark
 from django.utils.functional import lazy
-from templatetags.wwwtags import qualified_mark
+from .templatetags.wwwtags import qualified_mark
+from wsgiref.util import FileWrapper
 
 
 def get_context(request):
@@ -74,7 +74,7 @@ def profile(request, user_id):
     is_my_profile = (request.user == user)
     can_see_all_users = request.user.has_perm('wwwapp.see_all_users')
 
-    context['title'] = u"{0.first_name} {0.last_name}".format(user)
+    context['title'] = "{0.first_name} {0.last_name}".format(user)
     context['profile_page'] = profile_page
     context['is_my_profile'] = is_my_profile
 
@@ -85,7 +85,7 @@ def profile(request, user_id):
 
 
 def redirect_after_profile_save(request, target):
-    messages.info(request, u'Zapisano.')
+    messages.info(request, 'Zapisano.')
     return redirect(reverse('myProfile') + '#' + target)
 
 
@@ -156,7 +156,7 @@ def my_profile(request):
             context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
             context['user_info_page_form'] = UserInfoPageForm(instance=user_profile.user_info)
             context['is_editing_profile'] = True
-            context['title'] = u'Mój profil'
+            context['title'] = 'Mój profil'
 
             return render(request, 'profile.html', context)
 
@@ -166,7 +166,7 @@ def workshop(request, name=None):
     new = (name is None)
     if new:
         workshop = None
-        title = u'Nowe warsztaty'
+        title = 'Nowe warsztaty'
         if not request.user.is_authenticated():
             return redirect('login')
         else:
@@ -273,24 +273,24 @@ def save_points(request):
     # can edit?
     can_edit = can_edit_workshop(workshop_participant.workshop, request.user)
     if not can_edit:
-        return JsonResponse({'error': u'Brak uprawnień.'})
+        return JsonResponse({'error': 'Brak uprawnień.'})
 
-    print "first"
+    print("first")
     try:
         result_points = (request.POST['points'] if 'points' in request.POST else "").strip()
-        print "med"
+        print("med")
         result_comment = (request.POST['comment'] if 'comment' in request.POST else "").strip()
-        print "sthn"
+        print("sthn")
         if result_points:
             workshop_participant.qualification_result = result_points
         if result_comment:
             workshop_participant.comment = result_comment
     except (ValidationError, ValueError):
-        return JsonResponse({'error': u'Niepoprawny format liczby'})
+        return JsonResponse({'error': 'Niepoprawny format liczby'})
     except Exception as e:
-        print e
+        print(e)
         raise e
-    print "last"
+    print("last")
     workshop_participant.save()
     workshop_participant = WorkshopParticipant.objects.get(id=workshop_participant.id)
 
@@ -343,7 +343,7 @@ def participants(request, year):
         if participant.is_qualified():
             people[p_id]['accepted_workshop_count'] += 1
 
-    people = people.values()
+    people = list(people.values())
     people.sort(key=lambda p: (-p['has_letter'], -p['accepted_workshop_count']))
 
     context = get_context(request)
@@ -381,7 +381,7 @@ def people_info(request):
             'comments': user.user_info.comments,
         }
 
-    people = people.values()
+    people = list(people.values())
     people.sort(key=lambda p: (p['user'].get_full_name(), ))
 
     context = get_context(request)
@@ -400,7 +400,7 @@ def register_to_workshop(request):
     workshop = get_object_or_404(Workshop, name=workshop_name)
 
     if workshop.type.year != settings.CURRENT_YEAR:
-        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została dawno zakończona.'})
+        return JsonResponse({'error': 'Kwalifikacja na te warsztaty została dawno zakończona.'})
 
     # if workshop.qualification_threshold is not None:
     #     return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
@@ -410,7 +410,7 @@ def register_to_workshop(request):
     context = get_context(request)
     context['workshop'] = workshop
     context['registered'] = True
-    return JsonResponse({'content': render_to_response('_programworkshop.html', context).content})
+    return JsonResponse({'content': render_to_response('_programworkshop.html', context).content.decode()})
 
 
 def unregister_from_workshop(request):
@@ -425,7 +425,7 @@ def unregister_from_workshop(request):
     workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
 
     if workshop.type.year != settings.CURRENT_YEAR:
-        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została dawno zakończona.'})
+        return JsonResponse({'error': 'Kwalifikacja na te warsztaty została dawno zakończona.'})
 
     # if workshop.qualification_threshold is not None or workshop_participant.qualification_result is not None:
     #     return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona - nie możesz się wycofać.'})
@@ -435,7 +435,7 @@ def unregister_from_workshop(request):
     context = get_context(request)
     context['workshop'] = workshop
     context['registered'] = False
-    data['content'] = render_to_response('_programworkshop.html', context).content
+    data['content'] = render_to_response('_programworkshop.html', context).content.decode()
     return JsonResponse(data)
 
 
@@ -489,7 +489,7 @@ def qualification_problems(request, workshop_name):
     workshop = get_object_or_404(Workshop, name=workshop_name)
     filename = workshop.qualification_problems.path
 
-    wrapper = FileWrapper(file(filename))
+    wrapper = FileWrapper(open(filename, "rb"))
     response = HttpResponse(wrapper, content_type='application/pdf')
     response['Content-Length'] = os.path.getsize(filename)
     return response
@@ -500,7 +500,7 @@ def article(request, name = None):
     new = (name is None)
     if new:
         art = None
-        title = u'Nowy artykuł'
+        title = 'Nowy artykuł'
         has_perm = request.user.has_perm('wwwapp.add_article')
     else:
         art = Article.objects.get(name=name)
@@ -539,7 +539,7 @@ def your_workshops(request):
         return redirect('login')
 
     workshops = Workshop.objects.filter(lecturer__user=request.user)
-    return render_workshops(request, u'Twoje warsztaty', workshops)
+    return render_workshops(request, 'Twoje warsztaty', workshops)
 
 def all_workshops(request):
     if not request.user.has_perm('wwwapp.see_all_workshops'):
@@ -547,7 +547,7 @@ def all_workshops(request):
         return redirect('login')
 
     workshops = Workshop.objects.all()
-    return render_workshops(request, u'Wszystkie warsztaty', workshops)
+    return render_workshops(request, 'Wszystkie warsztaty', workshops)
 
 def render_workshops(request, title, workshops):
     context = get_context(request)
@@ -588,8 +588,11 @@ def as_article(name):
     try:
         Article.objects.get_or_create(name=name)
     except OperationalError:
-        print>> sys.stderr, "WARNING: Couldn't create article named", name,\
-            "; This should happen only during migration."
+        print("WARNING: Couldn't create article named", name,\
+            "; This should happen only during migration.", file=sys.stderr)
+    except ProgrammingError:
+        print("WARNING: Couldn't create article named", name,\
+            "; This should happen only during migration.", file=sys.stderr)
 
     def page(request):
         return article(request, name)

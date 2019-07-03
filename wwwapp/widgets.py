@@ -36,7 +36,7 @@ class RichTextarea(Widget):
     def render(self, name, value, attrs=None):
         if value is None:
             value = ''
-        final_attrs = self.build_attrs(attrs, name=name)
-        return format_html(u'<textarea{}>\r\n{}</textarea>',
+        final_attrs = self.build_attrs(self.attrs, self.build_attrs(attrs, {'name': name}))
+        return format_html('<textarea{}>\r\n{}</textarea>',
                            flatatt(final_attrs),
                            force_text(value))
