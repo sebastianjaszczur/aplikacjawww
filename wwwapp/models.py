@@ -7,8 +7,8 @@ from django.core.exceptions import ValidationError
 from wwwapp import settings
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    user_info = models.OneToOneField('UserInfo')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_info = models.OneToOneField('UserInfo', on_delete=models.CASCADE)
 
     gender = models.CharField(max_length=10, choices=[('M', 'Mężczyzna'), ('F', 'Kobieta'),],
                               null=True, default=None, blank=True)
@@ -39,7 +39,7 @@ class UserProfile(models.Model):
 
 class WorkshopUserProfile(models.Model):
     # for each year
-    user_profile = models.ForeignKey('UserProfile', null=True, related_name='workshop_profile')
+    user_profile = models.ForeignKey('UserProfile', null=True, related_name='workshop_profile', on_delete=models.CASCADE)
 
     year = models.IntegerField()
     status = models.CharField(max_length=10,
@@ -104,9 +104,9 @@ class AlphaNumericField(models.CharField):
 
 class ArticleContentHistory(models.Model):
     version = models.IntegerField(editable=False)
-    article = models.ForeignKey('Article')
+    article = models.ForeignKey('Article', on_delete=models.CASCADE)
     content = models.TextField()
-    modified_by = models.ForeignKey(User, null=True, default=None)
+    modified_by = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True, null=True, editable=False)
 
     def __str__(self):
@@ -130,7 +130,7 @@ class Article(models.Model):
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
     title = models.CharField(max_length=50, null=True, blank=True)
     content = models.TextField(max_length=100000, blank=True)
-    modified_by = models.ForeignKey(User, null=True, default=None)
+    modified_by = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
     on_menubar = models.BooleanField(default=False)
 
     class Meta:
@@ -177,7 +177,7 @@ class Workshop(models.Model):
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
     title = models.CharField(max_length=50, null=True, blank=False)
     proposition_description = models.TextField(max_length=100000, blank=True)
-    type = models.ForeignKey(WorkshopType, null=True, blank=True, default=None)
+    type = models.ForeignKey(WorkshopType, null=True, blank=True, default=None, on_delete=models.CASCADE)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10,
@@ -203,8 +203,8 @@ class Workshop(models.Model):
 
 
 class WorkshopParticipant(models.Model):
-    workshop = models.ForeignKey(Workshop)
-    participant = models.ForeignKey(UserProfile)
+    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
+    participant = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 
     qualification_result = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
     comment = models.CharField(max_length=1000, null=True, default=None, blank=True)

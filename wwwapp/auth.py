@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.shortcuts import render, redirect
@@ -31,7 +31,7 @@ def loginView(request):
     if 'merge_access_info' in request.session:
         del request.session['merge_access_info']
     
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         try:
             access = request.user.accountaccess_set.all()[0]
         except IndexError:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 import os
 from django.conf import settings
 from django.db import OperationalError, ProgrammingError
@@ -22,7 +22,7 @@ def get_context(request):
     context = {}
 
     articles_on_menubar = Article.objects.filter(on_menubar=True).all()
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         has_workshops = False
     else:
         if Workshop.objects.filter(lecturer__user=request.user).exists():
@@ -41,7 +41,7 @@ def program(request, year):
     context = get_context(request)
     context['title'] = 'Program WWW%d' % (int(year) % 100 - 4) # :)
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user_participation = set(Workshop.objects.filter(participants__user=request.user).all())
     else:
         user_participation = set()
@@ -50,7 +50,7 @@ def program(request, year):
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
                             in workshops ]
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         qualifications = WorkshopParticipant.objects.filter(participant__user=request.user, workshop__type__year=year).prefetch_related('workshop')
         if not any(qualification.qualification_result is not None for qualification in qualifications):
             qualifications = None
@@ -90,7 +90,7 @@ def redirect_after_profile_save(request, target):
 
 
 def update_profile_page(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
@@ -104,7 +104,7 @@ def update_profile_page(request):
 
 
 def update_cover_letter(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
@@ -117,7 +117,7 @@ def update_cover_letter(request):
         return redirect_after_profile_save(request, 'cover_letter')
 
 def update_user_info(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
@@ -133,7 +133,7 @@ def update_user_info(request):
 
 def my_profile(request):
     context = get_context(request)
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect('login')
     else:
         user_profile = UserProfile.objects.get(user=request.user)
@@ -167,14 +167,14 @@ def workshop(request, name=None):
     if new:
         workshop = None
         title = 'Nowe warsztaty'
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect('login')
         else:
             has_perm_to_edit = True
     else:
         workshop = Workshop.objects.get(name=name)
         title = workshop.title
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
         else:
             has_perm_to_edit = False
@@ -243,7 +243,7 @@ def workshop_page(request, name):
 
 
 def can_edit_workshop(workshop, user):
-    if user.is_authenticated():
+    if user.is_authenticated:
         return Workshop.objects.filter(id=workshop.id, lecturer__user=user).exists()
     else:
         return False
@@ -394,7 +394,7 @@ def people_info(request):
 def register_to_workshop(request):
     workshop_name = request.POST['workshop_name']
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return JsonResponse({'redirect': reverse('login')})
 
     workshop = get_object_or_404(Workshop, name=workshop_name)
@@ -416,7 +416,7 @@ def register_to_workshop(request):
 def unregister_from_workshop(request):
     workshop_name = request.POST['workshop_name']
     data = {}
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         data['redirect'] = reverse('login')
         return JsonResponse(data)
 
@@ -535,7 +535,7 @@ def article_name_list(request):
 
 
 def your_workshops(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect('login')
 
     workshops = Workshop.objects.filter(lecturer__user=request.user)
