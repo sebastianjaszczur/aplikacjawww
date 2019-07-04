@@ -175,9 +175,9 @@ class WorkshopType(models.Model):
 
 class Workshop(models.Model):
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
-    title = models.CharField(max_length=50, null=True, blank=False)
+    title = models.CharField(max_length=50)
     proposition_description = models.TextField(max_length=100000, blank=True)
-    type = models.ForeignKey(WorkshopType, null=True, blank=True, default=None, on_delete=models.CASCADE)
+    type = models.ForeignKey(WorkshopType, on_delete=models.CASCADE, null=False)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10,
@@ -192,6 +192,7 @@ class Workshop(models.Model):
     qualification_threshold = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
 
     def clean(self):
+        super(Workshop, self).clean()
         if self.type.year != settings.CURRENT_YEAR:
             raise ValidationError('cannot edit workshops from previous years')
 

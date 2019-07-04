@@ -107,10 +107,10 @@ class ArticleForm(ModelForm):
 
 class WorkshopForm(ModelForm):
     category = ModelMultipleChoiceField(label="Kategorie", queryset=WorkshopCategory.objects.filter(year=settings.CURRENT_YEAR),
-                                         required=False, widget=Select2MultipleWidget(attrs={'width': '200px'}))
+                                        widget=Select2MultipleWidget(attrs={'width': '200px'}))
 
     category.help_text = ""  # this removes annoying message ' Hold down "Control", or "Command" (..) '
-    type = ModelChoiceField(label="Rodzaj zajęć", queryset=WorkshopType.objects.filter(year=settings.CURRENT_YEAR), required=False,
+    type = ModelChoiceField(label="Rodzaj zajęć", queryset=WorkshopType.objects.filter(year=settings.CURRENT_YEAR),
                              widget=Select2Widget(attrs={'width': '200px'}))
 
     class Meta:
