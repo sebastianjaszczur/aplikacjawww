@@ -1,4 +1,4 @@
-Django==1.11.22
+Django<2.0
 django-all-access==0.9.0
 django-crispy-forms
 django-bleach
@@ -6,6 +6,6 @@ django-compressor
 django-cleanup
 django-debug-toolbar<2.0
 django-select2<7.0.0
-psycopg2
 django-annoying==0.9.0
 dj-static
+raven
