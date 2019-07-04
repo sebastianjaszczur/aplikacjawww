@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-Django settings for wwwapp project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
-"""
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import socket
@@ -32,7 +20,8 @@ else:
     SECRET_KEY = ')_7av^!cy(wfx=k#3*7x+(=j^fzv+ot^1@sh9s9t=8$bu@r(z$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# adjust to turn off when on Openshift, but allow an environment variable to override on PAAS
+# adjust to turn off when on Openshift, but allow an environment variable to
+# override on PAAS
 DEBUG = not ON_PAAS
 DEBUG = DEBUG or 'DEBUG' in os.environ
 if ON_PAAS and DEBUG:
@@ -98,7 +87,7 @@ MIDDLEWARE = (
 )
 
 if DEBUG:
-	MIDDLEWARE = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE
+    MIDDLEWARE = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE
 
 ROOT_URLCONF = 'wwwapp.urls'
 
@@ -214,14 +203,14 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-		        'django.contrib.auth.context_processors.auth',
-		        'django.contrib.messages.context_processors.messages',
-		        'django.template.context_processors.request',
-		        'django.template.context_processors.debug',
-		        'django.template.context_processors.media',
-		        'django.template.context_processors.i18n',
-		        'django.template.context_processors.static',
-		        'allaccess.context_processors.available_providers',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.media',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.static',
+                'allaccess.context_processors.available_providers',
             ],
         },
     },

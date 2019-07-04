@@ -1,16 +1,14 @@
-#-*- coding: utf-8 -*-
-from django.forms import ModelForm, FileInput, FileField
+from crispy_forms.helper import FormHelper
 from django.contrib.auth.models import User
 from django.forms import ModelChoiceField, ModelMultipleChoiceField
-
-from crispy_forms.helper import FormHelper
-
+from django.forms import ModelForm, FileInput, FileField
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 
-from .models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType, UserInfo
+from . import settings
+from .models import UserProfile, Article, Workshop, WorkshopCategory, \
+    WorkshopType, UserInfo
 from .widgets import RichTextarea
 
-from . import settings
 
 class UserProfilePageForm(ModelForm):
     class Meta:

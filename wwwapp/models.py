@@ -1,10 +1,11 @@
-#-*- coding: utf-8 -*-
-from django.db import models
-
 import re
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db import models
+
 from wwwapp import settings
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -19,7 +20,8 @@ class UserProfile(models.Model):
     cover_letter = models.TextField(max_length=100000, blank=True, default="")
 
     def is_participating_in(self, year):
-        return self.status_for(year) == 'Z' or Workshop.objects.filter(type__year=year, lecturer=self, status='Z').exists()
+        return self.status_for(year) == 'Z' \
+               or Workshop.objects.filter(type__year=year, lecturer=self, status='Z').exists()
     
     @property
     def status(self):
@@ -37,6 +39,7 @@ class UserProfile(models.Model):
     class Meta:
         permissions = (('see_all_users', 'Can see all users'),)
 
+
 class WorkshopUserProfile(models.Model):
     # for each year
     user_profile = models.ForeignKey('UserProfile', null=True, related_name='workshop_profile', on_delete=models.CASCADE)
@@ -48,6 +51,7 @@ class WorkshopUserProfile(models.Model):
 
     def __str__(self):
         return '%s: %s, %s' % (self.year, self.user_profile, self.status)
+
 
 # That's bad, one year design. I'm so sorry.
 POSSIBLE_DATES = [
@@ -87,7 +91,7 @@ class UserInfo(models.Model):
     meeting_point = models.CharField(max_length=100, choices=POSSIBLE_PLACES,
                                      default='no_idea', blank=False, null=False)
     tshirt_size = models.CharField(max_length=100, choices=POSSIBLE_TSHIRT_SIZES,
-                                     default='no_idea', blank=False, null=False)
+                                   default='no_idea', blank=False, null=False)
     comments = models.CharField(max_length=1000, blank=True, default="")
 
     class Meta:

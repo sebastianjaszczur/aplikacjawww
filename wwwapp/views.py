@@ -1,21 +1,22 @@
-# -*- coding: utf-8 -*-
-import sys
-from django.urls import reverse
 import os
+import sys
+from wsgiref.util import FileWrapper
+
 from django.conf import settings
-from django.db import OperationalError, ProgrammingError
-from django.http import JsonResponse, HttpResponse, Http404
-from django.core.exceptions import ValidationError
-from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.contrib import messages
 from django.contrib.auth.models import User
-from .models import Article, UserProfile, Workshop, WorkshopParticipant, WorkshopUserProfile
-from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, UserProfilePageForm, \
-    WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
-from wwwapp.templatetags.wwwtags import qualified_mark
-from django.utils.functional import lazy
+from django.core.exceptions import ValidationError
+from django.db import OperationalError, ProgrammingError
+from django.http import JsonResponse, HttpResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404, \
+    render_to_response
+from django.urls import reverse
+
+from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
+    UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
+from .models import Article, UserProfile, Workshop, WorkshopParticipant, \
+    WorkshopUserProfile
 from .templatetags.wwwtags import qualified_mark
-from wsgiref.util import FileWrapper
 
 
 def get_context(request):
@@ -115,6 +116,7 @@ def update_cover_letter(request):
                 user_cover_letter_form.save()
 
         return redirect_after_profile_save(request, 'cover_letter')
+
 
 def update_user_info(request):
     if not request.user.is_authenticated:
@@ -541,6 +543,7 @@ def your_workshops(request):
     workshops = Workshop.objects.filter(lecturer__user=request.user)
     return render_workshops(request, 'Twoje warsztaty', workshops)
 
+
 def all_workshops(request):
     if not request.user.has_perm('wwwapp.see_all_workshops'):
         # it should show page like "you don't have permission", probably
@@ -548,6 +551,7 @@ def all_workshops(request):
 
     workshops = Workshop.objects.all()
     return render_workshops(request, 'Wszystkie warsztaty', workshops)
+
 
 def render_workshops(request, title, workshops):
     context = get_context(request)
@@ -582,6 +586,7 @@ def emails(request):
 
     return JsonResponse(result, safe=False)
 
+
 def as_article(name):
     # We want to make sure that article with this name exists.
     # try-except is needed because of some migration/initialization problems.
@@ -597,6 +602,7 @@ def as_article(name):
     def page(request):
         return article(request, name)
     return page
+
 
 index = as_article("index")
 template_for_workshop_page = as_article("template_for_workshop_page")

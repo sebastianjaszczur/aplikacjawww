@@ -1,12 +1,9 @@
-#-*- coding: utf-8 -*-
-from datetime import date
+from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect, render
-from django.conf import settings
 
 from .models import Workshop, WorkshopUserProfile
 from .views import get_context
-
 
 _registered_filters = dict()
 
@@ -73,7 +70,7 @@ def _all_refused(year):
             WorkshopUserProfile.objects.filter(year=year) if profile.status == 'O']
 
 
-def filtered_emails(request, year='0', filter_id=''):
+def filtered_emails_view(request, year='0', filter_id=''):
     if not request.user.has_perm('wwwapp.see_all_users'):
         return redirect('login')
 

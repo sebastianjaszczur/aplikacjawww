@@ -1,18 +1,15 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.contrib.staticfiles.storage import staticfiles_storage
-from django.views.generic.base import RedirectView, TemplateView
-from wwwapp.settings import CURRENT_YEAR, DEBUG
-from . import views
-from . import mail_views
-from .auth import loginView, ScopedOAuthRedirect, ScopedOAuthCallback, createUserFromUnmergedAccess
-from django.views.generic import RedirectView
 from django.contrib.auth.views import logout_then_login
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic import RedirectView, TemplateView
+
+from wwwapp.settings import CURRENT_YEAR, DEBUG
+from . import views, mail_views
+from .auth import login_view, ScopedOAuthRedirect, ScopedOAuthCallback, \
+    create_user_from_unmerged_access_view
 
 urlpatterns = [
-    # Examples:
-    # url(r'^$', 'wwwapp.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
     url(
         r'^favicon.ico$',
         RedirectView.as_view(
@@ -22,10 +19,10 @@ urlpatterns = [
     ),
     url(r'^logout/$', logout_then_login, name='logout'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^login/$', loginView, name='login'),
+    url(r'^login/$', login_view, name='login'),
     url(r'^accounts/login/(?P<provider>(\w|-)+)/$', ScopedOAuthRedirect.as_view(), name='scopedallaccess-login'),
     url(r'^accounts/callback/(?P<provider>(\w|-)+)/$', ScopedOAuthCallback.as_view(), name='scopedallaccess-callback'),
-    url(r'^accounts/createUserFromAccess/$', createUserFromUnmergedAccess, name='scopedallaccess-createUserFromAccess'),
+    url(r'^accounts/createUserFromAccess/$', create_user_from_unmerged_access_view, name='scopedallaccess-createUserFromAccess'),
     url(r'^profile/(?P<user_id>[0-9]+)/$', views.profile, name='profile'),
     url(r'^updateProfilePage/$', views.update_profile_page, name='update_profile_page'),
     url(r'^updateCoverLetter/$', views.update_cover_letter, name='update_cover_letter'),
@@ -49,7 +46,7 @@ urlpatterns = [
     url(r'^([0-9]+)/participants/$', views.participants, name='year_participants'),
     url(r'^peopleInfo/$', views.people_info, name='peopleInfo'),
     url(r'^emails/$', views.emails, name='emails'),
-    url(r'^filterEmails/(?:(?P<year>[0-9]+)/(?P<filter_id>[a-zA-Z0-9\-_]+)/)?$', mail_views.filtered_emails, name='filter_emails'),
+    url(r'^filterEmails/(?:(?P<year>[0-9]+)/(?P<filter_id>[a-zA-Z0-9\-_]+)/)?$', mail_views.filtered_emails_view, name='filter_emails'),
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page, name='template_for_workshop_page'),
     url(r'^program/$', RedirectView.as_view(url='/%d/program/' % CURRENT_YEAR, permanent=False), name='program'),
     url(r'^([0-9]+)/program/$', views.program, name='year_program'),
