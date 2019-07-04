@@ -104,9 +104,9 @@ class AlphaNumericField(models.CharField):
 
 class ArticleContentHistory(models.Model):
     version = models.IntegerField(editable=False)
-    article = models.ForeignKey('Article', on_delete=models.CASCADE)
+    article = models.ForeignKey('Article', null=True, on_delete=models.SET_NULL)
     content = models.TextField()
-    modified_by = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
+    modified_by = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL)
     time = models.DateTimeField(auto_now_add=True, null=True, editable=False)
 
     def __str__(self):
@@ -130,7 +130,7 @@ class Article(models.Model):
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
     title = models.CharField(max_length=50, null=True, blank=True)
     content = models.TextField(max_length=100000, blank=True)
-    modified_by = models.ForeignKey(User, null=True, default=None, on_delete=models.CASCADE)
+    modified_by = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL)
     on_menubar = models.BooleanField(default=False)
 
     class Meta:
@@ -177,7 +177,7 @@ class Workshop(models.Model):
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
     title = models.CharField(max_length=50)
     proposition_description = models.TextField(max_length=100000, blank=True)
-    type = models.ForeignKey(WorkshopType, on_delete=models.CASCADE, null=False)
+    type = models.ForeignKey(WorkshopType, on_delete=models.PROTECT, null=False)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10,
