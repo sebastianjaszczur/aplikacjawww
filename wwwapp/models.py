@@ -151,8 +151,8 @@ class Article(models.Model):
         # save summary history
         content_history = self.content_history()
         if not content_history or self.content != content_history[0].content:
-            newContent = ArticleContentHistory(article=self, content=self.content)
-            newContent.save()
+            new_content = ArticleContentHistory(article=self, content=self.content)
+            new_content.save()
 
 
 class WorkshopCategory(models.Model):

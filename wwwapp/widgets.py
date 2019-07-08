@@ -27,7 +27,7 @@ class RichTextarea(Widget):
     def __init__(self, attrs=None):
         self.config = DEFAULT_CONFIG.copy()
         config = DjangoJSONEncoder().encode(self.config)
-        default_attrs = {'data-ckeditor-config': config }
+        default_attrs = {'data-ckeditor-config': config}
         if attrs:
             default_attrs.update(attrs)
         super(RichTextarea, self).__init__(default_attrs)

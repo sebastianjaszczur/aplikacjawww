@@ -97,33 +97,33 @@ class ScopedOAuthCallback(OAuthCallback):
         context = get_context(self.request)
         # Check for users with the same emails or names.
         standarize_user_info(info)
-        matchUsers = []
+        match_users = []
         context['allow_account_creation'] = True
         context['new_provider'] = provider
 
         if 'email' in info and info['email']:
             context['email'] = info['email']
-            matchUsers = list(User.objects.filter(email=info['email']))
-            if matchUsers:
+            match_users = list(User.objects.filter(email=info['email']))
+            if match_users:
                 context['allow_account_creation'] = False
         else:
             context['email'] = None
 
-        if not matchUsers and 'last_name' in info:
+        if not match_users and 'last_name' in info:
             context['name'] = info['last_name']
             query = User.objects.filter(last_name=info['last_name'])
             if 'first_name' in info:
                 context['name'] = info['first_name'] + ' ' + info['last_name']
                 query = query.filter(first_name=info['first_name'])
-            matchUsers = matchUsers + list(query.all())
+            match_users = match_users + list(query.all())
         else:
             context['name'] = None
 
         # If there are matches, suggest loging in with previous provider (and
         # remember access to connect accounts)
-        if matchUsers:
+        if match_users:
             context['matches'] = []
-            for matchUser in matchUsers:
+            for matchUser in match_users:
                 match = {'name': matchUser.first_name + ' ' + matchUser.last_name,
                          'email': matchUser.email,
                          'providers': []}

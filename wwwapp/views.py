@@ -38,9 +38,9 @@ def get_context(request):
     return context
 
 
-def program(request, year):
+def program_view(request, year):
     context = get_context(request)
-    context['title'] = 'Program WWW%d' % (int(year) % 100 - 4) # :)
+    context['title'] = 'Program WWW%d' % (int(year) % 100 - 4)  # :)
 
     if request.user.is_authenticated:
         user_participation = set(Workshop.objects.filter(participants__user=request.user).all())
@@ -49,7 +49,7 @@ def program(request, year):
 
     workshops = Workshop.objects.filter(status='Z', type__year=year).order_by('title').prefetch_related('lecturer', 'lecturer__user', 'category')
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
-                            in workshops ]
+                            in workshops]
 
     if request.user.is_authenticated:
         qualifications = WorkshopParticipant.objects.filter(participant__user=request.user, workshop__type__year=year).prefetch_related('workshop')
@@ -60,7 +60,7 @@ def program(request, year):
     return render(request, 'program.html', context)
 
 
-def profile(request, user_id):
+def profile_view(request, user_id):
     """
     This function allows to view other people's profile by id.
     However, to view them easily some kind of resolver might be needed as we don't have usernames.
@@ -90,7 +90,7 @@ def redirect_after_profile_save(request, target):
     return redirect(reverse('myProfile') + '#' + target)
 
 
-def update_profile_page(request):
+def update_profile_page_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
@@ -104,7 +104,7 @@ def update_profile_page(request):
         return redirect_after_profile_save(request, 'profile_page')
 
 
-def update_cover_letter(request):
+def update_cover_letter_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
@@ -118,7 +118,7 @@ def update_cover_letter(request):
         return redirect_after_profile_save(request, 'cover_letter')
 
 
-def update_user_info(request):
+def update_user_info_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
     else:
@@ -133,7 +133,7 @@ def update_user_info(request):
         return redirect_after_profile_save(request, 'user_info')
 
 
-def my_profile(request):
+def my_profile_view(request):
     context = get_context(request)
     if not request.user.is_authenticated:
         return redirect('login')
@@ -163,7 +163,7 @@ def my_profile(request):
             return render(request, 'profile.html', context)
 
 
-def workshop(request, name=None):
+def workshop_view(request, name=None):
     context = get_context(request)
     new = (name is None)
     if new:
@@ -206,11 +206,11 @@ def workshop(request, name=None):
     return render(request, 'workshop.html', context)
 
 
-def workshop_page(request, name):
+def workshop_page_view(request, name):
     context = get_context(request)
 
     workshop = get_object_or_404(Workshop, name=name)
-    if workshop.status != 'Z': # Zaakceptowane
+    if workshop.status != 'Z':  # Zaakceptowane
         raise Http404("Warsztaty nie zostały zaakceptowane")
 
     title = workshop.title
@@ -251,7 +251,7 @@ def can_edit_workshop(workshop, user):
         return False
 
 
-def workshop_participants(request, name):
+def workshop_participants_view(request, name):
     workshop = get_object_or_404(Workshop, name=name)
 
     can_see_all = request.user.has_perm('wwwapp.see_all_workshops')
@@ -270,7 +270,7 @@ def workshop_participants(request, name):
     return render(request, 'workshopparticipants.html', context)
 
 
-def save_points(request):
+def save_points_view(request):
     workshop_participant = WorkshopParticipant.objects.get(id=request.POST['id'])
     # can edit?
     can_edit = can_edit_workshop(workshop_participant.workshop, request.user)
@@ -300,7 +300,7 @@ def save_points(request):
                          'mark': qualified_mark(workshop_participant.is_qualified())})
 
 
-def participants(request, year):
+def participants_view(request, year):
     can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
     year = int(year)
 
@@ -355,14 +355,14 @@ def participants(request, year):
     return render(request, 'participants.html', context)
 
 
-def people_info(request):
+def people_info_view(request):
     can_see_users = request.user.has_perm('wwwapp.see_user_info')
 
     if not can_see_users:
         return redirect('login')
 
     users = UserProfile.objects.prefetch_related('user', 'user_info')
-    users = [ user for user in users if user.status == 'Z' ]
+    users = [user for user in users if user.status == 'Z']
     accepted_workshops = Workshop.objects.filter(status='Z')
     for workshop in accepted_workshops:
         for user_profile in workshop.lecturer.all():
@@ -393,7 +393,7 @@ def people_info(request):
     return render(request, 'people_info.html', context)
 
 
-def register_to_workshop(request):
+def register_to_workshop_view(request):
     workshop_name = request.POST['workshop_name']
 
     if not request.user.is_authenticated:
@@ -415,7 +415,7 @@ def register_to_workshop(request):
     return JsonResponse({'content': render_to_response('_programworkshop.html', context).content.decode()})
 
 
-def unregister_from_workshop(request):
+def unregister_from_workshop_view(request):
     workshop_name = request.POST['workshop_name']
     data = {}
     if not request.user.is_authenticated:
@@ -441,12 +441,12 @@ def unregister_from_workshop(request):
     return JsonResponse(data)
 
 
-def data_for_plan(request):
+def data_for_plan_view(request):
     if not request.user.is_superuser:
         return redirect('login')
     data = {}
     
-    user_profiles_raw = set( up for up in UserProfile.objects.all() if WorkshopUserProfile.objects.filter(user_profile=up, year=settings.CURRENT_YEAR, status='Z').exists() )
+    user_profiles_raw = set(up for up in UserProfile.objects.all() if WorkshopUserProfile.objects.filter(user_profile=up, year=settings.CURRENT_YEAR, status='Z').exists())
     
     workshops_raw = Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR)
     workshop_ids = set()
@@ -487,7 +487,7 @@ def data_for_plan(request):
     return JsonResponse(data)
 
 
-def qualification_problems(request, workshop_name):
+def qualification_problems_view(request, workshop_name):
     workshop = get_object_or_404(Workshop, name=workshop_name)
     filename = workshop.qualification_problems.path
 
@@ -497,7 +497,7 @@ def qualification_problems(request, workshop_name):
     return response
 
 
-def article(request, name = None):
+def article_view(request, name=None):
     context = get_context(request)
     new = (name is None)
     if new:
@@ -531,12 +531,12 @@ def article(request, name = None):
     return render(request, 'article.html', context)
 
 
-def article_name_list(request):
+def article_name_list_view(request):
     names = Article.objects.values_list('name', flat=True)
     return JsonResponse(list(names), safe=False)
 
 
-def your_workshops(request):
+def your_workshops_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
@@ -544,7 +544,7 @@ def your_workshops(request):
     return render_workshops(request, 'Twoje warsztaty', workshops)
 
 
-def all_workshops(request):
+def all_workshops_view(request):
     if not request.user.has_perm('wwwapp.see_all_workshops'):
         # it should show page like "you don't have permission", probably
         return redirect('login')
@@ -556,18 +556,18 @@ def all_workshops(request):
 def render_workshops(request, title, workshops):
     context = get_context(request)
 
-    years = set( workshop.type.year for workshop in workshops )
+    years = set(workshop.type.year for workshop in workshops)
     years = list(reversed(sorted(years)))
     context['workshops'] = [
         {'year': year,
-         'workshops': [ workshop for workshop in workshops if workshop.type.year == year ]}
-        for year in years ]
+         'workshops': [workshop for workshop in workshops if workshop.type.year == year]}
+        for year in years]
     context['title'] = title
 
     return render(request, 'workshoplist.html', context)
 
 
-def emails(request):
+def emails_view(request):
     # think about seperate permission
     if not request.user.has_perm('wwwapp.see_all_workshops'):
         # it should show page like "you don't have permission", probably
@@ -593,16 +593,16 @@ def as_article(name):
     try:
         Article.objects.get_or_create(name=name)
     except OperationalError:
-        print("WARNING: Couldn't create article named", name,\
-            "; This should happen only during migration.", file=sys.stderr)
+        print("WARNING: Couldn't create article named", name,
+              "; This should happen only during migration.", file=sys.stderr)
     except ProgrammingError:
-        print("WARNING: Couldn't create article named", name,\
-            "; This should happen only during migration.", file=sys.stderr)
+        print("WARNING: Couldn't create article named", name,
+              "; This should happen only during migration.", file=sys.stderr)
 
     def page(request):
-        return article(request, name)
+        return article_view(request, name)
     return page
 
 
-index = as_article("index")
-template_for_workshop_page = as_article("template_for_workshop_page")
+index_view = as_article("index")
+template_for_workshop_page_view = as_article("template_for_workshop_page")

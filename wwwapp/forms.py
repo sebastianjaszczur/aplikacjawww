@@ -109,7 +109,7 @@ class WorkshopForm(ModelForm):
 
     category.help_text = ""  # this removes annoying message ' Hold down "Control", or "Command" (..) '
     type = ModelChoiceField(label="Rodzaj zajęć", queryset=WorkshopType.objects.filter(year=settings.CURRENT_YEAR),
-                             widget=Select2Widget(attrs={'width': '200px'}))
+                            widget=Select2Widget(attrs={'width': '200px'}))
 
     class Meta:
         model = Workshop
