@@ -7,31 +7,72 @@
     <article class="col-sm-12 maincontent">
         {% if your_qualifications %}
         <h1>Wyniki kwalifikacji</h1>
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Warsztaty
-              <th>Punkty
-              <th>Zakwalifikowano
-            </tr>
-          </thead>
-          <tbody>
-            {% for workshop_participant in your_qualifications %}
-            <tr>
-              <td>
-                {{ workshop_participant.workshop.name }}
-              </td>
-              <td>
-                {{ workshop_participant.qualification_result|default_if_none:'?' }}
-              </td>
-              <td>
-                {% load wwwtags %}
-                {{ workshop_participant.is_qualified|qualified_mark }}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+        <div class="visible-xs">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Warsztaty</th>
+                <th scope="col">Punkty</th>
+                <th scope="col">Zakwalifikowano</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for workshop_participant in your_qualifications %}
+              <tr>
+                <th scope="row">
+                  {{ workshop_participant.workshop.name }}
+                </th>
+                <td>
+                  {{ workshop_participant.qualification_result|default_if_none:'?' }}
+                </td>
+                <td>
+                  {% load wwwtags %}
+                  {{ workshop_participant.is_qualified|qualified_mark }}
+                </td>
+              </tr>
+              {% if workshop_participant.comment %}
+              <tr>
+                <td></td>
+                <td colspan="3">{{ workshop_participant.comment }}</td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="hidden-xs">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Warsztaty</th>
+                <th scope="col">Punkty</th>
+                <th scope="col">Zakwalifikowano</th>
+                <th scope="col">Komentarz</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for workshop_participant in your_qualifications %}
+              <tr>
+                <th scope="row">
+                  {{ workshop_participant.workshop.name }}
+                </th>
+                <td>
+                  {{ workshop_participant.qualification_result|default_if_none:'?' }}
+                </td>
+                <td>
+                  {% load wwwtags %}
+                  {{ workshop_participant.is_qualified|qualified_mark }}
+                </td>
+                <td>
+                  {% if workshop_participant.comment %}
+                    {{ workshop_participant.comment }}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
         {% endif %}
 
         {% if workshops %}
