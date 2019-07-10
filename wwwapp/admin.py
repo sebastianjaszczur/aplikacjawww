@@ -21,15 +21,15 @@ admin.site.register(User, UserProfileAdmin)
 
 
 class WorkshopAdmin(admin.ModelAdmin):
-    def make_acccepted(request, queryset):
+    def make_acccepted(self, _request, queryset):
         queryset.update(status='Z')
     make_acccepted.short_description = "Zmień status na Zaakceptowane"
 
-    def make_refused(request, queryset):
+    def make_refused(self, _request, queryset):
         queryset.update(status='O')
     make_refused.short_description = "Zmień status na Odrzucone"
 
-    def make_clear(request, queryset):
+    def make_clear(self, _request, queryset):
         queryset.update(status=None)
     make_clear.short_description = "Zmień status na Null"
 
