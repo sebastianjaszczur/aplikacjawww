@@ -107,6 +107,14 @@ function handle_registration_change(workshop_name_txt, register) {
     });
 }
 
+$(document).ready( function () {
+    $('.data-table').each(
+      function() {
+          $( this ).DataTable();
+      }
+    );
+} );
+
 // Automatically hide 'Saved successfully' alerts after 4 seconds
 $(".alert").delay(4000).fadeTo(500, 0).slideUp(500, function(){
     $(this).remove();
