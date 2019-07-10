@@ -1,21 +1,20 @@
-#-*- coding: utf-8 -*-
-from django.forms import ModelForm, FileInput, FileField
-from django.contrib.auth.models import User
-
 from crispy_forms.helper import FormHelper
-
-from django_select2 import ModelSelect2MultipleField, Select2MultipleWidget, ModelSelect2Field, Select2Widget
-
-from .models import UserProfile, Article, Workshop, WorkshopCategory, WorkshopType, UserInfo
-from .widgets import RichTextarea
+from django.contrib.auth.models import User
+from django.forms import ModelChoiceField, ModelMultipleChoiceField
+from django.forms import ModelForm, FileInput, FileField
+from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from . import settings
+from .models import UserProfile, Article, Workshop, WorkshopCategory, \
+    WorkshopType, UserInfo
+from .widgets import RichTextarea
+
 
 class UserProfilePageForm(ModelForm):
     class Meta:
         model = UserProfile
         fields = ['profile_page']
-        labels = {'profile_page': u"Strona profilowa"}
+        labels = {'profile_page': "Strona profilowa"}
         widgets = {'profile_page': RichTextarea()}
 
 
@@ -23,7 +22,7 @@ class UserCoverLetterForm(ModelForm):
     class Meta:
         model = UserProfile
         fields = ['cover_letter']
-        labels = {'cover_letter': u"List motywacyjny"}
+        labels = {'cover_letter': "List motywacyjny"}
         widgets = {'cover_letter': RichTextarea()}
 
 
@@ -39,13 +38,13 @@ class UserInfoPageForm(ModelForm):
         fields = ['pesel', 'address', 'start_date', 'end_date', 'meeting_point',
                   'tshirt_size', 'comments']
         labels = {
-            'pesel': u'Pesel',
-            'address': u'Adres zameldowania',
-            'start_date': u'Data przyjazdu :-)',
-            'end_date': u'Data wyjazdju :-(',
-            'meeting_point': u'Miejsce zbiórki',
-            'tshirt_size': u'Rozmiar koszulki',
-            'comments': u'Dodatkowe uwagi (np. wegetarianin, uczulony na X, ale też inne)',
+            'pesel': 'Pesel',
+            'address': 'Adres zameldowania',
+            'start_date': 'Data przyjazdu :-)',
+            'end_date': 'Data wyjazdju :-(',
+            'meeting_point': 'Miejsce zbiórki',
+            'tshirt_size': 'Rozmiar koszulki',
+            'comments': 'Dodatkowe uwagi (np. wegetarianin, uczulony na X, ale też inne)',
         }
 
 
@@ -60,10 +59,10 @@ class UserProfileForm(ModelForm):
         model = UserProfile
         fields = ['gender', 'school', 'matura_exam_year', 'how_do_you_know_about']
         labels = {
-            'gender': u'Płeć',
-            'school': u'Szkoła lub uniwersytet',
-            'matura_exam_year': u'Rok zdania matury',
-            'how_do_you_know_about': u'Skąd wiesz o WWW?',
+            'gender': 'Płeć',
+            'school': 'Szkoła lub uniwersytet',
+            'matura_exam_year': 'Rok zdania matury',
+            'how_do_you_know_about': 'Skąd wiesz o WWW?',
         }
 
 
@@ -78,9 +77,9 @@ class UserForm(ModelForm):
         model = User
         fields = ['first_name', 'last_name', 'email']
         labels = {
-            'first_name': u'Imię',
-            'last_name': u'Nazwisko',
-            'email': u'E-mail',
+            'first_name': 'Imię',
+            'last_name': 'Nazwisko',
+            'email': 'E-mail',
         }
 
 
@@ -89,10 +88,10 @@ class ArticleForm(ModelForm):
         model = Article
         fields = ['title', 'name', 'on_menubar', 'content']
         labels = {
-            'title': u'Tytuł',
-            'name': u'Nazwa (w URLach)',
-            'on_menubar': u'Umieść w menu',
-            'content': u'Treść',
+            'title': 'Tytuł',
+            'name': 'Nazwa (w URLach)',
+            'on_menubar': 'Umieść w menu',
+            'content': 'Treść',
         }
         widgets = {
             'content': RichTextarea()
@@ -105,12 +104,12 @@ class ArticleForm(ModelForm):
 
 
 class WorkshopForm(ModelForm):
-    category = ModelSelect2MultipleField(label="Kategorie", queryset=WorkshopCategory.objects.filter(year=settings.CURRENT_YEAR),
-                                         required=False, widget=Select2MultipleWidget(select2_options={'width': '200px'}))
+    category = ModelMultipleChoiceField(label="Kategorie", queryset=WorkshopCategory.objects.filter(year=settings.CURRENT_YEAR),
+                                        widget=Select2MultipleWidget(attrs={'width': '200px'}))
 
     category.help_text = ""  # this removes annoying message ' Hold down "Control", or "Command" (..) '
-    type = ModelSelect2Field(label="Rodzaj zajęć", queryset=WorkshopType.objects.filter(year=settings.CURRENT_YEAR), required=False,
-                             widget=Select2Widget(select2_options={'width': '200px'}))
+    type = ModelChoiceField(label="Rodzaj zajęć", queryset=WorkshopType.objects.filter(year=settings.CURRENT_YEAR),
+                            widget=Select2Widget(attrs={'width': '200px'}))
 
     class Meta:
         model = Workshop
@@ -119,9 +118,9 @@ class WorkshopForm(ModelForm):
             'proposition_description': RichTextarea()
         }
         labels = {
-            'title': u'Tytuł',
-            'name': u'Nazwa (w URLach)',
-            'proposition_description': u'Opis propozycji warsztatów',
+            'title': 'Tytuł',
+            'name': 'Nazwa (w URLach)',
+            'proposition_description': 'Opis propozycji warsztatów',
         }
 
 
@@ -135,9 +134,9 @@ class WorkshopPageForm(ModelForm):
             'page_content': RichTextarea(),
         }
         labels = {
-            'qualification_problems': u'Zadania kwalifikacyjne w PDF:',
-            'is_qualifying': u'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',
-            'page_content': u'Strona warsztatów',
-            'page_content_is_public': u'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
-            'qualification_threshold': u'Minimalna liczba punktów potrzeba do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)'
+            'qualification_problems': 'Zadania kwalifikacyjne w PDF:',
+            'is_qualifying': 'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',
+            'page_content': 'Strona warsztatów',
+            'page_content_is_public': 'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
+            'qualification_threshold': 'Minimalna liczba punktów potrzeba do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)'
         }

@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-Django settings for wwwapp project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.7/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.7/ref/settings/
-"""
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import socket
@@ -32,13 +20,12 @@ else:
     SECRET_KEY = ')_7av^!cy(wfx=k#3*7x+(=j^fzv+ot^1@sh9s9t=8$bu@r(z$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# adjust to turn off when on Openshift, but allow an environment variable to override on PAAS
+# adjust to turn off when on Openshift, but allow an environment variable to
+# override on PAAS
 DEBUG = not ON_PAAS
 DEBUG = DEBUG or 'DEBUG' in os.environ
 if ON_PAAS and DEBUG:
     print("*** Warning - Debug mode is on ***")
-
-TEMPLATE_DEBUG = True
 
 if ON_PAAS:
     ALLOWED_HOSTS = [os.environ['OPENSHIFT_APP_DNS'], socket.gethostname(), 'warsztatywww.pl', 'www.warsztatywww.pl']
@@ -65,7 +52,7 @@ if ON_PAAS:
         EMAIL_USE_TLS = True
         EMAIL_HOST_PASSWORD = os.environ['GMAIL_PASSWORD']
     else:
-        print "ERROR: There is no Gmail credentials!"
+        print("ERROR: There is no Gmail credentials!")
 
 # Application definition
 
@@ -88,7 +75,7 @@ INSTALLED_APPS = (
 if DEBUG:
     INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar',)
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -98,6 +85,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+if DEBUG:
+    MIDDLEWARE = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE
 
 ROOT_URLCONF = 'wwwapp.urls'
 
@@ -122,9 +112,8 @@ else:
     # stock django
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'www',
-            'USER': 'michal',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'database.sqlite3',
         }
     }
 
@@ -207,25 +196,27 @@ if 'OPENSHIFT_DATA_DIR' in os.environ:
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, *MEDIA_URL.strip("/").split("/"))
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(BASE_DIR, 'templates'),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': ['templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.media',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.static',
+                'allaccess.context_processors.available_providers',
+            ],
+        },
+    },
+]
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.media',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.static',
-    'allaccess.context_processors.available_providers',
-)
-
-CURRENT_YEAR = 2016
+CURRENT_YEAR = 2019
 
 COMPRESS_ENABLED = True
 
@@ -242,3 +233,7 @@ if ON_PAAS:
     RAVEN_CONFIG = {
         'dsn': 'https://4709ef020c9f4ab5b69d5b910829ca88:23aca2a24534495893f31c96cd893b74@sentry.civsync.com/11',
     }
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

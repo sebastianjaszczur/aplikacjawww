@@ -1,8 +1,10 @@
-#-*- coding: utf-8 -*-
 from django.contrib import admin
-from django.contrib.auth.models import User
-from models import Article, UserProfile, ArticleContentHistory, WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant, UserInfo, WorkshopUserProfile
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+
+from .models import Article, UserProfile, ArticleContentHistory, \
+    WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant, UserInfo, \
+    WorkshopUserProfile
 
 admin.site.unregister(User)
 
@@ -13,6 +15,9 @@ class UserProfileInline(admin.StackedInline):
 
 class UserProfileAdmin(UserAdmin):
     inlines = [UserProfileInline, ]
+
+
+admin.site.register(User, UserProfileAdmin)
 
 
 class WorkshopAdmin(admin.ModelAdmin):
@@ -30,7 +35,9 @@ class WorkshopAdmin(admin.ModelAdmin):
 
     actions = [make_acccepted, make_refused, make_clear]
 
-admin.site.register(User, UserProfileAdmin)
+
+admin.site.register(Workshop, WorkshopAdmin)
+
 admin.site.register(UserInfo)
 
 admin.site.register(Article)
@@ -38,6 +45,5 @@ admin.site.register(ArticleContentHistory)
 
 admin.site.register(WorkshopCategory)
 admin.site.register(WorkshopType)
-admin.site.register(Workshop, WorkshopAdmin)
 admin.site.register(WorkshopParticipant)
 admin.site.register(WorkshopUserProfile)
