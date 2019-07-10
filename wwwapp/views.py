@@ -337,16 +337,18 @@ def participants_view(request, year):
             }
         
         if participant.qualification_result:
-            people[p_id]['points'] += float(participant.qualification_result)
-        people[p_id]['infos'].append(participant.workshop.title
-                + " : " + (str(participant.qualification_result) if participant.qualification_result else "0.0")
-                + (" : " + participant.comment if participant.comment else ""))
+            people[p_id]['points'] += float(participant.result_in_percent())
+        people[p_id]['infos'].append("{title} : {result:.1f}% : {comment}".format(
+            title=participant.workshop.title,
+            result=participant.result_in_percent() if participant.qualification_result else 0,
+            comment=participant.comment if participant.comment else ""
+        ))
         people[p_id]['workshop_count'] += 1
         if participant.is_qualified():
             people[p_id]['accepted_workshop_count'] += 1
 
     people = list(people.values())
-    people.sort(key=lambda p: (-p['has_letter'], -p['accepted_workshop_count']))
+    people.sort(key=lambda p: (-p['has_letter'], -p['accepted_workshop_count'], -p['points']))
 
     context = get_context(request)
     context['title'] = 'Uczestnicy'
