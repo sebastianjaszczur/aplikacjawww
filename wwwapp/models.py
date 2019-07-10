@@ -206,6 +206,14 @@ class Workshop(models.Model):
     def __str__(self):
         return str(self.type.year) + ': ' + (' (' + self.status + ') ' if self.status else '') + self.title
 
+    def registered_count(self):
+        return self.workshopparticipant_set.count()
+
+    def qualified_count(self):
+        if self.qualification_threshold is None:
+            return None
+        return self.workshopparticipant_set.filter(qualification_result__gte=self.qualification_threshold).count()
+
 
 class WorkshopParticipant(models.Model):
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
