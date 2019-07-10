@@ -25,26 +25,26 @@ if(editors.length !== 0) {
     });
 }
 
-$('.points-input').each(function() {
-    var elem = $(this);
+function send_points(field_name, elem, save_btn) {
     var workshop_participant_id = elem.data('id');
-    var save_btn = elem.parent().find('.save');
     var saved_value = elem.val();
     var qualified_mark = elem.parent().parent().find('.qualified-mark');
 
     save_btn.addClass('invisibile').click(function() {
+        var data = {'id': workshop_participant_id};
+        data[field_name] = elem.val();
         $.ajax({
             'url': '/savePoints/',
-            'data': {'points': elem.val(), 'id': workshop_participant_id},
+            'data': data,
             'error': function(xhr, textStatus, errorThrown) {
                 alert('Błąd: ' + errorThrown);
             },
             'method': 'POST',
             'success': function(value) {
                 if(value.error) {
-                    alert('Błąd: ' + errorThrown);
+                    alert('Błąd: ' + value.error);
                 } else {
-                    saved_value = value.value;
+                    saved_value = value[field_name];
                     elem.val(saved_value);
                     save_btn.addClass('invisibile');
                     qualified_mark.html(value.mark);
@@ -57,40 +57,18 @@ $('.points-input').each(function() {
         if(elem.val() != saved_value)
             save_btn.removeClass('invisibile');
     });
-});
+}
 
-// really bad copy-paste ;_;
+$('.points-input').each(function() {
+    var elem = $(this);
+    var save_btn = elem.parent().find('.save');
+	send_points('points', elem, save_btn);
+});
 
 $('.comment-input').each(function() {
     var elem = $(this);
-    var workshop_participant_id = elem.data('id');
     var save_btn = elem.parent().find('.savec');
-    var saved_value = elem.val();
-    var qualified_mark = elem.parent().parent().find('.qualified-mark');
-
-    save_btn.addClass('invisibile').click(function() {
-        $.ajax({
-            'url': '/savePoints/',
-            'data': {'comment': elem.val(), 'id': workshop_participant_id},
-            'error': function(xhr, textStatus, errorThrown) {
-                alert('Błąd: ' + errorThrown);
-            },
-            'method': 'POST',
-            'success': function(value) {
-                if(value.error) {
-                    alert('Błąd: ' + errorThrown);
-                } else {
-                    save_btn.addClass('invisibile');
-                    qualified_mark.html(value.mark);
-                }
-            }
-        });
-    });
-
-    elem.on('change keyup mouseup', function() {
-        if(elem.val() != saved_value)
-            save_btn.removeClass('invisibile');
-    });
+    send_points('comment', elem, save_btn);
 });
 
 function handle_registration_change(workshop_name_txt, register) {

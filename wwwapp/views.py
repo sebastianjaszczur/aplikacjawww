@@ -277,26 +277,27 @@ def save_points_view(request):
     if not can_edit:
         return JsonResponse({'error': 'Brak uprawnień.'})
 
-    print("first")
     try:
-        result_points = (request.POST['points'] if 'points' in request.POST else "").strip()
-        print("med")
-        result_comment = (request.POST['comment'] if 'comment' in request.POST else "").strip()
-        print("sthn")
-        if result_points:
-            workshop_participant.qualification_result = result_points
-        if result_comment:
+        result_points = (request.POST['points'].strip() if 'points' in request.POST else None)
+        result_comment = (request.POST['comment'].strip() if 'comment' in request.POST else None)
+        if result_points is not None:
+            if result_points == "":
+                workshop_participant.qualification_result = None
+            else:
+                workshop_participant.qualification_result = result_points
+        if result_comment is not None:
             workshop_participant.comment = result_comment
-    except (ValidationError, ValueError):
+        workshop_participant.save()
+    except (ValidationError, ValueError) as e:
+        print(e)
         return JsonResponse({'error': 'Niepoprawny format liczby'})
     except Exception as e:
         print(e)
         raise e
-    print("last")
-    workshop_participant.save()
     workshop_participant = WorkshopParticipant.objects.get(id=workshop_participant.id)
 
-    return JsonResponse({'value': str(workshop_participant.qualification_result),
+    return JsonResponse({'points': str(workshop_participant.qualification_result),
+                         'comment': workshop_participant.comment,
                          'mark': qualified_mark(workshop_participant.is_qualified())})
 
 
