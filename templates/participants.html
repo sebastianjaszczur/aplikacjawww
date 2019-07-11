@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
+{% load wwwtags %}
+
 {% block content %}
 <div class="container">
     <article class="col-sm-12 maincontent">
       <h1>Wszyscy uczestnicy</h1>
       <div class="table-responsive">
-        <table id="participants-table" class="table">
+        <table id="participants-table" class="table" style="width:100%!important;">
           <thead>
             <tr>
               <th></th>
@@ -20,25 +23,24 @@
               <th>Ilość Zakwalifikowanych Warsztatów</th>
               <th>List motywacyjny</th>
               <th>Status</th>
+              <th>Komentarz</th>
             </tr>
           </thead>
           <tbody>
             {% for person in people %}
               <tr>
                 <td>
-                  {{ forloop.counter }}
                 </td>
                 <td>
                   <a href="{% url 'profile' person.user.id %}">
-                    {{ person.user.get_full_name }}
+                    {{ person.user.get_full_name|maybe_not_present }}
                   </a>
                 </td>
                 <td>
-                  {{ person.birth }}
+                  {{ person.birth|maybe_not_present }}
                 </td>
                 <td>
-                  {% load wwwtags %}
-                  {{ person.minor|qualified_mark }}
+                  {{ person.is_adult|qualified_mark }}
                 </td>
                 <td>
                   {{ person.user.email }}
@@ -47,7 +49,10 @@
                   {{ person.school }}
                 </td>
                 <td>
-                  <a data-toggle="collapse" class="collapse-toggle collapsed" href="#collapseInfo{{ person.user.id }}" role="button" aria-expanded="false" aria-controls="collapseInfo{{ person.user.id }}">
+                  {{ person.matura_exam_year }}
+                </td>
+                <td>
+                  <a tabindex="0" data-html="true" role="button" data-trigger="focus" data-toggle="popover" data-placement="bottom" title="Komentarze" data-content="<ul>{% for info in person.infos %} <li> {{ info }} </li> {% endfor %}</ul>">
                     {{ person.points | floatformat }}%
                   </a>
                 </td>
@@ -58,19 +63,13 @@
                   {{ person.accepted_workshop_count }}
                 </td>
                 <td>
-                  {% load wwwtags %}
                   {{ person.has_letter|qualified_mark }}
                 </td>
                 <td>
                   {{ person.status }}
                 </td>
-              </tr>
-              <tr class="collapse panel-collapse" id="collapseInfo{{ person.user.id }}">
-                <td colspan="2"></td>
-                <td colspan="7">
-                  {% for info in person.infos %}
-                      * {{ info }} <br>
-                  {% endfor %}
+                <td>
+                  {{ person.comments }}
                 </td>
               </tr>
             {% endfor %}
@@ -86,8 +85,37 @@
     $(document).ready(() => {
       const table = $('#participants-table').DataTable({
         dom: 'Bfrtip',
+        responsive: true,
+        colReorder: true,
         buttons: [
-          'colvis'
+            {
+                extend: 'colvis',
+                columns: ':gt(0)'
+            },
+            {
+                extend: 'copy',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'excel',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdf',
+                exportOptions: {
+                    columns: ':visible'
+                }
+           },
+           {
+                extend: 'print',
+                exportOptions: {
+                    columns: ':visible'
+                }
+           }
         ],
         "columnDefs": [
           {
@@ -107,7 +135,8 @@
         "fnRowCallback" : function(nRow, aData, iDisplayIndex){
           $("td:first", nRow).html(iDisplayIndex +1);
           return nRow;
-        }
+        },
+        "order": [[ 1, "desc" ]],
       });
     }
     );

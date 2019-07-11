@@ -337,18 +337,18 @@ def participants_view(request, year):
                 continue
 
             birth = participant.participant.user_info.pesel[:6]
-            minor = None
+            is_adult = None
             if birth is not None:
                 if not birth.isdigit() or len(birth) != 6:
                     birth = None
                 else:
-                    birth = datetime.date(int(birth[:2]), int(birth[2:4]), int(birth[4:6]))
-                    minor = settings.WORKSHOPS_START_DATE < birth + relativedelta(years=18)
+                    birth = datetime.date(int(birth[:2]) + 2000, int(birth[2:4]), int(birth[4:6]))
+                    is_adult = settings.WORKSHOPS_START_DATE >= birth + relativedelta(years=18)
 
             people[p_id] = {
                 'user': participant.participant.user,
                 'birth': birth,
-                'minor': minor,
+                'is_adult': is_adult,
                 'matura_exam_year': participant.participant.matura_exam_year,
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
