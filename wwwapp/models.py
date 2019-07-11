@@ -1,10 +1,9 @@
 import re
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-
-from wwwapp import settings
 
 
 class UserProfile(models.Model):
@@ -194,11 +193,14 @@ class Workshop(models.Model):
     qualification_problems = models.FileField(null=True, blank=True, upload_to="qualification")
     participants = models.ManyToManyField(UserProfile, blank=True, related_name='workshops', through='WorkshopParticipant')
     qualification_threshold = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
+    max_points = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
 
     def clean(self):
         super(Workshop, self).clean()
         if self.type.year != settings.CURRENT_YEAR:
-            raise ValidationError('cannot edit workshops from previous years')
+            raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
+        if self.max_points is None and self.qualification_threshold is not None:
+            raise ValidationError('Maksymalna liczba punktów musi być ustawiona jeśli próg kwalifikacji jest ustawiony')
 
     class Meta:
         permissions = (('see_all_workshops', 'Can see all workshops'),)
@@ -222,6 +224,14 @@ class WorkshopParticipant(models.Model):
             return True
         else:
             return False
+
+    def result_in_percent(self):
+        if self.qualification_result is None:
+            return None
+        max_points = self.workshop.max_points
+        if max_points is None:
+            max_points = self.workshop.workshopparticipant_set.aggregate(max_points=models.Max('qualification_result'))['max_points']
+        return min(self.qualification_result / max_points * 100, settings.MAX_POINTS_PERCENT)
 
     class Meta:
         unique_together = [('workshop', 'participant')]

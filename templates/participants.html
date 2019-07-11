@@ -3,7 +3,8 @@
 {% block content %}
 <div class="container">
     <article class="col-sm-12 maincontent">
-        <h1>Wszyscy uczestnicy</h1>
+      <h1>Wszyscy uczestnicy</h1>
+      <div class="table-responsive">
         <table class="table">
           <thead>
             <th>N.</th>
@@ -13,52 +14,57 @@
             <th>Punkty</th>
             <th>Sum. il. war.</th>
             <th>Il.Zak.War.</th>
-            <th>Informacje</th>
             <th>List mot.</th>
             <th>Status</th>
           </thead>
           <tbody>
             {% for person in people %}
-            <tr>
-              <td>
-                {{ forloop.counter }}
-              </td>
-              <td>
-                <a href="{% url 'profile' person.user.id %}">
-                  {{ person.user.get_full_name }} ({{ person.birth }})
-                </a>
-              </td>
-              <td>
-                {{ person.user.email }}
-              </td>
-              <td>
-                {{ person.school }}
-              </td>
-              <td>
-                {{ person.points }}
-              </td>
-              <td>
-                {{ person.workshop_count }}
-              </td>
-              <td>
-                {{ person.accepted_workshop_count }}
-              </td>
-              <td>
-                {% for info in person.infos %}
-                  * {{ info }} <br>
-                {% endfor %}
-              </td>
-              <td>
-                {% load wwwtags %}
-                {{ person.has_letter|qualified_mark }}
-              </td>
-              <td>
-                {{ person.status }}
-              </td>
-            </tr>
+              <tr>
+                <td>
+                  {{ forloop.counter }}
+                </td>
+                <td>
+                  <a href="{% url 'profile' person.user.id %}">
+                    {{ person.user.get_full_name }} ({{ person.birth }})
+                  </a>
+                </td>
+                <td>
+                  {{ person.user.email }}
+                </td>
+                <td>
+                  {{ person.school }}
+                </td>
+                <td>
+                  <a data-toggle="collapse" class="collapse-toggle collapsed" href="#collapseInfo{{ person.user.id }}" role="button" aria-expanded="false" aria-controls="collapseInfo{{ person.user.id }}">
+                    {{ person.points | floatformat }}%
+                  </a>
+                </td>
+                <td>
+                  {{ person.workshop_count }}
+                </td>
+                <td>
+                  {{ person.accepted_workshop_count }}
+                </td>
+                <td>
+                  {% load wwwtags %}
+                  {{ person.has_letter|qualified_mark }}
+                </td>
+                <td>
+                  {{ person.status }}
+                </td>
+              </tr>
+              <tr class="collapse panel-collapse" id="collapseInfo{{ person.user.id }}">
+                <td colspan="2"></td>
+                <td colspan="7">
+                  {% for info in person.infos %}
+                      * {{ info }} <br>
+                  {% endfor %}
+                </td>
+              </tr>
             {% endfor %}
           </tbody>
         </table>
+      </div>
     </article>
 </div>
 {% endblock %}

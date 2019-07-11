@@ -23,7 +23,7 @@
                   {{ workshop_participant.workshop.name }}
                 </th>
                 <td>
-                  {{ workshop_participant.qualification_result|default_if_none:'?' }}
+                  {{ workshop_participant.qualification_result|default_if_none:'?' }} / {{ workshop_participant.workshop.max_points | default_if_none:'?' }}
                 </td>
                 <td>
                   {% load wwwtags %}
@@ -57,7 +57,7 @@
                   {{ workshop_participant.workshop.name }}
                 </th>
                 <td>
-                  {{ workshop_participant.qualification_result|default_if_none:'?' }}
+                  {{ workshop_participant.qualification_result|default_if_none:'?' }} / {{ workshop_participant.workshop.max_points | default_if_none:'?' }}
                 </td>
                 <td>
                   {% load wwwtags %}

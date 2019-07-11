@@ -237,3 +237,7 @@ if ON_PAAS:
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+# Max amount of points that a participant can get during qualification (relative to configured max_points for a given workshop)
+# This allows to give some people bonus points above 100%
+MAX_POINTS_PERCENT = 200

@@ -129,7 +129,9 @@ class WorkshopPageForm(ModelForm):
 
     class Meta:
         model = Workshop
-        fields = ['qualification_problems', 'is_qualifying', 'page_content_is_public', 'qualification_threshold', 'page_content']
+        fields = ['qualification_problems', 'is_qualifying',
+                  'page_content_is_public', 'qualification_threshold',
+                  'max_points', 'page_content']
         widgets = {
             'page_content': RichTextarea(),
         }
@@ -138,5 +140,6 @@ class WorkshopPageForm(ModelForm):
             'is_qualifying': 'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',
             'page_content': 'Strona warsztatów',
             'page_content_is_public': 'Zaznacz, jeśli opis jest gotowy i może już być publiczny.',
-            'qualification_threshold': 'Minimalna liczba punktów potrzeba do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)'
+            'qualification_threshold': 'Minimalna liczba punktów potrzeba do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)',
+            'max_points': 'Maksymalna liczba punktów możliwa do uzyskania z obowiązkowych zadań'
         }
