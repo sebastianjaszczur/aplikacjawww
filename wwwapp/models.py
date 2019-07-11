@@ -37,7 +37,8 @@ class UserProfile(models.Model):
         return "{0.first_name} {0.last_name}".format(self.user)
 
     class Meta:
-        permissions = (('see_all_users', 'Can see all users'),)
+        permissions = [('see_all_users', 'Can see all users'),
+                       ('export_workshop_registration', 'Can download workshop registration data')]
 
 
 class WorkshopUserProfile(models.Model):
