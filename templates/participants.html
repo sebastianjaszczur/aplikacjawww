@@ -4,19 +4,22 @@
 <div class="container">
     <article class="col-sm-12 maincontent">
       <h1>Wszyscy uczestnicy</h1>
-      <div class="table-responsive data-table">
-        <table class="table">
+      <div class="table-responsive">
+        <table id="participants-table" class="table">
           <thead>
-            <th>N.</th>
-            <th>Imię i nazwisko</th>
-            <th>Email</th>
-            <th>Szkoła</th>
-            <th>Punkty</th>
-            <th>Sum. il. war.</th>
-            <th>Il.Zak.War.</th>
-            <th>List mot.</th>
-            <th>Komcie</th>
-            <th>Status</th>
+            <tr>
+              <th></th>
+              <th>Imię i nazwisko</th>
+              <th>Email</th>
+              <th>Szkoła</th>
+              <th>Rok Matury</th>
+              <th>Punkty</th>
+              <th>Suma ilości warsztatów</th>
+              <th>Ilość Zakwalifikowanych Warsztatów</th>
+              <th>Pełnoletni</th>
+              <th>List motywacyjny</th>
+              <th>Status</th>
+            </tr>
           </thead>
           <tbody>
             {% for person in people %}
@@ -51,9 +54,6 @@
                   {{ person.has_letter|qualified_mark }}
                 </td>
                 <td>
-                  {{ person.comments }}
-                </td>
-                <td>
                   {{ person.status }}
                 </td>
               </tr>
@@ -71,4 +71,37 @@
       </div>
     </article>
 </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(document).ready(() => {
+      const table = $('#participants-table').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+          'colvis'
+        ],
+        "columnDefs": [
+          {
+            "type": "percent", targets: 4
+          },
+          {
+            "orderable": false,
+            targets: [-1, -2]
+          }
+          ],
+        "language": {
+          "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Polish.json",
+          buttons: {
+            colvis: 'Schowaj dane'
+          },
+        },
+        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
+          $("td:first", nRow).html(iDisplayIndex +1);
+          return nRow;
+        }
+      });
+    }
+    );
+  </script>
 {% endblock %}

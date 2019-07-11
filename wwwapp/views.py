@@ -337,6 +337,7 @@ def participants_view(request, year):
             people[p_id] = {
                 'user': participant.participant.user,
                 'birth': participant.participant.user_info.pesel[:6],
+                'matura_exam_year': participant.participant.matura_exam_year,
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
                 'has_letter': bool(cover_letter and len(cover_letter) > 50),
@@ -346,7 +347,7 @@ def participants_view(request, year):
                 'infos': [],
                 'comments': participant.participant.user_info.comments,
             }
-        
+
         if participant.qualification_result:
             people[p_id]['points'] += float(participant.result_in_percent())
         people[p_id]['infos'].append("{title} : {result:.1f}% : {comment}".format(
@@ -359,7 +360,6 @@ def participants_view(request, year):
             people[p_id]['accepted_workshop_count'] += 1
 
     people = list(people.values())
-    people.sort(key=lambda p: (-p['has_letter'], -p['accepted_workshop_count'], -p['points']))
 
     context = get_context(request)
     context['title'] = 'Uczestnicy'
@@ -380,7 +380,7 @@ def people_info_view(request):
     for workshop in accepted_workshops:
         for user_profile in workshop.lecturer.all():
             users.append(user_profile)
-    
+
     people = {}
 
     for user in users:
@@ -458,9 +458,9 @@ def data_for_plan_view(request):
     if not request.user.is_superuser:
         return redirect('login')
     data = {}
-    
+
     user_profiles_raw = set(up for up in UserProfile.objects.all() if WorkshopUserProfile.objects.filter(user_profile=up, year=settings.CURRENT_YEAR, status='Z').exists())
-    
+
     workshops_raw = Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR)
     workshop_ids = set()
     workshops = []
@@ -475,7 +475,7 @@ def data_for_plan_view(request):
                 user_profiles_raw.add(lect)
         workshops.append(record_to_add)
     data['workshops'] = workshops
-    
+
     users = []
     user_ids = set()
     for up in user_profiles_raw:
@@ -496,7 +496,7 @@ def data_for_plan_view(request):
                 'uid': wp.participant.id,
             })
     data['participation'] = participation
-    
+
     return JsonResponse(data)
 
 

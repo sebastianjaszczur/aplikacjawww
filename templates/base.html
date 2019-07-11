@@ -31,10 +31,11 @@
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap-theme.css' %}" media="screen">
-
-    <!-- Data tables -->
-    <link rel="stylesheet" href="{% static 'css/jquery.dataTables.min.css' %}">
     {% endcompress %}
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -147,12 +148,14 @@
       var ckeditor_highlight_js_path = "{% static 'ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js' %}";
     </script>
 
-    <!-- jquery datatables -->
-    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
-
     <script src="{% static 'js/ajax.requests.js' %}"></script>
     <script src="{% static 'js/warsztatywww.js' %}"></script>
     {% endcompress %}
+
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js>"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
     {% block script %}{% endblock %}
     <!-- mathjax / LaTeX support-->

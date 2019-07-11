@@ -12,3 +12,9 @@ def qualified_mark(value):
         return mark_safe('<span class="qualified">✔</span> TAK')
     else:
         return mark_safe('<span class="not-qualified">✘</span> NIE')
+
+@register.filter
+def is_a_minor(value):
+    if value is None:
+        return mark_safe('<span class="maybe-qualified">?</span>')
+    return "[TODO]"
