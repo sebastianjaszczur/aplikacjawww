@@ -1,5 +1,3 @@
-
-
 {
 	"processing":     "Przetwarzanie...",
 	"search":         "Szukaj:",
@@ -24,6 +22,12 @@
 	"buttons": {
 		"colvis": "Schowaj dane",
 		"copy": "Kopiuj",
-		"print": "Drukuj"
+		"print": "Drukuj",
+		"copyTitle": "Skopiowano do schowka",
+		"copySuccess": {
+			"_": "Skopiowano %d kolumn",
+			"2": "Skopiowano dwie kolumny",
+			"1": "Skopiowano jedną kolumnę"
+		}
   	}
 }
