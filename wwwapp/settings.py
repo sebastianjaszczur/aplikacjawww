@@ -1,6 +1,7 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import socket
+import datetime
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
@@ -163,7 +164,7 @@ AUTHENTICATION_BACKENDS = (
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pl'
 
 TIME_ZONE = 'UTC'
 
@@ -217,6 +218,7 @@ TEMPLATES = [
 ]
 
 CURRENT_YEAR = 2019
+WORKSHOPS_START_DATE = datetime.date(CURRENT_YEAR, 7, 1)
 
 COMPRESS_ENABLED = True
 

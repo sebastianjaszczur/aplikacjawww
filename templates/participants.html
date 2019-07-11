@@ -10,13 +10,14 @@
             <tr>
               <th></th>
               <th>Imię i nazwisko</th>
+              <th>Data Urodzenia</th>
+              <th>Pełnoletni</th>
               <th>Email</th>
               <th>Szkoła</th>
               <th>Rok Matury</th>
               <th>Punkty</th>
               <th>Suma ilości warsztatów</th>
               <th>Ilość Zakwalifikowanych Warsztatów</th>
-              <th>Pełnoletni</th>
               <th>List motywacyjny</th>
               <th>Status</th>
             </tr>
@@ -29,8 +30,15 @@
                 </td>
                 <td>
                   <a href="{% url 'profile' person.user.id %}">
-                    {{ person.user.get_full_name }} ({{ person.birth }})
+                    {{ person.user.get_full_name }}
                   </a>
+                </td>
+                <td>
+                  {{ person.birth }}
+                </td>
+                <td>
+                  {% load wwwtags %}
+                  {{ person.minor|qualified_mark }}
                 </td>
                 <td>
                   {{ person.user.email }}
@@ -87,11 +95,11 @@
           },
           {
             "orderable": false,
-            targets: [-1, -2]
+            targets: [0, -1, -2]
           }
           ],
         "language": {
-          "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Polish.json",
+          "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Polish.json",
           buttons: {
             colvis: 'Schowaj dane'
           },

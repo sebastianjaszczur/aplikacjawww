@@ -1,5 +1,7 @@
 import os
 import sys
+import datetime
+from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
 
 from django.conf import settings
@@ -334,9 +336,19 @@ def participants_view(request, year):
             if participant.participant.user.id in lecturers_ids:
                 continue
 
+            birth = participant.participant.user_info.pesel[:6]
+            minor = None
+            if birth is not None:
+                if not birth.isdigit() or len(birth) != 6:
+                    birth = None
+                else:
+                    birth = datetime.date(int(birth[:2]), int(birth[2:4]), int(birth[4:6]))
+                    minor = settings.WORKSHOPS_START_DATE < birth + relativedelta(years=18)
+
             people[p_id] = {
                 'user': participant.participant.user,
-                'birth': participant.participant.user_info.pesel[:6],
+                'birth': birth,
+                'minor': minor,
                 'matura_exam_year': participant.participant.matura_exam_year,
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
