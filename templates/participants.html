@@ -15,6 +15,7 @@
             <th>Sum. il. war.</th>
             <th>Il.Zak.War.</th>
             <th>List mot.</th>
+            <th>Komcie</th>
             <th>Status</th>
           </thead>
           <tbody>
@@ -48,6 +49,9 @@
                 <td>
                   {% load wwwtags %}
                   {{ person.has_letter|qualified_mark }}
+                </td>
+                <td>
+                  {{ person.comments }}
                 </td>
                 <td>
                   {{ person.status }}
