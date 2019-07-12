@@ -336,14 +336,10 @@ def participants_view(request, year):
             if participant.participant.user.id in lecturers_ids:
                 continue
 
-            birth = participant.participant.user_info.pesel[:6]
+            birth = participant.participant.user_info.get_birth_date()
             is_adult = None
             if birth is not None:
-                if not birth.isdigit() or len(birth) != 6:
-                    birth = None
-                else:
-                    birth = datetime.date(int(birth[:2]) + 2000, int(birth[2:4]), int(birth[4:6]))
-                    is_adult = settings.WORKSHOPS_START_DATE >= birth + relativedelta(years=18)
+                is_adult = settings.WORKSHOPS_START_DATE >= birth + relativedelta(years=18)
 
             people[p_id] = {
                 'user': participant.participant.user,

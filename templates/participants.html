@@ -33,11 +33,11 @@
                 </td>
                 <td>
                   <a href="{% url 'profile' person.user.id %}">
-                    {{ person.user.get_full_name|maybe_not_present }}
+                    {{ person.user.get_full_name|question_mark_on_empty_string }}
                   </a>
                 </td>
                 <td>
-                  {{ person.birth|maybe_not_present }}
+                  {{ person.birth|question_mark_on_none_value }}
                 </td>
                 <td>
                   {{ person.is_adult|qualified_mark }}
