@@ -1,42 +1,61 @@
 {% extends "base.html" %}
 
+{% load staticfiles %}
+{% load wwwtags %}
+
 {% block content %}
 <div class="container">
     <article class="col-sm-12 maincontent">
       <h1>Wszyscy uczestnicy</h1>
       <div class="table-responsive">
-        <table class="table">
+        <table id="participants-table" class="table" style="width:100%!important;">
           <thead>
-            <th>N.</th>
-            <th>Imię i nazwisko</th>
-            <th>Email</th>
-            <th>Szkoła</th>
-            <th>Punkty</th>
-            <th>Sum. il. war.</th>
-            <th>Il.Zak.War.</th>
-            <th>List mot.</th>
-            <th>Komcie</th>
-            <th>Status</th>
+            <tr>
+              <th></th>
+              <th>Imię i nazwisko</th>
+              <th>Data Urodzenia</th>
+              <th>Pełnoletni</th>
+              <th>Email</th>
+              <th>Szkoła</th>
+              <th>Rok Matury</th>
+              <th>Punkty</th>
+              <th>Suma ilości warsztatów</th>
+              <th>Ilość Zakwalifikowanych Warsztatów</th>
+              <th>List motywacyjny</th>
+              <th>Status</th>
+              <th>Komentarz</th>
+              <th>Pesel</th>
+              <th>Adres</th>
+              <th>Rozmiar Koszulki</th>
+            </tr>
           </thead>
           <tbody>
             {% for person in people %}
               <tr>
                 <td>
-                  {{ forloop.counter }}
                 </td>
                 <td>
                   <a href="{% url 'profile' person.user.id %}">
-                    {{ person.user.get_full_name }} ({{ person.birth }})
+                    {{ person.user.get_full_name | question_mark_on_empty_string }}
                   </a>
                 </td>
                 <td>
-                  {{ person.user.email }}
+                  {{ person.birth | question_mark_on_none_value }}
+                </td>
+                <td>
+                  {{ person.is_adult | qualified_mark }}
+                </td>
+                <td>
+                  {{ person.user.email | question_mark_on_empty_string }}
                 </td>
                 <td>
                   {{ person.school }}
                 </td>
                 <td>
-                  <a data-toggle="collapse" class="collapse-toggle collapsed" href="#collapseInfo{{ person.user.id }}" role="button" aria-expanded="false" aria-controls="collapseInfo{{ person.user.id }}">
+                  {{ person.matura_exam_year | question_mark_on_none_value }}
+                </td>
+                <td>
+                  <a tabindex="0" data-html="true" role="button" data-trigger="focus" data-toggle="popover" data-placement="bottom" title="Komentarze" data-content="<ul>{% for info in person.infos %} <li> {{ info }} </li> {% endfor %}</ul>">
                     {{ person.points | floatformat }}%
                   </a>
                 </td>
@@ -47,22 +66,22 @@
                   {{ person.accepted_workshop_count }}
                 </td>
                 <td>
-                  {% load wwwtags %}
-                  {{ person.has_letter|qualified_mark }}
+                  {{ person.has_letter | qualified_mark }}
+                </td>
+                <td>
+                  {{ person.status }}
                 </td>
                 <td>
                   {{ person.comments }}
                 </td>
                 <td>
-                  {{ person.status }}
+                  {{ person.pesel }}
                 </td>
-              </tr>
-              <tr class="collapse panel-collapse" id="collapseInfo{{ person.user.id }}">
-                <td colspan="2"></td>
-                <td colspan="7">
-                  {% for info in person.infos %}
-                      * {{ info }} <br>
-                  {% endfor %}
+                <td>
+                  {{ person.address }}
+                </td>
+                <td>
+                  {{ person.tshirt_size }}
                 </td>
               </tr>
             {% endfor %}
@@ -71,4 +90,80 @@
       </div>
     </article>
 </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(document).ready(() => {
+      const table = $('#participants-table').DataTable({
+        dom: 'Bfrtip',
+        responsive: true,
+        colReorder: true,
+        buttons: [
+            {
+                extend: 'colvis',
+                columns: ':gt(0)'
+            },
+            {
+                extend: 'copy',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'excel',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdf',
+                exportOptions: {
+                    columns: ':visible'
+                }
+           },
+           {
+                extend: 'print',
+                exportOptions: {
+                    columns: ':visible'
+                }
+           },
+        ],
+        "columnDefs": [
+          {
+            "type": "percent", targets: 4
+          },
+          {
+            "orderable": false,
+            targets: [0, 12]
+          },
+          {
+            visible: true,
+            targets: [0, 1, 3, 7, 10, 11]
+          },
+          {
+            visible: false,
+            targets: "_all"
+          },
+          {
+            "searchable": true,
+            targets: [1, 4, 5, 12]
+          },
+          {
+            "searchable": false,
+            targets: "_all"
+          }
+          ],
+        "language": {
+          "url": "{% static 'datatables/Polish.json' %}",
+        },
+        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
+          $("td:first", nRow).html(iDisplayIndex +1);
+          return nRow;
+        },
+        "order": [[ 1, "desc" ], [ 11, "desc" ]],
+      });
+    }
+    );
+  </script>
 {% endblock %}
