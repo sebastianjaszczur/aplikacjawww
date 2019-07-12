@@ -335,6 +335,7 @@ def participants_view(request, year):
                 'school': participant.participant.school,
                 'points': 0.0,
                 'infos': [],
+                'comments': participant.participant.user_info.comments,
             }
         
         if participant.qualification_result:
