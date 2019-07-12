@@ -11,12 +11,16 @@
         {% else %}
             <h2 class="heading">Wybierz metodę logowania: </h2>
             <div class="form-signin">
-                <a href="{% url 'scopedallaccess-login' 'facebook' %}">
-                    <img alt="Continue with Facebook" title="Continue with Facebook" src="{% static 'images/login_buttons/facebook/continue_with.png' %}" style="padding: 0.25em;">
-                </a>
-                <a href="{% url 'scopedallaccess-login' 'google' %}">
-                    <img alt="Sign in with Google" title="Sign in with Google" src="{% static 'images/login_buttons/google/btn_google_signin_dark_normal_web@2x.png' %}">
-                </a>
+                <div class="form-signin-button">
+                    <a href="{% url 'scopedallaccess-login' 'facebook' %}" class="btn" role="button">
+                        <img alt="Continue with Facebook" title="Continue with Facebook" src="{% static 'images/login_buttons/facebook/continue_with.png' %}" style="padding: 0.25em;">
+                    </a>
+                </div>
+                <div class="form-signin-button">
+                    <a href="{% url 'scopedallaccess-login' 'google' %}" class="btn" role="button">
+                        <img alt="Sign in with Google" title="Sign in with Google" src="{% static 'images/login_buttons/google/btn_google_signin_dark_normal_web@2x.png' %}">
+                    </a>
+                </div>
             </div>
         {% endif %}
 </div>

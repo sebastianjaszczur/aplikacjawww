@@ -42,12 +42,16 @@
     display: flex;
     flex-direction: column;
     justify-items: center;
-    align-content: center
+    align-content: center;
+    text-align: center;
 }
 
-.form-signin a {
-    text-align: center;
-    margin: 0.5em;
+.form-signin .form-signin-button {
+    margin: 0.25em;
+}
+
+.form-signin .btn {
+    padding: 0;
 }
 
 .form-signin img {
