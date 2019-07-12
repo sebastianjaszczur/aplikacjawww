@@ -62,7 +62,7 @@
                           <li><a href="{% url 'participants' %}">Uczestnicy</a></li>
                           <li><a href="{% url 'peopleInfo' %}">Info o ludziach</a></li>
                           <li><a href="{% url 'filter_emails' %}">Adresy email</a></li>
-                          {% if request.user.is_superuser %}
+                          {% if request.user.is_staff %}
                           <li role="separator" class="divider"></li>
                           <li><a href="{% url 'admin:index' %}">Django admin</a></li>
                           {% endif %}
