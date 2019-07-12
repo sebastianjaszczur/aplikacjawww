@@ -81,9 +81,13 @@
             {% for workshop, registered in workshops %}
             <div class="panel panel-default" id="{{ workshop.name }}">
                 <div class="panel-heading" style="font-size: 16pt;">
-                    {% if workshop.page_content_is_public %}{% if workshop.status == 'X' %}(ODWOŁANE) {% endif %}<a href="{% url 'workshop_page' workshop.name %}"><span style="font-size: larger;">{{ workshop.title }}</span></a>{% else %}<span style="font-size: larger;">{{ workshop.title }}</span>{% endif %}
+                    {% if workshop.page_content_is_public %}
+                        {% if workshop.status == 'X' %}(ODWOŁANE) {% endif %}<a href="{% url 'workshop_page' workshop.name %}"><span class="big">{{ workshop.title }}</span></a>
+                    {% else %}
+                        <span class="big">{{ workshop.title }}</span>
+                    {% endif %}
                         <span class="pull-right">
-                            <span style="font-size: larger;">
+                            <span class="big">
                                 {% for lecturer in workshop.lecturer.all %}
                                     <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer }}</a>{% if not forloop.last %},{% endif %}
                                 {% endfor %}

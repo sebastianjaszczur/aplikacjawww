@@ -219,7 +219,7 @@ def workshop_page_view(request, name):
     context = get_context(request)
 
     workshop = get_object_or_404(Workshop, name=name)
-    if workshop.status != 'Z' and workshop.status != 'X':  # Zaakceptowane lub odwołane
+    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
         raise Http404("Warsztaty nie zostały zaakceptowane")
 
     title = workshop.title

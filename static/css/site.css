@@ -30,6 +30,10 @@
     margin: 10px 10px 10px 10px;
 }
 
+.big {
+    font-size: larger;
+}
+
 /* Formularz logowania */
 
 .signin-container .heading,
