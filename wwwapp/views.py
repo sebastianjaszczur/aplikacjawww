@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
@@ -38,6 +38,7 @@ def get_context(request):
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     context['has_workshops'] = has_workshops
+    context['current_year'] = settings.CURRENT_YEAR
 
     return context
 
@@ -85,6 +86,29 @@ def profile_view(request, user_id):
 
     if can_see_all_users or is_my_profile:
         context['profile'] = profile
+
+    can_qualify = request.user.has_perm('wwwapp.change_workshop_user_profile')
+    context['can_qualify'] = can_qualify
+    context['has_workshop_profile'] = WorkshopUserProfile.objects.filter(
+        user_profile=user.userprofile, year=settings.CURRENT_YEAR).exists()
+
+    if request.method == 'POST':
+        if not can_qualify:
+            return HttpResponseForbidden()
+        (edition_profile, _) = WorkshopUserProfile.objects.get_or_create(
+            user_profile=user.userprofile, year=settings.CURRENT_YEAR)
+        context['has_workshop_profile'] = True
+        if request.POST['qualify'] == 'accept':
+            edition_profile.status = WorkshopUserProfile.STATUS_ACCEPTED
+            edition_profile.save()
+        elif request.POST['qualify'] == 'reject':
+            edition_profile.status = WorkshopUserProfile.STATUS_REJECTED
+            edition_profile.save()
+        elif request.POST['qualify'] == 'delete':
+            edition_profile.delete()
+            context['has_workshop_profile'] = False
+        else:
+            raise SuspiciousOperation("Invalid argument")
 
     return render(request, 'profile.html', context)
 

@@ -77,6 +77,34 @@
         <table class=table>
           <tbody>
             <tr>
+              <th>Edycje WWW:</th>
+              <td>
+                {% for edition in profile.workshop_profile.all %}
+                  {% if edition.status == 'Z' %}
+                    <span class="qualified">✔{{ edition.year }}</span>
+                  {% else %}
+                    <span class="not-qualified">✘{{ edition.year }}</span>
+                  {% endif %}
+                {% endfor %}
+                {% if has_workshop_profile %}
+                  <form method="post" class="inline">
+                    {% csrf_token %}
+                    <span class="btn-group-xs" role="group">
+                      <button type="submit" class="btn btn-default" name="qualify" value="delete">Usuń kwalifikację</button>
+                    </span>
+                  </form>
+                {% else %}
+                  <form method="post" class="inline">
+                    {% csrf_token %}
+                    <span class="btn-group-xs" role="group">
+                      <button type="submit" class="btn btn-default" name="qualify" value="accept">✔ Zakwalifikuj</button>
+                      <button type="submit" class="btn btn-default" name="qualify" value="reject">✘ Odrzuć</button>
+                    </span>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
               <th>Email:</th>
               <td>{{ profile.user.email }}
             </tr>
@@ -92,7 +120,6 @@
               <th>Rok matury:</th>
               <td>{{ profile.matura_exam_year }}
             </tr>
-
             <tr>
               <th>Skąd wie o WWW:</th>
               <td>{{ profile.how_do_you_know_about }}
@@ -107,7 +134,7 @@
         {% endif %}
 
         {% if profile.cover_letter %}
-          <hr />
+          <hr/>
           <h3>List motywacyjny</h3>
           {{ profile.cover_letter | bleach }}
         {% endif %}

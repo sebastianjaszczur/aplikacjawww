@@ -6,7 +6,7 @@ from django_select2.forms import Select2MultipleWidget, Select2Widget
 
 from . import settings
 from .models import UserProfile, Article, Workshop, WorkshopCategory, \
-    WorkshopType, UserInfo
+    WorkshopType, UserInfo, WorkshopUserProfile
 from .widgets import RichTextarea
 
 

@@ -43,11 +43,17 @@ class UserProfile(models.Model):
 
 class WorkshopUserProfile(models.Model):
     # for each year
+    STATUS_ACCEPTED = 'Z'
+    STATUS_REJECTED = 'O'
+    STATUS_CHOICES = [
+        (STATUS_ACCEPTED, 'Zaakceptowany'),
+        (STATUS_REJECTED, 'Odrzucony')
+    ]
     user_profile = models.ForeignKey('UserProfile', null=True, related_name='workshop_profile', on_delete=models.CASCADE)
 
     year = models.IntegerField()
     status = models.CharField(max_length=10,
-                              choices=[('Z', 'Zaakceptowany'), ('O', 'Odrzucony')],
+                              choices=STATUS_CHOICES,
                               null=True, default=None, blank=True)
 
     def __str__(self):
