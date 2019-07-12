@@ -82,7 +82,8 @@
             <div class="panel panel-default" id="{{ workshop.name }}">
                 <div class="panel-heading" style="font-size: 16pt;">
                     {% if workshop.page_content_is_public %}
-                        {% if workshop.status == 'X' %}(ODWOŁANE) {% endif %}<a href="{% url 'workshop_page' workshop.name %}"><span class="big">{{ workshop.title }}</span></a>
+                        {% if workshop.status == 'X' %}(ODWOŁANE) {% endif %}
+                        <a href="{% url 'workshop_page' workshop.name %}"><span class="big">{{ workshop.title }}</span></a>
                     {% else %}
                         <span class="big">{{ workshop.title }}</span>
                     {% endif %}
