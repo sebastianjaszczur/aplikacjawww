@@ -3,61 +3,107 @@
 {% load staticfiles %}
 {% block content %}
 
-
-{% if workshops %}
-<script src="{% static 'js/jquery.bdt.js' %}"></script>
-<link href="{% static 'css/jquery.bdt.css' %}" rel="stylesheet">
-<script src="{% static 'js/jquery.sortelements.js' %}"></script>
-
-<script>
-$(document).ready( function () {
-  $('#workshop_list').bdt();
-});
-</script>
-{% endif %}
-
-
-
 <div class="container">
-    <article class="col-sm-12 maincontent">
-        <h1> {{ title }}</h1>
-        {% for entry in workshops %}
-        <h2>{{ entry.year }}</h2>
+  <article class="col-sm-12 maincontent">
+    <h1> {{ title }}</h1>
+    {% for entry in workshops %}
+      <h2>{{ entry.year }}</h2>
+      <div class="table-responsive">
         <table id="workshop_list" class="table table-striped table-bordered table-condensed">
-            <thead>
+          <thead>
+          <tr>
+              <th>Warsztaty</th>
+              <th>Prowadzący</th>
+              <th>Kategorie</th>
+              <th>Rodzaj</th>
+              <th data-toggle="tooltip" data-container="body" data-placement="top" title="Liczba zakwalifikowanych">L.zak.</th>
+              <th data-toggle="tooltip" data-container="body" data-placement="top" title="Liczba zapisanych">L.zap.</th>
+              <th data-toggle="tooltip" data-container="body" data-placement="top" title="Próg kwalifikacji ustawiony?">Próg?</th>
+              <th data-toggle="tooltip" data-container="body" data-placement="top" title="Zadania opublikowane?">Zadania?</th>
+              <th data-toggle="tooltip" data-container="body" data-placement="top" title="Strona opublikowana?">Strona?</th>
+              <th>Status</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for workshop in entry.workshops %}
             <tr>
-                <th>Warsztaty</th>
-                <th>Prowadzący</th>
-                <th>Kategorie</th>
-                <th>Rodzaj</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for workshop in entry.workshops %}
-            <tr>
-                <td><a href="{% url 'workshop' workshop.name%}">{{ workshop.title }}</a></td>
-                <td>
+              <td><a href="{% url 'workshop' workshop.name%}">{{ workshop.title }}</a></td>
+              <td>
                 {% for lecturer in workshop.lecturer.all %}
-                    <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</a><br/>
+                  <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</a><br/>
                 {% endfor %}
-                </td>
-                <td>
-                {% for category in workshop.category.all %}
-                    {{ category.name }}<br/>
-                {% endfor %}
-                </td>
-                <td>
-                    <p>{{ workshop.type }}</p>
-                </td>
-                <td>
-                    <p>{{ workshop.get_status_display|default_if_none:"Brak" }}</p>
-                </td>
+              </td>
+              <td>
+              {% for category in workshop.category.all %}
+                  {{ category.name }}<br/>
+              {% endfor %}
+              </td>
+              <td>
+                  <p>{{ workshop.type }}</p>
+              </td>
+              <td>
+                {% if workshop.is_qualifying and workshop.qualification_threshold %}
+                  <p>{{ workshop.qualified_count }}</p>
+                {% else %}
+                  <p>-</p>
+                {% endif %}
+              </td>
+              <td>
+                <p>{{ workshop.registered_count }}</p>
+              </td>
+              <td>
+                {% if workshop.is_qualifying %}
+                  {% if workshop.qualification_threshold %}
+                    <span class="qualified">✔</span> TAK
+                  {% else %}
+                    <span class="not-qualified">✘</span> NIE
+                  {% endif %}
+                {% else %}
+                  <p>-</p>
+                {% endif %}
+              </td>
+              <td>
+                {% if workshop.is_qualifying %}
+                  {% if workshop.qualification_problems %}
+                    <span class="qualified">✔</span> TAK
+                  {% else %}
+                    <span class="not-qualified">✘</span> NIE
+                  {% endif %}
+                {% else %}
+                  <p>-</p>
+                {% endif %}
+              </td>
+              <td>
+                {% if workshop.page_content_is_public %}
+                  <span class="qualified">✔</span> TAK
+                {% else %}
+                  <span class="not-qualified">✘</span> NIE
+                {% endif %}
+              </td>
+              <td>
+                <p>{{ workshop.get_status_display|default_if_none:"Brak" }}</p>
+              </td>
             </tr>
-            {% endfor %}
-            </tbody>
+          {% endfor %}
+          </tbody>
         </table>
-        {% endfor %}
-    </article>
+      </div>
+    {% endfor %}
+  </article>
 </div>
+{% endblock %}
+
+{% block script %}
+  <script src="{% static 'js/jquery.bdt.js' %}"></script>
+  <link href="{% static 'css/jquery.bdt.css' %}" rel="stylesheet">
+  <script src="{% static 'js/jquery.sortelements.js' %}"></script>
+  <script>
+  $(document).ready( function () {
+    $('#workshop_list').bdt();
+
+  });
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  });
+  </script>
 {% endblock %}
