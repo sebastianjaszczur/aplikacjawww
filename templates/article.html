@@ -13,7 +13,7 @@
             Edytuj
         </a>
         {% endif %}
-        <div {%if not addArticle %}id="collapseOne" class="panel-collapse collapse out"{% endif %} role="tabpanel" aria-labelledby="headingOne">
+        <div {%if not addArticle %}id="collapseOne" class="panel-collapse collapse out"{% endif %} role="tabpanel">
             <hr>
             <form action="" method="post">
                 {% csrf_token %}

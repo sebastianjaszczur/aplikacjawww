@@ -1,6 +1,6 @@
 import os
 import sys
-import datetime
+import mimetypes
 from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
 
@@ -516,7 +516,7 @@ def qualification_problems_view(request, workshop_name):
     filename = workshop.qualification_problems.path
 
     wrapper = FileWrapper(open(filename, "rb"))
-    response = HttpResponse(wrapper, content_type='application/pdf')
+    response = HttpResponse(wrapper, content_type=mimetypes.guess_type(filename)[0])
     response['Content-Length'] = os.path.getsize(filename)
     return response
 
