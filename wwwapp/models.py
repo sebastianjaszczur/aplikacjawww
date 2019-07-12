@@ -245,7 +245,7 @@ class Workshop(models.Model):
         return self.workshopparticipant_set.filter(qualification_result__gte=self.qualification_threshold).count()
 
     """
-    Czy warsztaty powinny być publicznie widoczne (są zaakceptowane lub odwołane)
+    Should the workshop be publicly visible? (accepted or cancelled)
     """
     def is_publicly_visible(self):
         return self.status == 'Z' or self.status == 'X'
