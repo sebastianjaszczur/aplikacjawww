@@ -7,7 +7,8 @@
 
 <div class="container">
     <article class="col-sm-12 maincontent">
-        <h1>{{ title }} &dash; uczestnicy</h1>
+        <h1>{{ workshop.title }} &dash; uczestnicy</h1>
+        {% include '_workshopeditheader.html' %}
         <table class="table">
           <thead>
             <th>Numer</th>
@@ -32,18 +33,26 @@
                 {{ workshop_participant.participant.user.email }}
               </td>
               <td>
-                <input type=number step=0.1
-                       value="{{ workshop_participant.qualification_result|default_if_none:'' }}"
-                       class="points-input"
-                       data-id="{{ workshop_participant.id }}">
-                <a href="#" class="save">Zapisz</a>
+                {% if has_perm_to_edit %}
+                  <input type=number step=0.1
+                         value="{{ workshop_participant.qualification_result|default_if_none:'' }}"
+                         class="points-input"
+                         data-id="{{ workshop_participant.id }}">
+                  <a href="#" class="save">Zapisz</a>
+                {% else %}
+                  {{ workshop_participant.qualification_result|default_if_none:'' }}
+                {%  endif %}
               </td>
               <td>
-                <input type=text
-                       value="{{ workshop_participant.comment|default_if_none:'' }}"
-                       class="comment-input"
-                       data-id="{{ workshop_participant.id }}">
-                <a href="#" class="savec">Zapisz</a>
+                {% if has_perm_to_edit %}
+                  <input type=text
+                         value="{{ workshop_participant.comment|default_if_none:'' }}"
+                         class="comment-input"
+                         data-id="{{ workshop_participant.id }}">
+                  <a href="#" class="savec">Zapisz</a>
+                {% else %}
+                  {{ workshop_participant.qualification_result|default_if_none:'' }}
+                {%  endif %}
               </td>
               <td class="qualified-mark">
                 {% load wwwtags %}

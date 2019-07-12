@@ -8,7 +8,7 @@
         <h1>{{ title }}</h1>
         {% if has_perm_to_edit %}
             {% if workshop.status == 'Z' %}
-                <a href="{% url 'workshop_page' workshop.name%}">Edycja strony Twoich warsztatów</a>
+                {% include '_workshopeditheader.html' %}
             {% endif %}
             <div role="tabpanel" aria-labelledby="headingOne">
                 <hr>
@@ -21,7 +21,7 @@
             </div>
         {% else %}
             {% if workshop.status == 'Z' %}
-                <a href="{% url 'workshop_page' workshop.name%}">Link do głównej strony warsztatów</a>
+                {% include '_workshopeditheader.html' %}
             {% endif %}
             {{ workshop.proposition_description|bleach }}
         {% endif %}
