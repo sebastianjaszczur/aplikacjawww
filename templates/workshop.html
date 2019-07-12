@@ -6,10 +6,10 @@
 <div class="container">
     <article class="col-sm-12 maincontent">
         <h1>{{ title }}</h1>
+        {% if workshop.is_publicly_visible %}
+            {% include '_workshopeditheader.html' %}
+        {% endif %}
         {% if has_perm_to_edit %}
-            {% if workshop.status == 'Z' %}
-                {% include '_workshopeditheader.html' %}
-            {% endif %}
             <div role="tabpanel">
                 <hr>
                 <form action="" method="post">
@@ -20,9 +20,6 @@
                 </form>
             </div>
         {% else %}
-            {% if workshop.status == 'Z' %}
-                {% include '_workshopeditheader.html' %}
-            {% endif %}
             {{ workshop.proposition_description|bleach }}
         {% endif %}
     </article>

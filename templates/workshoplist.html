@@ -28,7 +28,7 @@
           {% for workshop in entry.workshops %}
             <tr>
               <td>
-                {% if workshop.status == 'Z' %}
+                {% if workshop.is_publicly_visible %}
                   <a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }}</a>
                 {% else %}
                   <a href="{% url 'workshop' workshop.name %}">{{ workshop.title }}</a>

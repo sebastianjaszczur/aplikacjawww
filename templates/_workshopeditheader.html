@@ -1,4 +1,4 @@
-{% if workshop.status == 'Z' %}
+{% if workshop.is_publicly_visible %}
     <div>
         {% if has_perm_to_edit %}
             <a href="{% url 'workshop' workshop.name %}">Edycja zgłoszenia</a> |
