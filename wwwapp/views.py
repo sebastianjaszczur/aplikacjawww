@@ -240,6 +240,7 @@ def workshop_page_view(request, name):
     context['workshop'] = workshop
     context['form'] = form
     context['has_perm_to_edit'] = has_perm_to_edit
+    context['has_perm_to_see_all'] = request.user.has_perm('wwwapp.see_all_workshops')
 
     return render(request, 'workshoppage.html', context)
 
@@ -263,9 +264,10 @@ def workshop_participants_view(request, name):
 
     context = get_context(request)
 
-    context['title'] = workshop.title
+    context['workshop'] = workshop
     context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
             'workshop', 'participant', 'participant__user')
+    context['has_perm_to_edit'] = can_see_this
     
     return render(request, 'workshopparticipants.html', context)
 
