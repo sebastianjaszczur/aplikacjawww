@@ -20,7 +20,7 @@
 		"sortDescending": ": aktywuj, by posortować kolumnę malejąco"
 	},
 	"buttons": {
-		"colvis": "Schowaj dane",
+		"colvis": "Wybierz Kolumny",
 		"copy": "Kopiuj",
 		"print": "Drukuj",
 		"copyTitle": "Skopiowano do schowka",

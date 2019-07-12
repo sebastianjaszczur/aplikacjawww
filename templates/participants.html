@@ -24,6 +24,9 @@
               <th>List motywacyjny</th>
               <th>Status</th>
               <th>Komentarz</th>
+              <th>Pesel</th>
+              <th>Adres</th>
+              <th>Rozmiar Koszulki</th>
             </tr>
           </thead>
           <tbody>
@@ -43,13 +46,13 @@
                   {{ person.is_adult|qualified_mark }}
                 </td>
                 <td>
-                  {{ person.user.email }}
+                  {{ person.user.email|question_mark_on_empty_string }}
                 </td>
                 <td>
                   {{ person.school }}
                 </td>
                 <td>
-                  {{ person.matura_exam_year }}
+                  {{ person.matura_exam_year|question_mark_on_none_value }}
                 </td>
                 <td>
                   <a tabindex="0" data-html="true" role="button" data-trigger="focus" data-toggle="popover" data-placement="bottom" title="Komentarze" data-content="<ul>{% for info in person.infos %} <li> {{ info }} </li> {% endfor %}</ul>">
@@ -70,6 +73,15 @@
                 </td>
                 <td>
                   {{ person.comments }}
+                </td>
+                <td>
+                  {{ person.pesel }}
+                </td>
+                <td>
+                  {{ person.address }}
+                </td>
+                <td>
+                  {{ person.tshirt_size }}
                 </td>
               </tr>
             {% endfor %}
@@ -115,7 +127,7 @@
                 exportOptions: {
                     columns: ':visible'
                 }
-           }
+           },
         ],
         "columnDefs": [
           {
@@ -123,20 +135,33 @@
           },
           {
             "orderable": false,
-            targets: [0, -1, -2]
+            targets: [0, 12]
+          },
+          {
+            visible: true,
+            targets: [0, 1, 3, 7, 10, 11]
+          },
+          {
+            visible: false,
+            targets: "_all"
+          },
+          {
+            "searchable": true,
+            targets: [1, 4, 5, 12]
+          },
+          {
+            "searchable": false,
+            targets: "_all"
           }
           ],
         "language": {
-          "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Polish.json",
-          buttons: {
-            colvis: 'Schowaj dane'
-          },
+          "url": "{% static 'datatables/Polish.json' %}",
         },
         "fnRowCallback" : function(nRow, aData, iDisplayIndex){
           $("td:first", nRow).html(iDisplayIndex +1);
           return nRow;
         },
-        "order": [[ 1, "desc" ]],
+        "order": [[ 1, "desc" ], [ 11, "desc" ]],
       });
     }
     );
