@@ -103,7 +103,6 @@ class UserInfo(models.Model):
     """
     def get_birth_date(self) -> date or None:
         birth = self.pesel[:6]
-        print(birth)
         if birth is not None and birth.isdigit() and len(birth) == 6:
             year = int(birth[:2], 10)
             month = int(birth[2:4], 10)
