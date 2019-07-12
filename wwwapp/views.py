@@ -191,6 +191,7 @@ def workshop_view(request, name=None):
                 user_profile = UserProfile.objects.get(user=request.user)
                 workshop.lecturer.add(user_profile)
                 workshop.save()
+                messages.info(request, 'Zapisano.')
                 return redirect('workshop', form.instance.name)
         else:
             form = WorkshopForm(instance=workshop)
@@ -226,6 +227,7 @@ def workshop_page_view(request, name):
                 user_profile = UserProfile.objects.get(user=request.user)
                 workshop.lecturer.add(user_profile)
                 workshop.save()
+                messages.info(request, 'Zapisano.')
                 return redirect('workshop_page', form.instance.name)
         else:
             if not workshop.page_content:
@@ -520,6 +522,7 @@ def article_view(request, name=None):
                 article.modified_by = request.user
                 article.save()
                 form.save_m2m()
+                messages.info(request, 'Zapisano.')
                 return redirect('article', form.instance.name)
         else:
             form = ArticleForm(request.user, instance=art)
