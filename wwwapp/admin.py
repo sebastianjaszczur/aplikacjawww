@@ -29,11 +29,15 @@ class WorkshopAdmin(admin.ModelAdmin):
         queryset.update(status='O')
     make_refused.short_description = "Zmień status na Odrzucone"
 
+    def make_cancelled(self, _request, queryset):
+        queryset.update(status='X')
+    make_cancelled.short_description = "Zmień status na Odwołane"
+
     def make_clear(self, _request, queryset):
         queryset.update(status=None)
     make_clear.short_description = "Zmień status na Null"
 
-    actions = [make_acccepted, make_refused, make_clear]
+    actions = [make_acccepted, make_refused, make_cancelled, make_clear]
 
 
 admin.site.register(Workshop, WorkshopAdmin)

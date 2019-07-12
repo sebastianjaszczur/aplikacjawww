@@ -7,7 +7,7 @@
     <article class="col-sm-12 maincontent">
         <h1>{{ title }}</h1>
         {% if has_perm_to_edit %}
-            {% if workshop.status == 'Z' %}
+            {% if workshop.status == 'Z' or workshop.status == 'X' %}
                 {% include '_workshopeditheader.html' %}
             {% endif %}
             <div role="tabpanel">
@@ -20,7 +20,7 @@
                 </form>
             </div>
         {% else %}
-            {% if workshop.status == 'Z' %}
+            {% if workshop.status == 'Z' or workshop.status == 'X' %}
                 {% include '_workshopeditheader.html' %}
             {% endif %}
             {{ workshop.proposition_description|bleach }}

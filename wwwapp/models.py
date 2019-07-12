@@ -212,7 +212,7 @@ class Workshop(models.Model):
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10,
-                              choices=[('Z', 'Zaakceptowane'), ('O', 'Odrzucone')],
+                              choices=[('Z', 'Zaakceptowane'), ('O', 'Odrzucone'), ('X', 'Odwołane')],
                               null=True, default=None, blank=True)
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)

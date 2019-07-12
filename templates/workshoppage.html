@@ -7,6 +7,9 @@
 <div class="container">
     <article class="col-sm-12 maincontent">
         <h1>{{ title }}</h1>
+        {% if workshop.status == 'X' %}
+            <h3 style="color: red;">Te warsztaty są odwołane!</h3>
+        {% endif %}
         {% if has_perm_to_edit %}
             {% include '_workshopeditheader.html' %}
             <hr>

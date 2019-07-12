@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import OperationalError, ProgrammingError
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
@@ -49,7 +50,7 @@ def program_view(request, year):
     else:
         user_participation = set()
 
-    workshops = Workshop.objects.filter(status='Z', type__year=year).order_by('title').prefetch_related('lecturer', 'lecturer__user', 'category')
+    workshops = Workshop.objects.filter(Q(status='Z') | Q(status='X'), type__year=year).order_by('title').prefetch_related('lecturer', 'lecturer__user', 'category')
     context['workshops'] = [(workshop, (workshop in user_participation)) for workshop
                             in workshops]
 
@@ -218,7 +219,7 @@ def workshop_page_view(request, name):
     context = get_context(request)
 
     workshop = get_object_or_404(Workshop, name=name)
-    if workshop.status != 'Z':  # Zaakceptowane
+    if workshop.status != 'Z' and workshop.status != 'X':  # Zaakceptowane lub odwołane
         raise Http404("Warsztaty nie zostały zaakceptowane")
 
     title = workshop.title
