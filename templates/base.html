@@ -62,6 +62,10 @@
                           <li><a href="{% url 'participants' %}">Uczestnicy</a></li>
                           <li><a href="{% url 'peopleInfo' %}">Info o ludziach</a></li>
                           <li><a href="{% url 'filter_emails' %}">Adresy email</a></li>
+                          {% if request.user.is_staff %}
+                          <li role="separator" class="divider"></li>
+                          <li><a href="{% url 'admin:index' %}">Django admin</a></li>
+                          {% endif %}
                         </ul>
                     </li>
                     {% endif %}
@@ -73,6 +77,7 @@
                                 <li><a href="{% url 'article' article.name%}">{{ article.title }}</a></li>
                             {% endfor %}
                             {% if perms.wwwapp.add_article %}
+                                <li role="separator" class="divider"></li>
                                 <li><a href="{% url 'addArticle' %}">Nowy artykuł</a></li>
                             {% endif %}
                         </ul>
