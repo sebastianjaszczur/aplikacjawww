@@ -106,3 +106,8 @@ function handle_registration_change(workshop_name_txt, register) {
         }
     });
 }
+
+// Automatically hide 'Saved successfully' alerts after 4 seconds
+$(".alert").delay(4000).fadeTo(500, 0).slideUp(500, function(){
+    $(this).remove();
+});
