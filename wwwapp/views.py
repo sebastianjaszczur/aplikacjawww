@@ -181,6 +181,11 @@ def workshop_view(request, name=None):
         else:
             has_perm_to_edit = False
 
+    # Workshop proposals are only visible to admins
+    has_perm_to_see_all = request.user.has_perm('wwwapp.see_all_workshops')
+    if not has_perm_to_edit and not has_perm_to_see_all:
+        return redirect('login')
+
     if has_perm_to_edit:
         if request.method == 'POST':
             form = WorkshopForm(request.POST, instance=workshop)
