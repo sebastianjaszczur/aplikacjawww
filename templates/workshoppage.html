@@ -17,7 +17,7 @@
             {% else %}
                 Na Twoje warsztaty nie obowiązuje kwalifikacja.
             {% endif %}
-            <div role="tabpanel" aria-labelledby="headingOne">
+            <div role="tabpanel" style="margin: 1em 0;">
                 <form action="" method="post" enctype="multipart/form-data">
                   {% csrf_token %}
                   {{ form|crispy }}
@@ -35,7 +35,9 @@
             {% else %}
                 Na te warsztaty nie obowiązuje kwalifikacja.
             {% endif %}
-            {{ workshop.page_content|bleach }}
+            <div role="tabpanel" style="margin: 1em 0;">
+                {{ workshop.page_content|bleach }}
+            </div>
         {% else %}
             Prowadzący warsztatów nie wstawił jeszcze opisu.
         {% endif %}
