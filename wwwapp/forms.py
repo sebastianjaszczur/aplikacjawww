@@ -58,10 +58,11 @@ class UserInfoPageForm(ModelForm):
 
     class Meta:
         model = UserInfo
-        fields = ['pesel', 'address', 'start_date', 'end_date', 'tshirt_size', 'comments']
+        fields = ['pesel', 'address', 'phone', 'start_date', 'end_date', 'tshirt_size', 'comments']
         labels = {
             'pesel': 'Pesel',
             'address': 'Adres zameldowania',
+            'phone': 'Numer telefonu',
             'start_date': 'Data przyjazdu :-)',
             'end_date': 'Data wyjazdu :-(',
             'tshirt_size': 'Rozmiar koszulki',

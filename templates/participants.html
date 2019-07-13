@@ -26,6 +26,7 @@
               <th>Komentarz</th>
               <th>Pesel</th>
               <th>Adres</th>
+              <th>Numer telefonu</th>
               <th>Rozmiar Koszulki</th>
               <th>Data Przyjazdu</th>
               <th>Data Wyjazdu</th>
@@ -81,6 +82,9 @@
                 </td>
                 <td>
                   {{ person.address }}
+                </td>
+                <td>
+                  {{ person.phone }}
                 </td>
                 <td>
                   {{ person.tshirt_size }}
@@ -143,7 +147,7 @@
           },
           {
             "orderable": false,
-            targets: [0, 12]
+            targets: [0, 12, 14]
           },
           {
             visible: true,
@@ -155,7 +159,7 @@
           },
           {
             "searchable": true,
-            targets: [1, 4, 5, 12]
+            targets: [1, 4, 5, 12, 14]
           },
           {
             "searchable": false,
