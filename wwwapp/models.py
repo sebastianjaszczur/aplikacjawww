@@ -75,6 +75,7 @@ class UserInfo(models.Model):
     """Info needed for camp, not for qualification."""
     pesel = models.CharField(max_length=20, blank=True, default="")
     address = models.TextField(max_length=1000, blank=True, default="")
+    phone = models.CharField(max_length=50, blank=True, default="")
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     tshirt_size = models.CharField(max_length=100, choices=POSSIBLE_TSHIRT_SIZES,

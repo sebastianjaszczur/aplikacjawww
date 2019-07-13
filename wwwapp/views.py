@@ -345,6 +345,7 @@ def participants_view(request, year):
                 'is_adult': is_adult,
                 'pesel': participant.participant.user_info.pesel,
                 'address': participant.participant.user_info.address,
+                'phone': participant.participant.user_info.phone,
                 'tshirt_size': participant.participant.user_info.tshirt_size,
                 'matura_exam_year': participant.participant.matura_exam_year,
                 'accepted_workshop_count': 0,
