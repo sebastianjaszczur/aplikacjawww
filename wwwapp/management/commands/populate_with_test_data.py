@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.conf import settings
 from wwwapp.models import UserProfile, UserInfo, Article, ArticleContentHistory, Workshop, WorkshopCategory, \
     WorkshopType, WorkshopParticipant
 from faker import Faker
@@ -130,6 +131,10 @@ class Command(BaseCommand):
     Handles the command
     """
     def handle(self, *args, **options) -> None:
+        if not settings.DEBUG:
+            print("Command not allowed in production")
+            return
+
         User.objects.create_superuser("admin", "admin@admin.admin", "admin")
 
         users = []
