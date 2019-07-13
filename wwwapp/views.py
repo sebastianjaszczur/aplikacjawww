@@ -600,7 +600,7 @@ def render_workshops(request, title, workshops):
 
 
 @login_required()
-@permission_required('wwwapp.see_all_workshops', raise_exception=True)  # think about seperate permission
+@permission_required('wwwapp.see_all_workshops', raise_exception=True)  # Think about seperate permission
 def emails_view(request):
     workshops = Workshop.objects.all()
 

@@ -132,6 +132,7 @@ class UserInfo(models.Model):
 
             return date(year, month, days)
 
+
 class AlphaNumericField(models.CharField):
     def clean(self, value, model_instance):
         value = super(AlphaNumericField, self).clean(value, model_instance)
