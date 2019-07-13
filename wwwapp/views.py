@@ -114,74 +114,55 @@ def profile_view(request, user_id):
     return render(request, 'profile.html', context)
 
 
-def redirect_after_profile_save(request, target):
-    messages.info(request, 'Zapisano.')
-    return redirect(reverse('myProfile') + '#' + target)
-
-
-@login_required()
-def update_profile_page_view(request):
-    user_profile = UserProfile.objects.get(user=request.user)
-
-    if request.method == "POST":
-        user_profile_page_form = UserProfilePageForm(request.POST, instance=user_profile)
-        if user_profile_page_form.is_valid():
-            user_profile_page_form.save()
-
-    return redirect_after_profile_save(request, 'profile_page')
-
-
-@login_required()
-def update_cover_letter_view(request):
-    user_profile = UserProfile.objects.get(user=request.user)
-
-    if request.method == "POST":
-        user_cover_letter_form = UserCoverLetterForm(request.POST, instance=user_profile)
-        if user_cover_letter_form.is_valid():
-            user_cover_letter_form.save()
-
-    return redirect_after_profile_save(request, 'cover_letter')
-
-
-@login_required()
-def update_user_info_view(request):
-    user_profile = UserProfile.objects.get(user=request.user)
-    user_info = user_profile.user_info
-
-    if request.method == "POST":
-        user_info_page_form = UserInfoPageForm(request.POST, instance=user_info)
-        if user_info_page_form.is_valid():
-            user_info_page_form.save()
-
-    return redirect_after_profile_save(request, 'user_info')
-
-
 @login_required()
 def my_profile_view(request):
     context = get_context(request)
     user_profile = UserProfile.objects.get(user=request.user)
+
+    user_form = UserForm(instance=request.user)
+    user_profile_form = UserProfileForm(instance=user_profile)
+    user_profile_page_form = UserProfilePageForm(instance=user_profile)
+    user_cover_letter_form = UserCoverLetterForm(instance=user_profile)
+    user_info_page_form = UserInfoPageForm(instance=user_profile.user_info)
+
     if request.method == "POST":
-        user_form = UserForm(request.POST, instance=request.user)
-        user_profile_form = UserProfileForm(request.POST, instance=user_profile)
-        if user_form.is_valid() and user_profile_form.is_valid():
-            user_form.save()
-            user_profile_form.save()
+        page = request.POST['page']
+        if page == 'data':
+            user_form = UserForm(request.POST, instance=request.user)
+            user_profile_form = UserProfileForm(request.POST, instance=user_profile)
+            if user_form.is_valid() and user_profile_form.is_valid():
+                user_form.save()
+                user_profile_form.save()
+                messages.info(request, 'Zapisano.')
+        elif page == 'profile_page':
+            user_profile_page_form = UserProfilePageForm(request.POST, instance=user_profile)
+            if user_profile_page_form.is_valid():
+                user_profile_page_form.save()
+                messages.info(request, 'Zapisano.')
+        elif page == 'cover_letter':
+            user_cover_letter_form = UserCoverLetterForm(request.POST, instance=user_profile)
+            if user_cover_letter_form.is_valid():
+                user_cover_letter_form.save()
+                messages.info(request, 'Zapisano.')
+        elif page == 'user_info':
+            user_info_page_form = UserInfoPageForm(request.POST, instance=user_profile.user_info)
+            if user_info_page_form.is_valid():
+                user_info_page_form.save()
+                messages.info(request, 'Zapisano.')
+        else:
+            raise SuspiciousOperation('Invalid page')
 
-        return redirect_after_profile_save(request, 'data')
-    else:
-        user_form = UserForm(instance=request.user)
-        user_profile_form = UserProfileForm(instance=user_profile)
-        user_form.helper.form_tag = False
-        user_profile_form.helper.form_tag = False
-        context['user_form'] = user_form
-        context['user_profile_form'] = user_profile_form
-        context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
-        context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
-        context['user_info_page_form'] = UserInfoPageForm(instance=user_profile.user_info)
-        context['is_editing_profile'] = True
-        context['title'] = 'Mój profil'
+    user_form.helper.form_tag = False
+    user_profile_form.helper.form_tag = False
+    context['user_form'] = user_form
+    context['user_profile_form'] = user_profile_form
+    context['user_profile_page_form'] = user_profile_page_form
+    context['user_cover_letter_form'] = user_cover_letter_form
+    context['user_info_page_form'] = user_info_page_form
+    context['is_editing_profile'] = True
+    context['title'] = 'Mój profil'
 
-        return render(request, 'profile.html', context)
+    return render(request, 'profile.html', context)
 
 
 def workshop_view(request, name=None):

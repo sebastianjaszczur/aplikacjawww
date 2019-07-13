@@ -108,10 +108,22 @@ function handle_registration_change(workshop_name_txt, register) {
 }
 
 $(function () {
-    $('[data-toggle="popover"]').popover()
-})
+    $('[data-toggle="popover"]').popover();
 
-// Automatically hide 'Saved successfully' alerts after 4 seconds
-$(".alert").delay(4000).fadeTo(500, 0).slideUp(500, function(){
-    $(this).remove();
+    // Automatically hide 'Saved successfully' alerts after 4 seconds
+    $(".alert").delay(4000).fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove();
+    });
+
+    $('.dateinput').each(function (i, x) {
+        var dates = [];
+        for(var date = moment($(x).data('start-date')); date <= moment($(x).data('end-date')); date.add(1, 'days'))
+            dates.push(date.toDate());
+        $(x).datetimepicker({
+            format: 'L',
+            locale: 'pl',
+            defaultDate: $(x).data('default-date'),
+            enabledDates: dates,
+        });
+    });
 });

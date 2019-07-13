@@ -60,22 +60,6 @@ class WorkshopUserProfile(models.Model):
         return '%s: %s, %s' % (self.year, self.user_profile, self.status)
 
 
-# That's bad, one year design. I'm so sorry.
-POSSIBLE_DATES = [
-    ('no_idea', 'Nie ogarniam'),
-] + [
-    (str(day_number), str(day_number) + ' sierpien')
-    for day_number in range(16, 28)
-] + [(str(28), 'Wybierz inną datę')]
-
-# The same
-POSSIBLE_PLACES = [
-    ('no_idea', 'Nie ogarniam'),
-    ('wierchomla', 'Wierchomla Wielka'),
-    ('warsaw', 'Warszawa'),
-    ('cracow', 'Kraków')
-]
-
 POSSIBLE_TSHIRT_SIZES = [
     ('no_idea', 'Nie ogarniam'),
     ("XS", "XS"),
@@ -91,12 +75,8 @@ class UserInfo(models.Model):
     """Info needed for camp, not for qualification."""
     pesel = models.CharField(max_length=20, blank=True, default="")
     address = models.TextField(max_length=1000, blank=True, default="")
-    start_date = models.CharField(max_length=100, choices=POSSIBLE_DATES,
-                                  default='no_idea', blank=False, null=False)
-    end_date = models.CharField(max_length=100, choices=POSSIBLE_DATES,
-                                default='no_idea', blank=False, null=False)
-    meeting_point = models.CharField(max_length=100, choices=POSSIBLE_PLACES,
-                                     default='no_idea', blank=False, null=False)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
     tshirt_size = models.CharField(max_length=100, choices=POSSIBLE_TSHIRT_SIZES,
                                    default='no_idea', blank=False, null=False)
     comments = models.CharField(max_length=1000, blank=True, default="")

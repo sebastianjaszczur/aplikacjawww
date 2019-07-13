@@ -14,14 +14,16 @@
 
       <div id="pagination_content">
         <div title="Dane" id="data">
-          <form id="profile_data_form" action="" method="post" class="form-horizontal">
+          <form id="profile_data_form" action="#data" method="post" class="form-horizontal">
+            <input type="hidden" name="page" value="data">
             {% include "_profilesubmit.html" %}
             {% crispy user_form %}
             {% crispy user_profile_form %}
           </form>
         </div>
         <div title="Strona profilowa" id="profile_page">
-          <form action="{% url 'update_profile_page' %}" method="post" class="form">
+          <form action="#profile_page" method="post" class="form">
+            <input type="hidden" name="page" value="profile_page">
             {% csrf_token %}
             {% include "_profilesubmit.html" %}
             {{ user_profile_page_form.profile_page }}
@@ -54,14 +56,16 @@
             <li>Tutaj możesz napisać cokolwiek, co nie mieści się w
             punktach 1-6.</li>
           </ol>
-          <form action="{% url 'update_cover_letter' %}" method="post" class="form">
+          <form action="#cover_letter" method="post" class="form">
+            <input type="hidden" name="page" value="cover_letter">
             {% csrf_token %}
             <button class="btn btn-default big-button">Zapisz</button>
             {{ user_cover_letter_form.cover_letter }}
           </form>
         </div>
         <div title="Informacje" id="user_info">
-          <form action="{% url 'update_user_info' %}" method="post" class="form-horizontal">
+          <form action="#user_info" method="post" class="form-horizontal">
+            <input type="hidden" name="page" value="user_info">
             {% csrf_token %}
             <button class="btn btn-default big-button">Zapisz</button>
             {% crispy user_info_page_form %}
