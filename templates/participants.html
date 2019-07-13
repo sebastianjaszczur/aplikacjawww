@@ -27,6 +27,8 @@
               <th>Pesel</th>
               <th>Adres</th>
               <th>Rozmiar Koszulki</th>
+              <th>Data Przyjazdu</th>
+              <th>Data Wyjazdu</th>
             </tr>
           </thead>
           <tbody>
@@ -82,6 +84,12 @@
                 </td>
                 <td>
                   {{ person.tshirt_size }}
+                </td>
+                <td>
+                  {{ person.start_date }}
+                </td>
+                <td>
+                  {{ person.end_date }}
                 </td>
               </tr>
             {% endfor %}

@@ -374,6 +374,8 @@ def participants_view(request, year):
                 'points': 0.0,
                 'infos': [],
                 'comments': participant.participant.user_info.comments,
+                'start_date': participant.participant.user_info.start_date,
+                'end_date': participant.participant.user_info.end_date,
             }
 
         if participant.qualification_result:
