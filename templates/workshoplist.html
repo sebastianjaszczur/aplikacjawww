@@ -9,9 +9,10 @@
     {% for entry in workshops %}
       <h2>{{ entry.year }}</h2>
       <div class="table-responsive">
-        <table id="workshop_list" class="table table-striped table-bordered table-condensed">
+        <table id="workshop_list" class="table" style="width:100%!important;">
           <thead>
           <tr>
+              <th></th>
               <th>Warsztaty</th>
               <th>Prowadzący</th>
               <th>Kategorie</th>
@@ -27,6 +28,8 @@
           <tbody>
           {% for workshop in entry.workshops %}
             <tr>
+              <td>
+              </td>
               <td>
                 {% if workshop.is_publicly_visible %}
                   <a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }}</a>
@@ -100,14 +103,71 @@
 {% endblock %}
 
 {% block script %}
-  <script src="{% static 'js/jquery.bdt.js' %}"></script>
-  <link href="{% static 'css/jquery.bdt.css' %}" rel="stylesheet">
-  <script src="{% static 'js/jquery.sortelements.js' %}"></script>
   <script>
   $(document).ready( function () {
-    $('#workshop_list').bdt();
-
+    const table = $('#workshop_list').DataTable({
+        dom: 'Bfrtip',
+        responsive: true,
+        colReorder: true,
+        buttons: [
+            {
+                extend: 'colvis',
+                columns: ':gt(0)'
+            },
+            {
+                extend: 'copy',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'excel',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdf',
+                exportOptions: {
+                    columns: ':visible'
+                }
+           },
+           {
+                extend: 'print',
+                exportOptions: {
+                    columns: ':visible'
+                }
+           },
+        ],
+        "columnDefs": [
+          {
+            "orderable": false,
+            targets: [0]
+          },
+          {
+            visible: true,
+            targets: "_all"
+          },
+          {
+            "searchable": true,
+            targets: [1, 2, 3, 4]
+          },
+          {
+            "searchable": false,
+            targets: "_all"
+          }
+          ],
+        "language": {
+          "url": "{% static 'datatables/Polish.json' %}",
+        },
+        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
+          $("td:first", nRow).html(iDisplayIndex +1);
+          return nRow;
+        },
+        "order": [[ 10, "desc" ]],
+      });
   });
+
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
   });
