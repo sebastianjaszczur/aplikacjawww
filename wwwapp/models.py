@@ -37,16 +37,23 @@ class UserProfile(models.Model):
         return "{0.first_name} {0.last_name}".format(self.user)
 
     class Meta:
-        permissions = (('see_all_users', 'Can see all users'),)
+        permissions = [('see_all_users', 'Can see all users'),
+                       ('export_workshop_registration', 'Can download workshop registration data')]
 
 
 class WorkshopUserProfile(models.Model):
     # for each year
+    STATUS_ACCEPTED = 'Z'
+    STATUS_REJECTED = 'O'
+    STATUS_CHOICES = [
+        (STATUS_ACCEPTED, 'Zaakceptowany'),
+        (STATUS_REJECTED, 'Odrzucony')
+    ]
     user_profile = models.ForeignKey('UserProfile', null=True, related_name='workshop_profile', on_delete=models.CASCADE)
 
     year = models.IntegerField()
     status = models.CharField(max_length=10,
-                              choices=[('Z', 'Zaakceptowany'), ('O', 'Odrzucony')],
+                              choices=STATUS_CHOICES,
                               null=True, default=None, blank=True)
 
     def __str__(self):
@@ -124,6 +131,7 @@ class UserInfo(models.Model):
                 year += 1800
 
             return date(year, month, days)
+
 
 class AlphaNumericField(models.CharField):
     def clean(self, value, model_instance):

@@ -19,6 +19,10 @@
     visibility: hidden;
 }
 
+.inline {
+	display: inline;
+}
+
 .profile-preview {
     margin-top: 10px;
     font-size: 105%;

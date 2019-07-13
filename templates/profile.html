@@ -28,33 +28,32 @@
           </form>
         </div>
         <div title="List motywacyjny" id="cover_letter">
-            <p>Napisz (w 50 - 1000 słowach) odnosząc się do każdego punktu w oddzielnym paragrafie:
-                <ol>
-                    <li>Opisz swoje główne zainteresowania naukowe.
-                    Mile widziany będzie szczegółowy opis (jeśli interesujesz się
-                    matematyką - jaka dziedzina interesuje Cię najbardziej;
-                    jeśli programowaniem - co i w czym programujesz etc.).</li>
-                    <li>W jaki sposób rozwijasz zainteresowania z punktu 1.?
-                    Napisz, jakie książki czytasz, jakiego typu zadania i problemy
-                    rozwiązujesz itd. Jeśli masz własne projekty, prace,
-                    przeprowadzasz doświadczenia, piszesz własne programy -
-                    opisz je. Jeśli jesteś w Krajowym Funduszu na rzecz Dzieci,
-                    opisz krótko, co robisz w ramach programu.</li>
-                    <li>Jeśli interesujesz się czymś nie stricte naukowym
-                    (spoza tematyki mat/fiz/inf) lub angażujesz się w inne
-                    inicjatywy, opisz je pokrótce.</li>
-                    <li>Jeśli bierzesz udział w konkursach lub olimpiadach,
-                    opisz swoje dokonania (udział, nagrody).</li>
-                    <li>O których ze swoich zainteresowań najchętniej
-                    opowiedziałbyś innym?</li>
-                    <li>Czego oczekujesz od swojego udziału w Warsztatach,
-                    co skłoniło Cię do zgłoszenia się? Jeśli masz ochotę
-                    wnieść coś do Warsztatów (zorganizować coś, wygłosić
-                    wieczorny wykład itd.), opisz to.</li>
-                    <li>Tutaj możesz napisać cokolwiek, co nie mieści się w
-                    punktach 1-6.</li>
-              </ol>
-          </p>
+          <p>Napisz (w 50 - 1000 słowach) odnosząc się do każdego punktu w oddzielnym paragrafie:</p>
+          <ol>
+            <li>Opisz swoje główne zainteresowania naukowe.
+            Mile widziany będzie szczegółowy opis (jeśli interesujesz się
+            matematyką - jaka dziedzina interesuje Cię najbardziej;
+            jeśli programowaniem - co i w czym programujesz etc.).</li>
+            <li>W jaki sposób rozwijasz zainteresowania z punktu 1.?
+            Napisz, jakie książki czytasz, jakiego typu zadania i problemy
+            rozwiązujesz itd. Jeśli masz własne projekty, prace,
+            przeprowadzasz doświadczenia, piszesz własne programy -
+            opisz je. Jeśli jesteś w Krajowym Funduszu na rzecz Dzieci,
+            opisz krótko, co robisz w ramach programu.</li>
+            <li>Jeśli interesujesz się czymś nie stricte naukowym
+            (spoza tematyki mat/fiz/inf) lub angażujesz się w inne
+            inicjatywy, opisz je pokrótce.</li>
+            <li>Jeśli bierzesz udział w konkursach lub olimpiadach,
+            opisz swoje dokonania (udział, nagrody).</li>
+            <li>O których ze swoich zainteresowań najchętniej
+            opowiedziałbyś innym?</li>
+            <li>Czego oczekujesz od swojego udziału w Warsztatach,
+            co skłoniło Cię do zgłoszenia się? Jeśli masz ochotę
+            wnieść coś do Warsztatów (zorganizować coś, wygłosić
+            wieczorny wykład itd.), opisz to.</li>
+            <li>Tutaj możesz napisać cokolwiek, co nie mieści się w
+            punktach 1-6.</li>
+          </ol>
           <form action="{% url 'update_cover_letter' %}" method="post" class="form">
             {% csrf_token %}
             <button class="btn btn-default big-button">Zapisz</button>
@@ -72,10 +71,49 @@
       </div>
       </div>
     {% else %}
-
       {% if profile %}
         <table class=table>
           <tbody>
+            <tr>
+              <th>Edycje WWW:</th>
+              <td>
+                {% for edition in profile.workshop_profile.all %}
+                  {% if edition.status == 'Z' %}
+                    <span class="qualified">✔{{ edition.year }}</span>
+                  {% else %}
+                    <span class="not-qualified">✘{{ edition.year }}</span>
+                  {% endif %}
+                {% endfor %}
+                {% if has_workshop_profile %}
+                  <form method="post" class="inline">
+                    {% csrf_token %}
+                    <span class="btn-group-xs" role="group">
+                      <button type="submit" class="btn btn-default"
+                              name="qualify" value="delete"
+                              onclick="return confirm('Czy na pewno chcesz usunąć kwalifikację?');">
+                        Usuń kwalifikację
+                      </button>
+                    </span>
+                  </form>
+                {% else %}
+                  <form method="post" class="inline">
+                    {% csrf_token %}
+                    <span class="btn-group-xs" role="group">
+                      <button type="submit" class="btn btn-default"
+                              name="qualify" value="accept"
+                              onclick="return confirm('Czy na pewno chcesz zakwalifikować?');">
+                        ✔ Zakwalifikuj
+                      </button>
+                      <button type="submit" class="btn btn-default"
+                              name="qualify" value="reject"
+                              onclick="return confirm('Czy na pewno chcesz odrzucić?');">
+                        ✘ Odrzuć
+                      </button>
+                    </span>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
             <tr>
               <th>Email:</th>
               <td>{{ profile.user.email }}
@@ -92,7 +130,6 @@
               <th>Rok matury:</th>
               <td>{{ profile.matura_exam_year }}
             </tr>
-
             <tr>
               <th>Skąd wie o WWW:</th>
               <td>{{ profile.how_do_you_know_about }}
@@ -107,7 +144,7 @@
         {% endif %}
 
         {% if profile.cover_letter %}
-          <hr />
+          <hr/>
           <h3>List motywacyjny</h3>
           {{ profile.cover_letter | bleach }}
         {% endif %}
@@ -126,7 +163,6 @@
           <em>Twoje szczegółowe dane oraz list motywacyjny są widoczne tylko dla administratorów. Strona profilowa jest publiczna.</em>
         </p>
       {% endif %}
-
     {% endif %}
   </div>
 </div>

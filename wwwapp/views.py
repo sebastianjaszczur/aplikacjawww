@@ -6,11 +6,12 @@ from wsgiref.util import FileWrapper
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.urls import reverse
@@ -37,6 +38,7 @@ def get_context(request):
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = articles_on_menubar
     context['has_workshops'] = has_workshops
+    context['current_year'] = settings.CURRENT_YEAR
 
     return context
 
@@ -85,6 +87,29 @@ def profile_view(request, user_id):
     if can_see_all_users or is_my_profile:
         context['profile'] = profile
 
+    can_qualify = request.user.has_perm('wwwapp.change_workshop_user_profile')
+    context['can_qualify'] = can_qualify
+    context['has_workshop_profile'] = WorkshopUserProfile.objects.filter(
+        user_profile=user.userprofile, year=settings.CURRENT_YEAR).exists()
+
+    if request.method == 'POST':
+        if not can_qualify:
+            return HttpResponseForbidden()
+        (edition_profile, _) = WorkshopUserProfile.objects.get_or_create(
+            user_profile=user.userprofile, year=settings.CURRENT_YEAR)
+        context['has_workshop_profile'] = True
+        if request.POST['qualify'] == 'accept':
+            edition_profile.status = WorkshopUserProfile.STATUS_ACCEPTED
+            edition_profile.save()
+        elif request.POST['qualify'] == 'reject':
+            edition_profile.status = WorkshopUserProfile.STATUS_REJECTED
+            edition_profile.save()
+        elif request.POST['qualify'] == 'delete':
+            edition_profile.delete()
+            context['has_workshop_profile'] = False
+        else:
+            raise SuspiciousOperation("Invalid argument")
+
     return render(request, 'profile.html', context)
 
 
@@ -93,77 +118,69 @@ def redirect_after_profile_save(request, target):
     return redirect(reverse('myProfile') + '#' + target)
 
 
+@login_required()
 def update_profile_page_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    else:
-        user_profile = UserProfile.objects.get(user=request.user)
+    user_profile = UserProfile.objects.get(user=request.user)
 
-        if request.method == "POST":
-            user_profile_page_form = UserProfilePageForm(request.POST, instance=user_profile)
-            if user_profile_page_form.is_valid():
-                user_profile_page_form.save()
+    if request.method == "POST":
+        user_profile_page_form = UserProfilePageForm(request.POST, instance=user_profile)
+        if user_profile_page_form.is_valid():
+            user_profile_page_form.save()
 
-        return redirect_after_profile_save(request, 'profile_page')
+    return redirect_after_profile_save(request, 'profile_page')
 
 
+@login_required()
 def update_cover_letter_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    else:
-        user_profile = UserProfile.objects.get(user=request.user)
+    user_profile = UserProfile.objects.get(user=request.user)
 
-        if request.method == "POST":
-            user_cover_letter_form = UserCoverLetterForm(request.POST, instance=user_profile)
-            if user_cover_letter_form.is_valid():
-                user_cover_letter_form.save()
+    if request.method == "POST":
+        user_cover_letter_form = UserCoverLetterForm(request.POST, instance=user_profile)
+        if user_cover_letter_form.is_valid():
+            user_cover_letter_form.save()
 
-        return redirect_after_profile_save(request, 'cover_letter')
+    return redirect_after_profile_save(request, 'cover_letter')
 
 
+@login_required()
 def update_user_info_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    else:
-        user_profile = UserProfile.objects.get(user=request.user)
-        user_info = user_profile.user_info
+    user_profile = UserProfile.objects.get(user=request.user)
+    user_info = user_profile.user_info
 
-        if request.method == "POST":
-            user_info_page_form = UserInfoPageForm(request.POST, instance=user_info)
-            if user_info_page_form.is_valid():
-                user_info_page_form.save()
+    if request.method == "POST":
+        user_info_page_form = UserInfoPageForm(request.POST, instance=user_info)
+        if user_info_page_form.is_valid():
+            user_info_page_form.save()
 
-        return redirect_after_profile_save(request, 'user_info')
+    return redirect_after_profile_save(request, 'user_info')
 
 
+@login_required()
 def my_profile_view(request):
     context = get_context(request)
-    if not request.user.is_authenticated:
-        return redirect('login')
+    user_profile = UserProfile.objects.get(user=request.user)
+    if request.method == "POST":
+        user_form = UserForm(request.POST, instance=request.user)
+        user_profile_form = UserProfileForm(request.POST, instance=user_profile)
+        if user_form.is_valid() and user_profile_form.is_valid():
+            user_form.save()
+            user_profile_form.save()
+
+        return redirect_after_profile_save(request, 'data')
     else:
-        user_profile = UserProfile.objects.get(user=request.user)
-        if request.method == "POST":
-            user_form = UserForm(request.POST, instance=request.user)
-            user_profile_form = UserProfileForm(request.POST, instance=user_profile)
-            if user_form.is_valid() and user_profile_form.is_valid():
-                user_form.save()
-                user_profile_form.save()
+        user_form = UserForm(instance=request.user)
+        user_profile_form = UserProfileForm(instance=user_profile)
+        user_form.helper.form_tag = False
+        user_profile_form.helper.form_tag = False
+        context['user_form'] = user_form
+        context['user_profile_form'] = user_profile_form
+        context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
+        context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
+        context['user_info_page_form'] = UserInfoPageForm(instance=user_profile.user_info)
+        context['is_editing_profile'] = True
+        context['title'] = 'Mój profil'
 
-            return redirect_after_profile_save(request, 'data')
-        else:
-            user_form = UserForm(instance=request.user)
-            user_profile_form = UserProfileForm(instance=user_profile)
-            user_form.helper.form_tag = False
-            user_profile_form.helper.form_tag = False
-            context['user_form'] = user_form
-            context['user_profile_form'] = user_profile_form
-            context['user_profile_page_form'] = UserProfilePageForm(instance=user_profile)
-            context['user_cover_letter_form'] = UserCoverLetterForm(instance=user_profile)
-            context['user_info_page_form'] = UserInfoPageForm(instance=user_profile.user_info)
-            context['is_editing_profile'] = True
-            context['title'] = 'Mój profil'
-
-            return render(request, 'profile.html', context)
+        return render(request, 'profile.html', context)
 
 
 def workshop_view(request, name=None):
@@ -220,7 +237,7 @@ def workshop_page_view(request, name):
 
     workshop = get_object_or_404(Workshop, name=name)
     if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
-        raise Http404("Warsztaty nie zostały zaakceptowane")
+        return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
 
     title = workshop.title
     has_perm_to_edit = can_edit_workshop(workshop, request.user)
@@ -262,29 +279,29 @@ def can_edit_workshop(workshop, user):
         return False
 
 
+@login_required()
 def workshop_participants_view(request, name):
     workshop = get_object_or_404(Workshop, name=name)
 
-    can_see_all = request.user.has_perm('wwwapp.see_all_workshops')
-    can_see_this = can_edit_workshop(workshop, request.user)
+    can_edit = can_edit_workshop(workshop, request.user)
+    can_see = can_edit or request.user.has_perm('wwwapp.see_all_workshops')
 
-    if not can_see_all and not can_see_this:
-        # it should show page like "you don't have permission", probably
-        return redirect('login')
+    if not can_see:
+        return HttpResponseForbidden()
 
     context = get_context(request)
 
     context['workshop'] = workshop
     context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
             'workshop', 'participant', 'participant__user')
-    context['has_perm_to_edit'] = can_see_this
+    context['has_perm_to_edit'] = can_edit
     
     return render(request, 'workshopparticipants.html', context)
 
 
 def save_points_view(request):
     workshop_participant = WorkshopParticipant.objects.get(id=request.POST['id'])
-    # can edit?
+
     can_edit = can_edit_workshop(workshop_participant.workshop, request.user)
     if not can_edit:
         return JsonResponse({'error': 'Brak uprawnień.'})
@@ -313,12 +330,10 @@ def save_points_view(request):
                          'mark': qualified_mark(workshop_participant.is_qualified())})
 
 
+@login_required()
+@permission_required('wwwapp.see_all_workshops', raise_exception=True)
 def participants_view(request, year):
-    can_see_users = request.user.has_perm('wwwapp.see_all_workshops')
     year = int(year)
-
-    if not can_see_users:
-        return redirect('login')
 
     participants = WorkshopParticipant.objects.all().filter(workshop__type__year=year)\
                                                     .prefetch_related('workshop', 'participant', 'participant__user')
@@ -380,12 +395,9 @@ def participants_view(request, year):
     return render(request, 'participants.html', context)
 
 
+@login_required()
+@permission_required('wwwapp.see_user_info', raise_exception=True)
 def people_info_view(request):
-    can_see_users = request.user.has_perm('wwwapp.see_user_info')
-
-    if not can_see_users:
-        return redirect('login')
-
     users = UserProfile.objects.prefetch_related('user', 'user_info')
     users = [user for user in users if user.status == 'Z']
     accepted_workshops = Workshop.objects.filter(status='Z')
@@ -422,7 +434,7 @@ def register_to_workshop_view(request):
     workshop_name = request.POST['workshop_name']
 
     if not request.user.is_authenticated:
-        return JsonResponse({'redirect': reverse('login')})
+        return JsonResponse({'redirect': reverse('login'), 'error': u'Jesteś niezalogowany'})
 
     workshop = get_object_or_404(Workshop, name=workshop_name)
 
@@ -444,8 +456,7 @@ def unregister_from_workshop_view(request):
     workshop_name = request.POST['workshop_name']
     data = {}
     if not request.user.is_authenticated:
-        data['redirect'] = reverse('login')
-        return JsonResponse(data)
+        return JsonResponse({'redirect': reverse('login'), 'error': u'Jesteś niezalogowany'})
 
     workshop = get_object_or_404(Workshop, name=workshop_name)
     profile = UserProfile.objects.get(user=request.user)
@@ -466,9 +477,8 @@ def unregister_from_workshop_view(request):
     return JsonResponse(data)
 
 
+@permission_required('wwwapp.export_workshop_registration')
 def data_for_plan_view(request):
-    if not request.user.is_superuser:
-        return redirect('login')
     data = {}
 
     user_profiles_raw = set(up for up in UserProfile.objects.all() if WorkshopUserProfile.objects.filter(user_profile=up, year=settings.CURRENT_YEAR, status='Z').exists())
@@ -562,19 +572,15 @@ def article_name_list_view(request):
     return JsonResponse(list(names), safe=False)
 
 
+@login_required()
 def your_workshops_view(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
     workshops = Workshop.objects.filter(lecturer__user=request.user)
     return render_workshops(request, 'Twoje warsztaty', workshops)
 
 
+@login_required()
+@permission_required('wwwapp.see_all_workshops', raise_exception=True)
 def all_workshops_view(request):
-    if not request.user.has_perm('wwwapp.see_all_workshops'):
-        # it should show page like "you don't have permission", probably
-        return redirect('login')
-
     workshops = Workshop.objects.all()
     return render_workshops(request, 'Wszystkie warsztaty', workshops)
 
@@ -593,12 +599,9 @@ def render_workshops(request, title, workshops):
     return render(request, 'workshoplist.html', context)
 
 
+@login_required()
+@permission_required('wwwapp.see_all_workshops', raise_exception=True)  # Think about seperate permission
 def emails_view(request):
-    # think about seperate permission
-    if not request.user.has_perm('wwwapp.see_all_workshops'):
-        # it should show page like "you don't have permission", probably
-        return redirect('login')
-
     workshops = Workshop.objects.all()
 
     result = []
