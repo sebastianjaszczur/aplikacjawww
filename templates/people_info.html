@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <article class="col-sm-12 maincontent">
+        <h1>Wszyscy uczestnicy</h1>
+        <table class="table">
+          <thead>
+            <th>N.</th>
+            <th>Imię i nazwisko</th>
+            <th>E-mail</th>
+            <th>Pesel</th>
+            <th>Adres</th>
+            <th>Start</th>
+            <th>Koniec</th>
+            <th>Spotkanie</th>
+            <th>Tshirt</th>
+            <th>Komcie</th>
+          </thead>
+          <tbody>
+            {% for person in people %}
+            <tr>
+              <td>
+                {{ forloop.counter }}
+              </td>
+              <td>
+                <a href="{% url 'profile' person.user.id %}">
+                  {{ person.user.get_full_name }}
+                </a>
+              </td>
+              <td>
+                {{ person.user.email }}
+              </td>
+              <td>
+                {{ person.pesel }}
+              </td>
+              <td>
+                {{ person.address }}
+              </td>
+              <td>
+                {{ person.start_date }}
+              </td>
+              <td>
+                {{ person.end_date }}
+              </td>
+              <td>
+                {{ person.meeting_point }}
+              </td>
+              <td>
+                {{ person.tshirt_size }}
+              </td>
+              <td>
+                {{ person.comments }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </article>
+</div>
+{% endblock %}

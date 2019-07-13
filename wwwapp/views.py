@@ -380,6 +380,44 @@ def participants_view(request, year):
     return render(request, 'participants.html', context)
 
 
+def people_info_view(request):
+    can_see_users = request.user.has_perm('wwwapp.see_user_info')
+
+    if not can_see_users:
+        return redirect('login')
+
+    users = UserProfile.objects.prefetch_related('user', 'user_info')
+    users = [user for user in users if user.status == 'Z']
+    accepted_workshops = Workshop.objects.filter(status='Z')
+    for workshop in accepted_workshops:
+        for user_profile in workshop.lecturer.all():
+            users.append(user_profile)
+
+    people = {}
+
+    for user in users:
+        p_id = user.id
+        people[p_id] = {
+            'user': user.user,
+            'pesel': user.user_info.pesel,
+            'address': user.user_info.address,
+            'start_date': user.user_info.start_date,
+            'end_date': user.user_info.end_date,
+            'meeting_point': user.user_info.meeting_point,
+            'tshirt_size': user.user_info.tshirt_size,
+            'comments': user.user_info.comments,
+        }
+
+    people = list(people.values())
+    people.sort(key=lambda p: (p['user'].get_full_name(), ))
+
+    context = get_context(request)
+    context['title'] = 'Ludzie na warsztatach'
+    context['people'] = people
+
+    return render(request, 'people_info.html', context)
+
+
 def register_to_workshop_view(request):
     workshop_name = request.POST['workshop_name']
 
