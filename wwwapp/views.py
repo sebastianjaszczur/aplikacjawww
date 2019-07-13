@@ -1,3 +1,4 @@
+import datetime
 import os
 import sys
 import mimetypes
@@ -441,8 +442,8 @@ def register_to_workshop_view(request):
     if workshop.type.year != settings.CURRENT_YEAR:
         return JsonResponse({'error': 'Kwalifikacja na te warsztaty została dawno zakończona.'})
 
-    # if workshop.qualification_threshold is not None:
-    #     return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
+    if datetime.datetime.now().date() >= settings.WORKSHOPS_START_DATE:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
 
     WorkshopParticipant(participant=UserProfile.objects.get(user=request.user), workshop=workshop).save()
 
@@ -465,8 +466,11 @@ def unregister_from_workshop_view(request):
     if workshop.type.year != settings.CURRENT_YEAR:
         return JsonResponse({'error': 'Kwalifikacja na te warsztaty została dawno zakończona.'})
 
-    # if workshop.qualification_threshold is not None or workshop_participant.qualification_result is not None:
-    #     return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona - nie możesz się wycofać.'})
+    if datetime.datetime.now().date() >= settings.WORKSHOPS_START_DATE:
+        return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
+
+    if workshop_participant.qualification_result is not None or workshop_participant.comment:
+        return JsonResponse({'error': u'Masz już wyniki z tej kwalifikacji - nie możesz się wycofać.'})
 
     workshop_participant.delete()
 
