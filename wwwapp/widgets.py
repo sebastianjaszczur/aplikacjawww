@@ -1,6 +1,7 @@
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.utils import flatatt
-from django.forms.widgets import Widget, DateInput
+from django.forms.widgets import Widget
+from django.template import Template, Context
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 
@@ -39,3 +40,8 @@ class RichTextarea(Widget):
         return format_html('<textarea{}>\r\n{}</textarea>',
                            flatatt(final_attrs),
                            force_text(value))
+
+
+class RenderHTML(Widget):
+    def render(self, name, value, attrs=None, renderer=None):
+        return Template("{% load bleach_tags %} {{ x|bleach }}").render(Context({'x': value}))

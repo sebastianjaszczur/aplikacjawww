@@ -8,7 +8,7 @@ from django_select2.forms import Select2MultipleWidget, Select2Widget
 from . import settings
 from .models import UserProfile, Article, Workshop, WorkshopCategory, \
     WorkshopType, UserInfo, WorkshopUserProfile
-from .widgets import RichTextarea
+from .widgets import RichTextarea, RenderHTML
 
 
 class UserProfilePageForm(ModelForm):
@@ -135,6 +135,12 @@ class WorkshopForm(ModelForm):
     category.help_text = ""  # this removes annoying message ' Hold down "Control", or "Command" (..) '
     type = ModelChoiceField(label="Rodzaj zajęć", queryset=WorkshopType.objects.filter(year=settings.CURRENT_YEAR),
                             widget=Select2Widget(attrs={'width': '200px'}))
+
+    def __init__(self, *args, **kwargs):
+        super(WorkshopForm, self).__init__(*args, **kwargs)
+        if self.instance.status:
+            self.fields['proposition_description'].disabled = True
+            self.fields['proposition_description'].widget = RenderHTML()
 
     class Meta:
         model = Workshop
