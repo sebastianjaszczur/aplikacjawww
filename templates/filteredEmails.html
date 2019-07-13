@@ -13,23 +13,23 @@
 
 <div class="container">
     {% if filtered_users %}
-        <div>
-            <h2 class="heading">Filtr "{{ chosen_filter_name }}" dla roku {{ chosen_year }}</h2>
-            <input class="form-control" value="{% for user in filtered_users %}{{ user.email }}, {% endfor %}" />
+        <div class="form-group">
+            <label for="emails"><h2 class="heading">Filtr "{{ chosen_filter_name }}" dla roku {{ chosen_year }}</h2></label>
+            <input id="emails" class="form-control" value="{% for user in filtered_users %}{{ user.email }}, {% endfor %}" />
         </div>
     {% endif %}
 
 
-    <div>
+    <div class="form-group">
         <form id="filter_methods">
-            <h2 class="heading">Wybierz rok i metodę filtrowania: </h2>
-            <select name="selected_year">
+            <label for="year"><h2 class="heading">Wybierz rok i metodę filtrowania: </h2></label>
+            <select id="year" class="form-control" name="selected_year">
                 {% for year in years %}
                 <option value="{{ year }}" {% if year == chosen_year %} selected {% endif %}>{{ year }}</option>
                 {% endfor %}
             </select>
             <br/><br/>
-            <select name="selected_method">
+            <select class="form-control" name="selected_method">
                 {% for filter_id, filter_name in filter_methods %}
                     <option value="{{ filter_id }}" {% if filter_name == chosen_filter_name %} selected {% endif %}>{{ filter_name }}</option>
                 {% endfor %}
