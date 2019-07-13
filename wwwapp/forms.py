@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
 from django.contrib.auth.models import User
-from django.forms import ModelChoiceField, ModelMultipleChoiceField
+from django.core.exceptions import ValidationError
+from django.forms import ModelChoiceField, ModelMultipleChoiceField, DateInput
 from django.forms import ModelForm, FileInput, FileField
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 
@@ -32,15 +33,43 @@ class UserInfoPageForm(ModelForm):
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-lg-3'
         self.helper.field_class = 'col-lg-9'
-    
+
+    def clean_start_date(self):
+        if self.cleaned_data['start_date']:
+            if self.cleaned_data['start_date'] < settings.WORKSHOPS_START_DATE:
+                raise ValidationError('Warsztaty rozpoczynają się ' + str(settings.WORKSHOPS_START_DATE))
+            if self.cleaned_data['start_date'] > settings.WORKSHOPS_END_DATE:
+                raise ValidationError('Warsztaty kończą się ' + str(settings.WORKSHOPS_END_DATE))
+            if 'end_date' in self.cleaned_data and self.cleaned_data['end_date']:
+                if self.cleaned_data['start_date'] > self.cleaned_data['end_date']:
+                    raise ValidationError('Nie możesz wyjechać wcześniej niż przyjechać! :D')
+        return self.cleaned_data['start_date']
+
+    def clean_end_date(self):
+        if self.cleaned_data['end_date']:
+            if self.cleaned_data['end_date'] < settings.WORKSHOPS_START_DATE:
+                raise ValidationError('Warsztaty rozpoczynają się ' + str(settings.WORKSHOPS_START_DATE))
+            if self.cleaned_data['end_date'] > settings.WORKSHOPS_END_DATE:
+                raise ValidationError('Warsztaty kończą się ' + str(settings.WORKSHOPS_END_DATE))
+            if 'start_date' in self.cleaned_data and self.cleaned_data['start_date']:
+                if self.cleaned_data['start_date'] > self.cleaned_data['end_date']:
+                    raise ValidationError('Nie możesz wyjechać wcześniej niż przyjechać! :D')
+        return self.cleaned_data['end_date']
+
     class Meta:
         model = UserInfo
-        fields = ['pesel', 'address', 'tshirt_size', 'comments']
+        fields = ['pesel', 'address', 'start_date', 'end_date', 'tshirt_size', 'comments']
         labels = {
             'pesel': 'Pesel',
             'address': 'Adres zameldowania',
+            'start_date': 'Data przyjazdu :-)',
+            'end_date': 'Data wyjazdu :-(',
             'tshirt_size': 'Rozmiar koszulki',
             'comments': 'Dodatkowe uwagi (np. wegetarianin, uczulony na X, ale też inne)',
+        }
+        widgets = {
+            'start_date': DateInput(attrs={'data-default-date': settings.WORKSHOPS_START_DATE, 'data-start-date': settings.WORKSHOPS_START_DATE, 'data-end-date': settings.WORKSHOPS_END_DATE}),
+            'end_date': DateInput(attrs={'data-default-date': settings.WORKSHOPS_END_DATE, 'data-start-date': settings.WORKSHOPS_START_DATE, 'data-end-date': settings.WORKSHOPS_END_DATE})
         }
 
 

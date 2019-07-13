@@ -1,6 +1,6 @@
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.utils import flatatt
-from django.forms.widgets import Widget
+from django.forms.widgets import Widget, DateInput
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 
