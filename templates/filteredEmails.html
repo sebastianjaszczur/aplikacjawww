@@ -1,42 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<script>
-    function use_filter() {
-        var year = document.forms['filter_methods'].elements['selected_year']
-        var filter_method = document.forms['filter_methods'].elements['selected_method']
-        document.location = '/filterEmails/' + year[year.selectedIndex].value + '/'
-                                             + filter_method[filter_method.selectedIndex].value
-    }
-</script>
-
-<div class="container">
+  <div class="container">
     {% if filtered_users %}
-        <div class="form-group">
-            <label for="emails"><h2 class="heading">Filtr "{{ chosen_filter_name }}" dla roku {{ chosen_year }}</h2></label>
-            <input id="emails" class="form-control" value="{% for user in filtered_users %}{{ user.email }}, {% endfor %}" />
-        </div>
+    <div class="form-group">
+      <label for="emails"><h2 class="heading">Filtr "{{ chosen_filter_name }}" dla roku {{ chosen_year }}</h2></label>
+      <input id="emails" class="form-control" value="{% for user in filtered_users %}{{ user.email }}, {% endfor %}" />
+    </div>
     {% endif %}
 
 
     <div class="form-group">
-        <form id="filter_methods">
-            <label for="year"><h2 class="heading">Wybierz rok i metodę filtrowania: </h2></label>
-            <select id="year" class="form-control" name="selected_year">
-                {% for year in years %}
-                <option value="{{ year }}" {% if year == chosen_year %} selected {% endif %}>{{ year }}</option>
-                {% endfor %}
-            </select>
-            <br/><br/>
-            <select class="form-control" name="selected_method">
-                {% for filter_id, filter_name in filter_methods %}
-                    <option value="{{ filter_id }}" {% if filter_name == chosen_filter_name %} selected {% endif %}>{{ filter_name }}</option>
-                {% endfor %}
-            </select>
-            <br/><br/>
-            <button type="button" class="btn btn-default" onclick="use_filter()">Filtruj</button>
-        </form>
+      <form id="filter_methods">
+        <label for="year"><h2 class="heading">Wybierz rok i metodę filtrowania: </h2></label>
+        <select id="year" class="form-control" name="selected_year">
+          {% for year in years %}
+          <option value="{{ year }}" {% if year == chosen_year %} selected {% endif %}>{{ year }}</option>
+          {% endfor %}
+        </select>
+        <br/><br/>
+        <select class="form-control" name="selected_method">
+          {% for filter_id, filter_name in filter_methods %}
+          <option value="{{ filter_id }}" {% if filter_name == chosen_filter_name %} selected {% endif %}>{{ filter_name }}</option>
+          {% endfor %}
+        </select>
+        <br/><br/>
+        <button type="button" class="btn btn-default" onclick="use_filter()">Filtruj</button>
+      </form>
     </div>
-</div>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    function use_filter() {
+      var year = document.forms['filter_methods'].elements['selected_year']
+      var filter_method = document.forms['filter_methods'].elements['selected_method']
+      document.location = '/filterEmails/' + year[year.selectedIndex].value + '/'
+                                           + filter_method[filter_method.selectedIndex].value
+    }
+  </script>
 {% endblock %}

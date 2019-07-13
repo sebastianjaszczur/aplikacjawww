@@ -1,27 +1,26 @@
 {% extends "base.html" %}
-
 {% load bleach_tags %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
+  <div class="container">
     <article class="col-sm-12 maincontent">
-        <h1>{{ title }}</h1>
-        {% if workshop.is_publicly_visible %}
-            {% include '_workshopeditheader.html' %}
-        {% endif %}
-        {% if has_perm_to_edit %}
-            <div role="tabpanel">
-                <hr>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {% load crispy_forms_tags %}
-                    {{ form|crispy }}
-                    <button class="btn btn-default">Zapisz</button>
-                </form>
-            </div>
-        {% else %}
-            {{ workshop.proposition_description|bleach }}
-        {% endif %}
+      <h1>{{ title }}</h1>
+      {% if workshop.is_publicly_visible %}
+        {% include '_workshopeditheader.html' %}
+      {% endif %}
+      {% if has_perm_to_edit %}
+        <div role="tabpanel">
+          <hr>
+          <form action="" method="post">
+            {% csrf_token %}
+            {{ form | crispy }}
+            <button class="btn btn-default">Zapisz</button>
+          </form>
+        </div>
+      {% else %}
+        {{ workshop.proposition_description | bleach }}
+      {% endif %}
     </article>
-</div>
+  </div>
 {% endblock %}

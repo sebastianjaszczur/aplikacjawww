@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+  {% load staticfiles %}
+  {% load compress %}
 
-{% load staticfiles %}
-
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Wakacyjne Warsztaty Wielodyscyplinarne">
@@ -11,31 +11,37 @@
     <meta property="og:image" content="http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{% static 'images/black.png' %}">
     <meta property="og:description"
           content="Wakacyjne Warsztaty Wielodyscyplinarne to coroczna impreza organizowana przez studentów,
-          przeznaczona dla licealistów zainteresowanych matematyką, informatyką, fizyką lub astronomią.">
+            przeznaczona dla licealistów zainteresowanych matematyką, informatyką, fizyką lub astronomią.">
 
-    <title>{% if title %}{{ title }} - WWW{% else %}Wakacyjne Warsztaty Wielodyscyplinarne{% endif %}</title>
+    <title>
+      {% if title %}
+        {{ title }} - WWW
+      {% else %}
+        Wakacyjne Warsztaty Wielodyscyplinarne
+      {% endif %}
+    </title>
 
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 
     <link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css" />
 
-    {% load compress %}
     {% compress css %}
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
-    <!-- highlight for code / codesnippets-->
-    <link rel="stylesheet" href="{% static 'ckeditor/plugins/codesnippet/lib/highlight/styles/default.css' %}">
+      <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+      <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+      <!-- Highlight for code / codesnippets-->
+      <link rel="stylesheet" href="{% static 'ckeditor/plugins/codesnippet/lib/highlight/styles/default.css' %}">
 
-    <!-- datatables -->
-    <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
+      <!-- Datatables -->
+      <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
 
-    <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.css' %}">
+      <!-- DateTime Picker -->
+      <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.css' %}">
 
-    <!-- Custom styles for our template -->
-    <link rel="stylesheet" href="{% static 'css/site.css' %}">
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-theme.css' %}" media="screen">
+      <!-- Custom styles for our template -->
+      <link rel="stylesheet" href="{% static 'css/site.css' %}">
+      <link rel="stylesheet" href="{% static 'css/main.css' %}">
+      <link rel="stylesheet" href="{% static 'css/bootstrap-theme.css' %}" media="screen">
     {% endcompress %}
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -43,98 +49,95 @@
     <script src="static/js/html5shiv.js"></script>
     <script src="static/js/respond.min.js"></script>
     <![endif]-->
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Fixed navbar -->
     <div class="navbar navbar-inverse navbar-fixed-top headroom" >
-        <div class="container">
-            <div class="navbar-header">
-                <!-- Button for smallest screens -->
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-                <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" alt="Wakacyjne Warsztaty Wielodyscyplinarne"></a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav pull-right">
-                    <li><a href="{% url 'index' %}">Strona główna</a></li>
-
-                    <li><a href="{% url 'program' %}">Program</a></li>
-
-                    {% if perms.wwwapp.see_all_users %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                          <li><a href="{% url 'participants' %}">Uczestnicy</a></li>
-                          <li><a href="{% url 'filter_emails' %}">Adresy email</a></li>
-                          {% if request.user.is_staff %}
-                          <li role="separator" class="divider"></li>
-                          <li><a href="{% url 'admin:index' %}">Django admin</a></li>
-                          {% endif %}
-                        </ul>
-                    </li>
-                    {% endif %}
-
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Artykuły <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            {% for article in articles_on_menubar %}
-                                <li><a href="{% url 'article' article.name%}">{{ article.title }}</a></li>
-                            {% endfor %}
-                            {% if perms.wwwapp.add_article %}
-                                <li role="separator" class="divider"></li>
-                                <li><a href="{% url 'addArticle' %}">Nowy artykuł</a></li>
-                            {% endif %}
-                        </ul>
-                    </li>
-
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Warsztaty<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{% url 'addWorkshop' %}">Zgłoś warsztaty!</a></li>
-                            {% if has_workshops %}
-                                <li><a href="{% url 'yourWorkshops' %}">Twoje warsztaty</a></li>
-                            {% endif %}
-                            {% if perms.wwwapp.see_all_workshops %}
-                                <li><a href="{% url 'allWorkshops' %}">Wszystkie warsztaty</a></li>
-                            {% endif %}
-                        </ul>
-                    </li>
-
-
-
-                    <li><a href="{% url 'myProfile' %}">Profil</a></li>
-
-                    {% if user.is_authenticated %}
-                        <li><a class="btn" href="{% url 'login' %}">{{ user.first_name }} {{ user.last_name }}</a></li>
-                    {% else %}
-                        <li><a class="btn" href="{% url 'login' %}">Zaloguj</a></li>
-                    {% endif %}
-                </ul>
-            </div><!--/.nav-collapse -->
+      <div class="container">
+        <div class="navbar-header">
+          <!-- Button for smallest screens -->
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+          <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" alt="Wakacyjne Warsztaty Wielodyscyplinarne"></a>
         </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav pull-right">
+            <li><a href="{% url 'index' %}">Strona główna</a></li>
+
+            <li><a href="{% url 'program' %}">Program</a></li>
+
+            {% if perms.wwwapp.see_all_users %}
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="{% url 'participants' %}">Uczestnicy</a></li>
+                  <li><a href="{% url 'filter_emails' %}">Adresy email</a></li>
+                  {% if request.user.is_staff %}
+                    <li role="separator" class="divider"></li>
+                    <li><a href="{% url 'admin:index' %}">Django admin</a></li>
+                  {% endif %}
+                </ul>
+              </li>
+            {% endif %}
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Artykuły <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                {% for article in articles_on_menubar %}
+                  <li><a href="{% url 'article' article.name%}">{{ article.title }}</a></li>
+                {% endfor %}
+                {% if perms.wwwapp.add_article %}
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{% url 'addArticle' %}">Nowy artykuł</a></li>
+                {% endif %}
+              </ul>
+            </li>
+
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Warsztaty<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'addWorkshop' %}">Zgłoś warsztaty!</a></li>
+                {% if has_workshops %}
+                  <li><a href="{% url 'yourWorkshops' %}">Twoje warsztaty</a></li>
+                {% endif %}
+                {% if perms.wwwapp.see_all_workshops %}
+                  <li><a href="{% url 'allWorkshops' %}">Wszystkie warsztaty</a></li>
+                {% endif %}
+              </ul>
+            </li>
+
+            <li><a href="{% url 'myProfile' %}">Profil</a></li>
+
+            {% if user.is_authenticated %}
+              <li><a class="btn" href="{% url 'login' %}">{{ user.first_name }} {{ user.last_name }}</a></li>
+            {% else %}
+              <li><a class="btn" href="{% url 'login' %}">Zaloguj</a></li>
+            {% endif %}
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
     </div>
     <!-- /.navbar -->
 
     <header id="head" class="secondary"></header>
 
     {% if messages %}
-    <div class="container">
+      <div class="container">
         {% for message in messages %}
-            <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              {{ message }}
-            </div>
+          <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+          </div>
         {% endfor %}
-    </div>
+      </div>
     {% endif %}
 
-    {% block content %}
-    {% endblock %}
+    {% block content %}{% endblock %}
 
     <div id="csrftoken" style="display: none;">
-        {% csrf_token %}
+      {% csrf_token %}
     </div>
 
     {% include "analytics.html" %}
@@ -144,33 +147,33 @@
     <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
     {% compress js %}
-    <script src="{% static 'js/headroom.min.js' %}"></script>
-    <script src="{% static 'js/jQuery.headroom.min.js' %}"></script>
-    <script src="{% static 'js/template.js' %}"></script>
-    <script src="{% static 'js/jquery.cookie.js' %}"></script>
-    <script>
-      var ckeditor_js_path = "{% static 'ckeditor/ckeditor.js' %}";
-      var ckeditor_highlight_js_path = "{% static 'ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js' %}";
-    </script>
+      <script src="{% static 'js/headroom.min.js' %}"></script>
+      <script src="{% static 'js/jQuery.headroom.min.js' %}"></script>
+      <script src="{% static 'js/template.js' %}"></script>
+      <script src="{% static 'js/jquery.cookie.js' %}"></script>
+      <script>
+            var ckeditor_js_path = "{% static 'ckeditor/ckeditor.js' %}";
+            var ckeditor_highlight_js_path = "{% static 'ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js' %}";
+          </script>
 
-    <!-- Datatables -->
-    <script type="text/javascript" src="{% static 'js/pdfmake.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/vfs_fonts.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
+      <!-- Datatables -->
+      <script type="text/javascript" src="{% static 'js/pdfmake.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'js/vfs_fonts.js' %}"></script>
+      <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
 
-    <script src="{% static 'js/moment.js' %}"></script>
-    <script src="{% static 'js/moment-locale-pl.js' %}"></script>
-    <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+      <script src="{% static 'js/moment.js' %}"></script>
+      <script src="{% static 'js/moment-locale-pl.js' %}"></script>
+      <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
 
-    <script src="{% static 'js/ajax.requests.js' %}"></script>
-    <script src="{% static 'js/warsztatywww.js' %}"></script>
+      <script src="{% static 'js/ajax.requests.js' %}"></script>
+      <script src="{% static 'js/warsztatywww.js' %}"></script>
     {% endcompress %}
 
     {% block script %}{% endblock %}
-    <!-- mathjax / LaTeX support-->
+    <!-- Mathjax / LaTeX support-->
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
             async="true">
     </script>
-</body>
+  </body>
 </html>

@@ -3,25 +3,29 @@
 {% load bleach_tags %}
 
 {% block content %}
-<div class="container">
+  <div class="container">
     <article class="col-sm-12 maincontent">
-        {% if article.title %}<header><h1>{{ article.title }}</h1></header>{% endif %}
-        {{ article.content|bleach }}
-        {% if perms.wwwapp.change_article %}
+      {% if article.title %}
+        <header>
+          <h1>{{ article.title }}</h1>
+        </header>
+      {% endif %}
+      {{ article.content | bleach }}
+      {% if perms.wwwapp.change_article %}
         {% if not addArticle %}
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="btn btn-default">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="btn btn-default">
             Edytuj
-        </a>
+          </a>
         {% endif %}
-        <div {%if not addArticle %}id="collapseOne" class="panel-collapse collapse out"{% endif %} role="tabpanel">
-            <hr>
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn btn-default">Zapisz</button>
-            </form>
+        <div {% if not addArticle %} id="collapseOne" class="panel-collapse collapse out"{% endif %} role="tabpanel">
+          <hr>
+          <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-default">Zapisz</button>
+          </form>
         </div>
-        {% endif %}
+      {% endif %}
     </article>
-</div>
+  </div>
 {% endblock %}

@@ -1,17 +1,16 @@
 {% extends "base.html" %}
-
 {% load staticfiles %}
-{% block content %}
 
-<div class="container">
-  <article class="col-sm-12 maincontent">
-    <h1> {{ title }}</h1>
-    {% for entry in workshops %}
-      <h2>{{ entry.year }}</h2>
-      <div class="table-responsive">
-        <table id="workshop_list" class="table" style="width:100%!important;">
-          <thead>
-          <tr>
+{% block content %}
+  <div class="container">
+    <article class="col-sm-12 maincontent">
+      <h1> {{ title }}</h1>
+      {% for entry in workshops %}
+        <h2>{{ entry.year }}</h2>
+        <div class="table-responsive">
+          <table id="workshop_list" class="table" style="width:100%!important;">
+            <thead>
+            <tr>
               <th></th>
               <th>Warsztaty</th>
               <th>Prowadzący</th>
@@ -23,149 +22,149 @@
               <th data-toggle="tooltip" data-container="body" data-placement="top" title="Zadania opublikowane?">Zadania?</th>
               <th data-toggle="tooltip" data-container="body" data-placement="top" title="Strona opublikowana?">Strona?</th>
               <th>Status</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for workshop in entry.workshops %}
-            <tr>
-              <td>
-              </td>
-              <td>
-                {% if workshop.is_publicly_visible %}
-                  <a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }}</a>
-                {% else %}
-                  <a href="{% url 'workshop' workshop.name %}">{{ workshop.title }}</a>
-                {% endif %}
-              </td>
-              <td>
-                {% for lecturer in workshop.lecturer.all %}
-                  <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</a><br/>
-                {% endfor %}
-              </td>
-              <td>
-              {% for category in workshop.category.all %}
-                  {{ category.name }}<br/>
-              {% endfor %}
-              </td>
-              <td>
-                  <p>{{ workshop.type }}</p>
-              </td>
-              <td>
-                {% if workshop.is_qualifying and workshop.qualification_threshold %}
-                  <p>{{ workshop.qualified_count }}</p>
-                {% else %}
-                  <p>-</p>
-                {% endif %}
-              </td>
-              <td>
-                <p>{{ workshop.registered_count }}</p>
-              </td>
-              <td>
-                {% if workshop.is_qualifying %}
-                  {% if workshop.qualification_threshold %}
-                    <span class="qualified">✔</span> TAK
-                  {% else %}
-                    <span class="not-qualified">✘</span> NIE
-                  {% endif %}
-                {% else %}
-                  <p>-</p>
-                {% endif %}
-              </td>
-              <td>
-                {% if workshop.is_qualifying %}
-                  {% if workshop.qualification_problems %}
-                    <span class="qualified">✔</span> TAK
-                  {% else %}
-                    <span class="not-qualified">✘</span> NIE
-                  {% endif %}
-                {% else %}
-                  <p>-</p>
-                {% endif %}
-              </td>
-              <td>
-                {% if workshop.page_content_is_public %}
-                  <span class="qualified">✔</span> TAK
-                {% else %}
-                  <span class="not-qualified">✘</span> NIE
-                {% endif %}
-              </td>
-              <td>
-                <p>{{ workshop.get_status_display|default_if_none:"Brak" }}</p>
-              </td>
             </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endfor %}
-  </article>
-</div>
+            </thead>
+            <tbody>
+              {% for workshop in entry.workshops %}
+                <tr>
+                  <td>
+                  </td>
+                  <td>
+                    {% if workshop.is_publicly_visible %}
+                      <a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }}</a>
+                    {% else %}
+                      <a href="{% url 'workshop' workshop.name %}">{{ workshop.title }}</a>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% for lecturer in workshop.lecturer.all %}
+                      <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</a><br/>
+                    {% endfor %}
+                  </td>
+                  <td>
+                  {% for category in workshop.category.all %}
+                      {{ category.name }}<br/>
+                  {% endfor %}
+                  </td>
+                  <td>
+                      <p>{{ workshop.type }}</p>
+                  </td>
+                  <td>
+                    {% if workshop.is_qualifying and workshop.qualification_threshold %}
+                      <p>{{ workshop.qualified_count }}</p>
+                    {% else %}
+                      <p>-</p>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <p>{{ workshop.registered_count }}</p>
+                  </td>
+                  <td>
+                    {% if workshop.is_qualifying %}
+                      {% if workshop.qualification_threshold %}
+                        <span class="qualified">✔</span> TAK
+                      {% else %}
+                        <span class="not-qualified">✘</span> NIE
+                      {% endif %}
+                    {% else %}
+                      <p>-</p>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if workshop.is_qualifying %}
+                      {% if workshop.qualification_problems %}
+                        <span class="qualified">✔</span> TAK
+                      {% else %}
+                        <span class="not-qualified">✘</span> NIE
+                      {% endif %}
+                    {% else %}
+                      <p>-</p>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if workshop.page_content_is_public %}
+                      <span class="qualified">✔</span> TAK
+                    {% else %}
+                      <span class="not-qualified">✘</span> NIE
+                    {% endif %}
+                  </td>
+                  <td>
+                    <p>{{ workshop.get_status_display | default_if_none:"Brak" }}</p>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endfor %}
+    </article>
+  </div>
 {% endblock %}
 
 {% block script %}
   <script>
   $(document).ready( function () {
     const table = $('#workshop_list').DataTable({
-        dom: 'Bfrtip',
-        responsive: true,
-        colReorder: true,
-        buttons: [
-            {
-                extend: 'colvis',
-                columns: ':gt(0)'
-            },
-            {
-                extend: 'copy',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'excel',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'pdf',
-                exportOptions: {
-                    columns: ':visible'
-                }
-           },
-           {
-                extend: 'print',
-                exportOptions: {
-                    columns: ':visible'
-                }
-           },
-        ],
-        "columnDefs": [
-          {
-            "orderable": false,
-            targets: [0]
-          },
-          {
-            visible: true,
-            targets: "_all"
-          },
-          {
-            "searchable": true,
-            targets: [1, 2, 3, 4]
-          },
-          {
-            "searchable": false,
-            targets: "_all"
+      dom: 'Bfrtip',
+      responsive: true,
+      colReorder: true,
+      buttons: [
+        {
+          extend: 'colvis',
+          columns: ':gt(0)'
+        },
+        {
+          extend: 'copy',
+          exportOptions: {
+            columns: ':visible'
           }
-          ],
-        "language": {
-          "url": "{% static 'datatables/Polish.json' %}",
         },
-        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
-          $("td:first", nRow).html(iDisplayIndex +1);
-          return nRow;
+        {
+          extend: 'excel',
+          exportOptions: {
+            columns: ':visible'
+          }
         },
-        "order": [[ 10, "desc" ]],
-      });
+        {
+          extend: 'pdf',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+        {
+          extend: 'print',
+          exportOptions: {
+            columns: ':visible'
+          }
+        },
+      ],
+      "columnDefs": [
+        {
+          "orderable": false,
+          targets: [0]
+        },
+        {
+          visible: true,
+          targets: "_all"
+        },
+        {
+          "searchable": true,
+          targets: [1, 2, 3, 4]
+        },
+        {
+          "searchable": false,
+          targets: "_all"
+        }
+        ],
+      "language": {
+        "url": "{% static 'datatables/Polish.json' %}",
+      },
+      "fnRowCallback" : function(nRow, aData, iDisplayIndex){
+        $("td:first", nRow).html(iDisplayIndex +1);
+        return nRow;
+      },
+      "order": [[ 10, "desc" ]],
+    });
   });
 
   $(function () {

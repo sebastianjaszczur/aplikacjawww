@@ -4,183 +4,181 @@
 {% load bleach_tags %}
 
 {% block content %}
+  <div class="container">
+    <div id="profile_content" class="col-sm-12 maincontent" style="display: block;">
+      <h1>{{ title }}</h1>
 
-<div class="container">
-  <div id="profile_content" class="col-sm-12 maincontent" style="display: block;">
-    <h1>{{ title }}</h1>
+      {% if is_editing_profile %}
+        <script src="{% static 'js/jquery.content_pagination.js' %}"></script>
 
-    {% if is_editing_profile %}
-      <script src="{% static 'js/jquery.content_pagination.js' %}"></script>
+        <div id="pagination_content">
+          <div title="Dane" id="data">
+            <form id="profile_data_form" action="#data" method="post" class="form-horizontal">
+              <input type="hidden" name="page" value="data">
+              {% include "_profilesubmit.html" %}
+              {% crispy user_form %}
+              {% crispy user_profile_form %}
+            </form>
+          </div>
+          <div title="Strona profilowa" id="profile_page">
+            <form action="#profile_page" method="post" class="form">
+              <input type="hidden" name="page" value="profile_page">
+              {% csrf_token %}
+              {% include "_profilesubmit.html" %}
+              {{ user_profile_page_form.profile_page }}
+            </form>
+          </div>
+          <div title="List motywacyjny" id="cover_letter">
+            <p>Napisz (w 50 - 1000 słowach) odnosząc się do każdego punktu w oddzielnym paragrafie:</p>
+            <ol>
+              <li>Opisz swoje główne zainteresowania naukowe.
+              Mile widziany będzie szczegółowy opis (jeśli interesujesz się
+              matematyką - jaka dziedzina interesuje Cię najbardziej;
+              jeśli programowaniem - co i w czym programujesz etc.).</li>
+              <li>W jaki sposób rozwijasz zainteresowania z punktu 1.?
+              Napisz, jakie książki czytasz, jakiego typu zadania i problemy
+              rozwiązujesz itd. Jeśli masz własne projekty, prace,
+              przeprowadzasz doświadczenia, piszesz własne programy -
+              opisz je. Jeśli jesteś w Krajowym Funduszu na rzecz Dzieci,
+              opisz krótko, co robisz w ramach programu.</li>
+              <li>Jeśli interesujesz się czymś nie stricte naukowym
+              (spoza tematyki mat/fiz/inf) lub angażujesz się w inne
+              inicjatywy, opisz je pokrótce.</li>
+              <li>Jeśli bierzesz udział w konkursach lub olimpiadach,
+              opisz swoje dokonania (udział, nagrody).</li>
+              <li>O których ze swoich zainteresowań najchętniej
+              opowiedziałbyś innym?</li>
+              <li>Czego oczekujesz od swojego udziału w Warsztatach,
+              co skłoniło Cię do zgłoszenia się? Jeśli masz ochotę
+              wnieść coś do Warsztatów (zorganizować coś, wygłosić
+              wieczorny wykład itd.), opisz to.</li>
+              <li>Tutaj możesz napisać cokolwiek, co nie mieści się w
+              punktach 1-6.</li>
+            </ol>
+            <form action="#cover_letter" method="post" class="form">
+              <input type="hidden" name="page" value="cover_letter">
+              {% csrf_token %}
+              <button class="btn btn-default big-button">Zapisz</button>
+              {{ user_cover_letter_form.cover_letter }}
+            </form>
+          </div>
+          <div title="Informacje" id="user_info">
+            <form action="#user_info" method="post" class="form-horizontal">
+              <input type="hidden" name="page" value="user_info">
+              {% csrf_token %}
+              <button class="btn btn-default big-button">Zapisz</button>
+              {% crispy user_info_page_form %}
 
-      <div id="pagination_content">
-        <div title="Dane" id="data">
-          <form id="profile_data_form" action="#data" method="post" class="form-horizontal">
-            <input type="hidden" name="page" value="data">
-            {% include "_profilesubmit.html" %}
-            {% crispy user_form %}
-            {% crispy user_profile_form %}
-          </form>
+            </form>
+          </div>
         </div>
-        <div title="Strona profilowa" id="profile_page">
-          <form action="#profile_page" method="post" class="form">
-            <input type="hidden" name="page" value="profile_page">
-            {% csrf_token %}
-            {% include "_profilesubmit.html" %}
-            {{ user_profile_page_form.profile_page }}
-          </form>
         </div>
-        <div title="List motywacyjny" id="cover_letter">
-          <p>Napisz (w 50 - 1000 słowach) odnosząc się do każdego punktu w oddzielnym paragrafie:</p>
-          <ol>
-            <li>Opisz swoje główne zainteresowania naukowe.
-            Mile widziany będzie szczegółowy opis (jeśli interesujesz się
-            matematyką - jaka dziedzina interesuje Cię najbardziej;
-            jeśli programowaniem - co i w czym programujesz etc.).</li>
-            <li>W jaki sposób rozwijasz zainteresowania z punktu 1.?
-            Napisz, jakie książki czytasz, jakiego typu zadania i problemy
-            rozwiązujesz itd. Jeśli masz własne projekty, prace,
-            przeprowadzasz doświadczenia, piszesz własne programy -
-            opisz je. Jeśli jesteś w Krajowym Funduszu na rzecz Dzieci,
-            opisz krótko, co robisz w ramach programu.</li>
-            <li>Jeśli interesujesz się czymś nie stricte naukowym
-            (spoza tematyki mat/fiz/inf) lub angażujesz się w inne
-            inicjatywy, opisz je pokrótce.</li>
-            <li>Jeśli bierzesz udział w konkursach lub olimpiadach,
-            opisz swoje dokonania (udział, nagrody).</li>
-            <li>O których ze swoich zainteresowań najchętniej
-            opowiedziałbyś innym?</li>
-            <li>Czego oczekujesz od swojego udziału w Warsztatach,
-            co skłoniło Cię do zgłoszenia się? Jeśli masz ochotę
-            wnieść coś do Warsztatów (zorganizować coś, wygłosić
-            wieczorny wykład itd.), opisz to.</li>
-            <li>Tutaj możesz napisać cokolwiek, co nie mieści się w
-            punktach 1-6.</li>
-          </ol>
-          <form action="#cover_letter" method="post" class="form">
-            <input type="hidden" name="page" value="cover_letter">
-            {% csrf_token %}
-            <button class="btn btn-default big-button">Zapisz</button>
-            {{ user_cover_letter_form.cover_letter }}
-          </form>
-        </div>
-        <div title="Informacje" id="user_info">
-          <form action="#user_info" method="post" class="form-horizontal">
-            <input type="hidden" name="page" value="user_info">
-            {% csrf_token %}
-            <button class="btn btn-default big-button">Zapisz</button>
-            {% crispy user_info_page_form %}
-            
-          </form>
-        </div>
-      </div>
-      </div>
-    {% else %}
-      {% if profile %}
-        <table class=table>
-          <tbody>
-            <tr>
-              <th>Edycje WWW:</th>
-              <td>
-                {% for edition in profile.workshop_profile.all %}
-                  {% if edition.status == 'Z' %}
-                    <span class="qualified">✔{{ edition.year }}</span>
+      {% else %}
+        {% if profile %}
+          <table class=table>
+            <tbody>
+              <tr>
+                <th>Edycje WWW:</th>
+                <td>
+                  {% for edition in profile.workshop_profile.all %}
+                    {% if edition.status == 'Z' %}
+                      <span class="qualified">✔{{ edition.year }}</span>
+                    {% else %}
+                      <span class="not-qualified">✘{{ edition.year }}</span>
+                    {% endif %}
+                  {% endfor %}
+                  {% if has_workshop_profile %}
+                    <form method="post" class="inline">
+                      {% csrf_token %}
+                      <span class="btn-group-xs" role="group">
+                        <button type="submit" class="btn btn-default"
+                                name="qualify" value="delete"
+                                onclick="return confirm('Czy na pewno chcesz usunąć kwalifikację?');">
+                          Usuń kwalifikację
+                        </button>
+                      </span>
+                    </form>
                   {% else %}
-                    <span class="not-qualified">✘{{ edition.year }}</span>
+                    <form method="post" class="inline">
+                      {% csrf_token %}
+                      <span class="btn-group-xs" role="group">
+                        <button type="submit" class="btn btn-default"
+                                name="qualify" value="accept"
+                                onclick="return confirm('Czy na pewno chcesz zakwalifikować?');">
+                          ✔ Zakwalifikuj
+                        </button>
+                        <button type="submit" class="btn btn-default"
+                                name="qualify" value="reject"
+                                onclick="return confirm('Czy na pewno chcesz odrzucić?');">
+                          ✘ Odrzuć
+                        </button>
+                      </span>
+                    </form>
                   {% endif %}
-                {% endfor %}
-                {% if has_workshop_profile %}
-                  <form method="post" class="inline">
-                    {% csrf_token %}
-                    <span class="btn-group-xs" role="group">
-                      <button type="submit" class="btn btn-default"
-                              name="qualify" value="delete"
-                              onclick="return confirm('Czy na pewno chcesz usunąć kwalifikację?');">
-                        Usuń kwalifikację
-                      </button>
-                    </span>
-                  </form>
-                {% else %}
-                  <form method="post" class="inline">
-                    {% csrf_token %}
-                    <span class="btn-group-xs" role="group">
-                      <button type="submit" class="btn btn-default"
-                              name="qualify" value="accept"
-                              onclick="return confirm('Czy na pewno chcesz zakwalifikować?');">
-                        ✔ Zakwalifikuj
-                      </button>
-                      <button type="submit" class="btn btn-default"
-                              name="qualify" value="reject"
-                              onclick="return confirm('Czy na pewno chcesz odrzucić?');">
-                        ✘ Odrzuć
-                      </button>
-                    </span>
-                  </form>
-                {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <th>Email:</th>
-              <td>{{ profile.user.email }}
-            </tr>
-            <tr>
-              <th>Płeć:</th>
-              <td>{{ profile.get_gender_display }}
-            </tr>
-            <tr>
-              <th>Szkoła lub uniwersytet:</th>
-              <td>{{ profile.school }}
-            </tr>
-            <tr>
-              <th>Rok matury:</th>
-              <td>{{ profile.matura_exam_year }}
-            </tr>
-            <tr>
-              <th>Skąd wie o WWW:</th>
-              <td>{{ profile.how_do_you_know_about }}
-            </tr>
-          </tbody>
-        </table>
+                </td>
+              </tr>
+              <tr>
+                <th>Email:</th>
+                <td>{{ profile.user.email }}
+              </tr>
+              <tr>
+                <th>Płeć:</th>
+                <td>{{ profile.get_gender_display }}
+              </tr>
+              <tr>
+                <th>Szkoła lub uniwersytet:</th>
+                <td>{{ profile.school }}
+              </tr>
+              <tr>
+                <th>Rok matury:</th>
+                <td>{{ profile.matura_exam_year }}
+              </tr>
+              <tr>
+                <th>Skąd wie o WWW:</th>
+                <td>{{ profile.how_do_you_know_about }}
+              </tr>
+            </tbody>
+          </table>
+
+          {% if is_my_profile %}
+            <a class="btn btn-default pull-right big-button" role=button href="{% url 'myProfile' %}">
+              Edytuj
+            </a>
+          {% endif %}
+
+          {% if profile.cover_letter %}
+            <hr/>
+            <h3>List motywacyjny</h3>
+            {{ profile.cover_letter | bleach }}
+          {% endif %}
+
+          {% if profile_page %}
+            <hr />
+            <h3>Strona profilowa</h3>
+          {% endif %}
+        {% endif %}
+
+        {{ profile_page | bleach }}
+        <hr />
 
         {% if is_my_profile %}
-          <a class="btn btn-default pull-right big-button" role=button href="{% url 'myProfile' %}">
-            Edytuj
-          </a>
-        {% endif %}
-
-        {% if profile.cover_letter %}
-          <hr/>
-          <h3>List motywacyjny</h3>
-          {{ profile.cover_letter | bleach }}
-        {% endif %}
-
-        {% if profile_page %}
-          <hr />
-          <h3>Strona profilowa</h3>
+          <p>
+            <em>Twoje szczegółowe dane oraz list motywacyjny są widoczne tylko dla administratorów. Strona profilowa jest publiczna.</em>
+          </p>
         {% endif %}
       {% endif %}
-
-      {{ profile_page | bleach }}
-      <hr />
-
-      {% if is_my_profile %}
-        <p>
-          <em>Twoje szczegółowe dane oraz list motywacyjny są widoczne tylko dla administratorów. Strona profilowa jest publiczna.</em>
-        </p>
-      {% endif %}
-    {% endif %}
+    </div>
   </div>
-</div>
-
 {% endblock %}
+
 {% block script %}
-<script>
-  $(document).ready(function() {
+  <script>
+    $(document).ready(function() {
       paginate_content("pagination_content");
 
       if(["#data", "#profile_page", "#cover_letter", "#user_info"].indexOf(location.hash) != -1) {
           go_to_page("pagination_content_navigation", location.hash.slice(1));
       }
-  });
-</script>
-
+    });
+  </script>
 {% endblock %}
