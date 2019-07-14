@@ -67,7 +67,7 @@ class Command(BaseCommand):
     Creates and returns a fake random article with a random edit history
     """
     def fake_article(self, users) -> Article:
-        article = Article(name=self.fake.uri_page(),
+        article = Article(name=self.fake.uri_page() + str(self.fake.random_number()),
                           title=self.fake.text(),
                           content=self.fake.paragraph(),
                           modified_by=random.choice(users),
@@ -104,7 +104,7 @@ class Command(BaseCommand):
     Creates a fake random workshops with 5 random participants
     """
     def fake_workshop(self, lecturer, participants, types, categories) -> Workshop:
-        workshop = Workshop(name=self.fake.uri_page(),
+        workshop = Workshop(name=self.fake.uri_page() + str(self.fake.random_number()),
                             title=self.fake.text(10),
                             proposition_description=self.fake.paragraph(),
                             type=random.choice(types),
