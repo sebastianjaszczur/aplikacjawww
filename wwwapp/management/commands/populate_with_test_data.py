@@ -66,8 +66,8 @@ class Command(BaseCommand):
     """
     Creates and returns a fake random article with a random edit history
     """
-    def fake_article(self, users) -> Article:
-        article = Article(name=self.fake.uri_page() + str(self.fake.random_number()),
+    def fake_article(self, users, sequence) -> Article:
+        article = Article(name=self.fake.uri_page() + f'{sequence:04}',
                           title=self.fake.text(),
                           content=self.fake.paragraph(),
                           modified_by=random.choice(users),
@@ -103,8 +103,8 @@ class Command(BaseCommand):
     """
     Creates a fake random workshops with 5 random participants
     """
-    def fake_workshop(self, lecturer, participants, types, categories) -> Workshop:
-        workshop = Workshop(name=self.fake.uri_page() + str(self.fake.random_number()),
+    def fake_workshop(self, lecturer, participants, types, categories, sequence) -> Workshop:
+        workshop = Workshop(name=self.fake.uri_page() + f'{sequence:04}',
                             title=self.fake.text(10),
                             proposition_description=self.fake.paragraph(),
                             type=random.choice(types),
@@ -146,7 +146,7 @@ class Command(BaseCommand):
 
         articles = []
         for i in range(self.NUM_OF_ARTICLES):
-            articles.append(self.fake_article(users))
+            articles.append(self.fake_article(users, i))
 
         types = []
         for i in range(self.NUM_OF_TYPES):
@@ -162,5 +162,5 @@ class Command(BaseCommand):
                         range(len(participants) // self.NUM_OF_WORKSHOPS)]
 
         workshops = []
-        for lecturer, participants in zip(lecturers, participants):
-            workshops.append(self.fake_workshop(lecturer, participants, types, categories))
+        for i, (lecturer, participants) in enumerate(zip(lecturers, participants)):
+            workshops.append(self.fake_workshop(lecturer, participants, types, categories, i))
