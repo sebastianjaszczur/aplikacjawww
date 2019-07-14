@@ -1,5 +1,6 @@
 import re
 from datetime import date
+from typing import Dict
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -239,6 +240,12 @@ class Workshop(models.Model):
 
     def __str__(self):
         return str(self.type.year) + ': ' + (' (' + self.status + ') ' if self.status else '') + self.title
+
+    """
+    Retrieve information needed to display a meaningful link to the workshop page
+    """
+    def info_for_client_link(self) -> Dict[str, str]:
+        return {'name': self.name, 'title': str(self.title)}
 
     def registered_count(self):
         return self.workshopparticipant_set.count()
