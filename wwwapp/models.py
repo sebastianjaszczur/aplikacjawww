@@ -101,27 +101,24 @@ class UserInfo(models.Model):
             return None
 
         birth = self.pesel[:6]
-        if birth is not None and len(birth) == 6:
-            year = int(birth[:2], 10)
-            month = int(birth[2:4], 10)
-            days = int(birth[4:6], 10)
+        year, month, days = map(int, [birth[i:i+2] for i in range(0, 6, 2)])
 
-            if month < 20:
-                year += 1900
-            elif month < 40:
-                month -= 20
-                year += 2000
-            elif month < 60:
-                month -= 40
-                year += 2100
-            elif month < 80:
-                month -= 60
-                year += 2200
-            elif month < 100:
-                month -= 80
-                year += 1800
+        if month < 20:
+            year += 1900
+        elif month < 40:
+            month -= 20
+            year += 2000
+        elif month < 60:
+            month -= 40
+            year += 2100
+        elif month < 80:
+            month -= 60
+            year += 2200
+        elif month < 100:
+            month -= 80
+            year += 1800
 
-            return date(year, month, days)
+        return date(year, month, days)
 
 
 class AlphaNumericField(models.CharField):
