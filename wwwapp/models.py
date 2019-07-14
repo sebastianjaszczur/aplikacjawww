@@ -90,8 +90,18 @@ class UserInfo(models.Model):
     Returns a date class instance or None if the PESEL is malformed or not present.
     """
     def get_birth_date(self) -> date or None:
+        if not self.pesel.isdigit():
+            return None
+        if len(self.pesel) != 11:
+            return None
+        # https://pl.wikipedia.org/wiki/PESEL#Cyfra_kontrolna_i_sprawdzanie_poprawno%C5%9Bci_numeru
+        pesel_digits = [int(digit) for digit in self.pesel]
+        checksum_mults = [1, 3, 7, 9] * 2 + [1, 3, 1]
+        if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
+            return None
+
         birth = self.pesel[:6]
-        if birth is not None and birth.isdigit() and len(birth) == 6:
+        if birth is not None and len(birth) == 6:
             year = int(birth[:2], 10)
             month = int(birth[2:4], 10)
             days = int(birth[4:6], 10)
