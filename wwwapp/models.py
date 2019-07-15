@@ -59,6 +59,25 @@ class WorkshopUserProfile(models.Model):
     def __str__(self):
         return '%s: %s, %s' % (self.year, self.user_profile, self.status)
 
+class PESELField(models.CharField):
+    """PESEL field, with checksum verification."""
+    def clean(self):
+        pesel = self[:]
+
+        # https://en.wikipedia.org/wiki/PESEL#Format
+
+        if len(pesel) != 11:
+            raise ValidationError('PESEL length is wrong ({})'.format(len(pesel)))
+        if not pesel.isdigit():
+            raise ValidationError('PESEL contains non-numbers')
+        pesel_digits = [int(digit) for digit in pesel]
+
+        checksum_mults = [1, 3, 7, 9] * 2 + [1, 3, 1]
+        if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
+            raise ValidationError('PESEL checksum is not valid')
+
+        
+
 
 POSSIBLE_TSHIRT_SIZES = [
     ('no_idea', 'Nie ogarniam'),
@@ -73,7 +92,7 @@ POSSIBLE_TSHIRT_SIZES = [
 
 class UserInfo(models.Model):
     """Info needed for camp, not for qualification."""
-    pesel = models.CharField(max_length=20, blank=True, default="")
+    pesel = PESELField(max_length=20, blank=True, default="")
     address = models.TextField(max_length=1000, blank=True, default="")
     phone = models.CharField(max_length=50, blank=True, default="")
     start_date = models.DateField(blank=True, null=True)
@@ -90,18 +109,12 @@ class UserInfo(models.Model):
     Returns a date class instance or None if the PESEL is malformed or not present.
     """
     def get_birth_date(self) -> date or None:
-        if not self.pesel.isdigit():
+        if len(self.pesel) < 6:
             return None
-        if len(self.pesel) != 11:
+        try:
+            year, month, day = [int(self.pesel[i:i+2]) for i in range(0, 6, 2)]
+        except ValueError:
             return None
-        # https://pl.wikipedia.org/wiki/PESEL#Cyfra_kontrolna_i_sprawdzanie_poprawno%C5%9Bci_numeru
-        pesel_digits = [int(digit) for digit in self.pesel]
-        checksum_mults = [1, 3, 7, 9] * 2 + [1, 3, 1]
-        if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
-            return None
-
-        birth = self.pesel[:6]
-        year, month, days = map(int, [birth[i:i+2] for i in range(0, 6, 2)])
 
         if month < 20:
             year += 1900
