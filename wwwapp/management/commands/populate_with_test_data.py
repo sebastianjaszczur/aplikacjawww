@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from wwwapp.models import UserProfile, UserInfo, Article, ArticleContentHistory, Workshop, WorkshopCategory, \
     WorkshopType, WorkshopParticipant
+from typing import Tuple, List, Union
 from faker import Faker
 from faker.providers import profile, person, date_time, internet
 import random
@@ -39,7 +40,7 @@ class Command(BaseCommand):
     """
     Create and returns a fake random user.
     """
-    def fake_user(self) -> (User, UserProfile):
+    def fake_user(self) -> Tuple[User, UserProfile]:
         profile_data = self.fake.profile()
         user = User.objects.create_user(profile_data['username'], profile_data['mail'], 'password')
         user.first_name = self.fake.first_name()
@@ -64,10 +65,21 @@ class Command(BaseCommand):
         return user, user_profile
 
     """
+    Returns a zero padded string representation of the given number
+    or an empty string if the argument is not present
+    """
+    @staticmethod
+    def tail_for_sequence(sequence: Union[int, None]) -> str:
+        if sequence is not None:
+            return '{0:04d}'.format(sequence)
+        else:
+            return ''
+
+    """
     Creates and returns a fake random article with a random edit history
     """
-    def fake_article(self, users) -> Article:
-        article = Article(name=self.fake.uri_page(),
+    def fake_article(self, users: List[User], sequence: Union[str, None] = None) -> Article:
+        article = Article(name=self.fake.uri_page() + self.tail_for_sequence(sequence),
                           title=self.fake.text(),
                           content=self.fake.paragraph(),
                           modified_by=random.choice(users),
@@ -103,16 +115,20 @@ class Command(BaseCommand):
     """
     Creates a fake random workshops with 5 random participants
     """
-    def fake_workshop(self, lecturer, participants, types, categories) -> Workshop:
-        workshop = Workshop(name=self.fake.uri_page(),
+    def fake_workshop(self,
+                      lecturer: UserProfile,
+                      participants: List[UserProfile],
+                      types: List[WorkshopType],
+                      categories: List[WorkshopCategory],
+                      sequence: Union[str, None] = None) -> Workshop:
+        workshop = Workshop(name=self.fake.uri_page() + self.tail_for_sequence(sequence),
                             title=self.fake.text(10),
                             proposition_description=self.fake.paragraph(),
                             type=random.choice(types),
                             status='Z',
                             page_content=self.fake.paragraph(),
                             page_content_is_public=True,
-                            is_qualifying=True
-                            )
+                            is_qualifying=True)
         workshop.save()
 
         for participant in participants:
@@ -146,7 +162,7 @@ class Command(BaseCommand):
 
         articles = []
         for i in range(self.NUM_OF_ARTICLES):
-            articles.append(self.fake_article(users))
+            articles.append(self.fake_article(users, i))
 
         types = []
         for i in range(self.NUM_OF_TYPES):
@@ -162,5 +178,5 @@ class Command(BaseCommand):
                         range(len(participants) // self.NUM_OF_WORKSHOPS)]
 
         workshops = []
-        for lecturer, participants in zip(lecturers, participants):
-            workshops.append(self.fake_workshop(lecturer, participants, types, categories))
+        for i, (lecturer, participants) in enumerate(zip(lecturers, participants)):
+            workshops.append(self.fake_workshop(lecturer, participants, types, categories, i))
