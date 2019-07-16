@@ -11,3 +11,5 @@ dj-static
 raven
 python-dateutil
 Faker
+mypy==0.700
+django-stubs
