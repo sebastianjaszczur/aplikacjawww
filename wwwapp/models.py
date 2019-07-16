@@ -61,8 +61,9 @@ class WorkshopUserProfile(models.Model):
 
 class PESELField(models.CharField):
     """PESEL field, with checksum verification."""
-    def clean(self):
-        pesel = self[:]
+
+    def clean(self, *args, **kwargs):
+        pesel = args[0] 
 
         # https://en.wikipedia.org/wiki/PESEL#Format
 
@@ -75,6 +76,8 @@ class PESELField(models.CharField):
         checksum_mults = [1, 3, 7, 9] * 2 + [1, 3, 1]
         if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
             raise ValidationError('PESEL checksum is not valid')
+
+        return pesel
 
         
 
