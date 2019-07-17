@@ -62,8 +62,7 @@ class WorkshopUserProfile(models.Model):
 class PESELField(models.CharField):
     """PESEL field, with checksum verification."""
 
-    def clean(self, *args, **kwargs):
-        pesel = args[0] 
+    def validate(self, pesel: str, user_info: 'UserInfo') -> None:
         if not pesel:
             raise ValidationError('PESEL type is {})'.format(type(pesel)))
 
@@ -78,14 +77,16 @@ class PESELField(models.CharField):
         if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
             raise ValidationError('PESEL checksum is not valid')
 
-        if not _extract_date(pesel):
+        if not PESELField._extract_date(pesel):
             raise ValidationError('Birth date is not a valid date.')
-        self.pesel = pesel
-        self.pesel_digits = pesel_digits
 
-        return self
 
-    def _extract_date(pesel) -> date or None:
+    @staticmethod
+    def _extract_date(pesel: str) -> date or None:
+        """
+        Takes PESEL (string that starts with at least 6 digits) and returns
+        birth date associated with it.
+        """
         try:
             year, month, day = [int(pesel[i:i+2]) for i in range(0, 6, 2)]
         except ValueError:
