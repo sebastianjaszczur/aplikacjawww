@@ -59,6 +59,7 @@ class WorkshopUserProfile(models.Model):
     def __str__(self):
         return '%s: %s, %s' % (self.year, self.user_profile, self.status)
 
+
 class PESELField(models.CharField):
     """PESEL field, with checksum verification."""
 
@@ -101,7 +102,6 @@ class PESELField(models.CharField):
             return None
 
 
-
 POSSIBLE_TSHIRT_SIZES = [
     ('no_idea', 'Nie ogarniam'),
     ("XS", "XS"),
@@ -135,7 +135,6 @@ class UserInfo(models.Model):
         if not self.pesel or len(self.pesel) < 6:
             return None
         return PESELField._extract_date(self.pesel)
-
 
 
 class AlphaNumericField(models.CharField):
