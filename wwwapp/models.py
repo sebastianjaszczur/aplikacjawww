@@ -63,23 +63,24 @@ class PESELField(models.CharField):
     """PESEL field, with checksum verification."""
 
     def validate(self, pesel: str, user_info: 'UserInfo') -> None:
+        super().validate(pesel, user_info)
+        # We accept empty PESEL (don't raise exception) for legacy reasons.
         if not pesel:
-            raise ValidationError('PESEL type is {})'.format(type(pesel)))
+            return
 
         # https://en.wikipedia.org/wiki/PESEL#Format
         if len(pesel) != 11:
             raise ValidationError('PESEL length is wrong ({})'.format(len(pesel)))
         if not pesel.isdigit():
             raise ValidationError('PESEL contains non-numbers')
-        pesel_digits = [int(digit) for digit in pesel]
 
+        pesel_digits = [int(digit) for digit in pesel]
         checksum_mults = [1, 3, 7, 9] * 2 + [1, 3, 1]
         if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
             raise ValidationError('PESEL checksum is not valid')
 
         if not PESELField._extract_date(pesel):
             raise ValidationError('Birth date is not a valid date.')
-
 
     @staticmethod
     def _extract_date(pesel: str) -> date or None:
@@ -114,7 +115,7 @@ POSSIBLE_TSHIRT_SIZES = [
 
 class UserInfo(models.Model):
     """Info needed for camp, not for qualification."""
-    pesel = PESELField(max_length=20, blank=True, default="")
+    pesel = PESELField(max_length=11, blank=True, default="")
     address = models.TextField(max_length=1000, blank=True, default="")
     phone = models.CharField(max_length=50, blank=True, default="")
     start_date = models.DateField(blank=True, null=True)
