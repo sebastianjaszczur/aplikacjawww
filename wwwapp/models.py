@@ -64,9 +64,10 @@ class PESELField(models.CharField):
 
     def clean(self, *args, **kwargs):
         pesel = args[0] 
+        if not pesel:
+            raise ValidationError('PESEL type is {})'.format(type(pesel)))
 
         # https://en.wikipedia.org/wiki/PESEL#Format
-
         if len(pesel) != 11:
             raise ValidationError('PESEL length is wrong ({})'.format(len(pesel)))
         if not pesel.isdigit():
@@ -77,9 +78,26 @@ class PESELField(models.CharField):
         if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
             raise ValidationError('PESEL checksum is not valid')
 
-        return pesel
+        if not _extract_date(pesel):
+            raise ValidationError('Birth date is not a valid date.')
+        self.pesel = pesel
+        self.pesel_digits = pesel_digits
 
-        
+        return self
+
+    def _extract_date(pesel) -> date or None:
+        try:
+            year, month, day = [int(pesel[i:i+2]) for i in range(0, 6, 2)]
+        except ValueError:
+            return None
+        years_from_month = [1900, 2000, 2100, 2200, 1800]
+        count, month = divmod(month, 20)
+        year += years_from_month[count]
+        try:
+            return date(year, month, day)
+        except ValueError:
+            return None
+
 
 
 POSSIBLE_TSHIRT_SIZES = [
@@ -107,34 +125,15 @@ class UserInfo(models.Model):
     class Meta:
         permissions = (('see_user_info', 'Can see user info'),)
 
-    """
-    Retrieves the birth date from the provided PESEL number.
-    Returns a date class instance or None if the PESEL is malformed or not present.
-    """
     def get_birth_date(self) -> date or None:
-        if len(self.pesel) < 6:
+        """
+        Retrieves the birth date from the provided PESEL number.
+        Returns a date class instance or None if the PESEL is malformed or not present.
+        """
+        if not self.pesel or len(self.pesel) < 6:
             return None
-        try:
-            year, month, day = [int(self.pesel[i:i+2]) for i in range(0, 6, 2)]
-        except ValueError:
-            return None
+        return PESELField._extract_date(self.pesel)
 
-        if month < 20:
-            year += 1900
-        elif month < 40:
-            month -= 20
-            year += 2000
-        elif month < 60:
-            month -= 40
-            year += 2100
-        elif month < 80:
-            month -= 60
-            year += 2200
-        elif month < 100:
-            month -= 80
-            year += 1800
-
-        return date(year, month, days)
 
 
 class AlphaNumericField(models.CharField):
