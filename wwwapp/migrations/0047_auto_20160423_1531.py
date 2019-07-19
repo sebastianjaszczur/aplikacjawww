@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import annoying.fields
 
 
 class Migration(migrations.Migration):
@@ -15,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='userprofile',
             name='userinfo',
-            field=annoying.fields.AutoOneToOneField(to='wwwapp.UserInfo'),
+            field=models.OneToOneField(to='wwwapp.UserInfo'),
             preserve_default=True,
         ),
     ]
