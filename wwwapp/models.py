@@ -71,17 +71,17 @@ class PESELField(models.CharField):
 
         # https://en.wikipedia.org/wiki/PESEL#Format
         if len(pesel) != 11:
-            raise ValidationError('PESEL length is wrong ({})'.format(len(pesel)))
+            raise ValidationError('Długość numeru PESEL jest niepoprawna ({}).'.format(len(pesel)))
         if not pesel.isdigit():
-            raise ValidationError('PESEL contains non-numbers')
+            raise ValidationError('PESEL nie składa się z samych cyfr.')
 
         pesel_digits = [int(digit) for digit in pesel]
         checksum_mults = [1, 3, 7, 9] * 2 + [1, 3, 1]
         if sum(x*y for x, y in zip(pesel_digits, checksum_mults)) % 10 != 0:
-            raise ValidationError('PESEL checksum is not valid')
+            raise ValidationError('Suma kontrolna PESEL się nie zgadza.')
 
         if not PESELField._extract_date(pesel):
-            raise ValidationError('Birth date is not a valid date.')
+            raise ValidationError('Data urodzenia zawarta w numerze PESEL nie istnieje.')
 
     @staticmethod
     def _extract_date(pesel: str) -> date or None:
