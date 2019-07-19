@@ -114,14 +114,6 @@ class UserInfo(models.Model):
             return date(year, month, days)
 
 
-class AlphaNumericField(models.CharField):
-    def clean(self, value, model_instance):
-        value = super(AlphaNumericField, self).clean(value, model_instance)
-        if not re.match(r'[A-z0-9]+', value):
-            raise ValidationError('AlphaNumeric characters only.')
-        return value
-
-
 class ArticleContentHistory(models.Model):
     version = models.IntegerField(editable=False)
     article = models.ForeignKey('Article', null=True, on_delete=models.SET_NULL)

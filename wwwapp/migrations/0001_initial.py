@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='Article',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', wwwapp.models.AlphaNumericField(max_length=40)),
+                ('name', models.CharField(max_length=40)),
                 ('content', models.TextField(max_length=100000, blank=True)),
                 ('on_menubar', models.BooleanField(default=False)),
                 ('modified_by', models.ForeignKey(default=None, to=settings.AUTH_USER_MODEL, null=True)),
