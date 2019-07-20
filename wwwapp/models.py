@@ -1,4 +1,3 @@
-import re
 from datetime import date
 from typing import Dict
 from enum import Enum
@@ -301,3 +300,13 @@ class WorkshopParticipant(models.Model):
 
     class Meta:
         unique_together = [('workshop', 'participant')]
+
+
+class ResourceYearPermission(models.Model):
+    display_name = models.CharField(max_length=50, null=False, blank=False)
+    root_url = models.CharField(max_length=256, null=False, blank=False,
+                                help_text="URL bez protokołu. bez \"/\" na końcu.")
+    year = models.IntegerField(null=False, blank=False)
+
+    class Meta:
+        permissions = [('access_all_resources', 'Access all resources'), ]
