@@ -29,18 +29,21 @@ from .templatetags.wwwtags import qualified_mark
 def get_context(request):
     context = {}
 
-    articles_on_menubar = Article.objects.filter(on_menubar=True).all()
-    if not request.user.is_authenticated:
-        has_workshops = False
-    else:
+    context['has_workshops'] = False
+
+    if request.user.is_authenticated:
         if Workshop.objects.filter(lecturer__user=request.user).exists():
-            has_workshops = True
+            context['has_workshops'] = True
+
+        visible_resources = ResourceYearPermission.objects.exclude(access_url__exact="")
+        if request.user.has_perm('wwwapp.access_all_resources'):
+            context['resources'] = visible_resources
         else:
-            has_workshops = False
+            user_profile = UserProfile.objects.get(user=request.user)
+            context['resources'] = visible_resources.filter(year__in=user_profile.participation_years())
 
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
-    context['articles_on_menubar'] = articles_on_menubar
-    context['has_workshops'] = has_workshops
+    context['articles_on_menubar'] = Article.objects.filter(on_menubar=True).all()
     context['current_year'] = settings.CURRENT_YEAR
 
     return context

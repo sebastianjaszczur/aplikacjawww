@@ -23,6 +23,15 @@ class UserProfile(models.Model):
     def is_participating_in(self, year):
         return self.status_for(year) == 'Z' \
                or Workshop.objects.filter(type__year=year, lecturer=self, status='Z').exists()
+
+    def participation_years(self):
+        return self.participant_years().union(self.lecturer_years())
+
+    def participant_years(self):
+        return set([profile.year for profile in self.workshop_profile.filter(status=WorkshopUserProfile.STATUS_ACCEPTED)])
+
+    def lecturer_years(self):
+        return set([workshop.type.year for workshop in Workshop.objects.filter(lecturer=self, status='Z')])
     
     @property
     def status(self):
@@ -303,10 +312,21 @@ class WorkshopParticipant(models.Model):
 
 
 class ResourceYearPermission(models.Model):
-    display_name = models.CharField(max_length=50, null=False, blank=False)
+    display_name = models.CharField(max_length=50, blank=True)
+    access_url = models.URLField(blank=True,
+                                 help_text="URL dla przycisku w menu. Przycisk nie jest wyświetlany jeśli url jest pusty")
     root_url = models.CharField(max_length=256, null=False, blank=False,
                                 help_text="URL bez protokołu. bez \"/\" na końcu.")
     year = models.IntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return "{} - {}".format(self.year, self.path)
+
+    def clean(self):
+        super().clean()
+        if self.access_url != "" and self.display_name == "":
+            raise ValidationError("Wyświetlana nazwa musi być ustawiona jeśli "
+                                  "URL dostępu jest ustawiony")
 
     class Meta:
         permissions = [('access_all_resources', 'Access all resources'), ]
