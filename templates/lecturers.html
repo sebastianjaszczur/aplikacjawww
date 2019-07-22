@@ -17,7 +17,6 @@
               <th>Pełnoletni</th>
               <th>Email</th>
               <th>Warsztaty</th>
-              <th>Status</th>
               <th>Komentarz</th>
               <th>Pesel</th>
               <th>Adres</th>
@@ -53,9 +52,6 @@
                     </a>
                     <br>
                   {% endfor %}
-                </td>
-                <td>
-                  {{ person.status }}
                 </td>
                 <td>
                   {{ person.comments }}
@@ -127,11 +123,11 @@
         "columnDefs": [
           {
             "orderable": false,
-            targets: 0
+            targets: [0, 5]
           },
           {
             visible: true,
-            targets: [0, 1, 3, 5, 6, 7]
+            targets: [0, 1, 4, 5, 6, 9]
           },
           {
             visible: false,
@@ -139,7 +135,8 @@
           },
           {
             "searchable": true,
-            targets: [1, 5, 7]
+            // Name, Email, Workshops, Comment, Address, Phone number
+            targets: [1, 4, 5, 6, 8, 9]
           },
           {
             "searchable": false,

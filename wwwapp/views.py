@@ -21,7 +21,7 @@ from django.urls import reverse
 from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
     UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
 from .models import Article, UserProfile, Workshop, WorkshopParticipant, \
-    WorkshopUserProfile
+    WorkshopUserProfile, WorkshopStatus
 from .templatetags.wwwtags import qualified_mark
 
 
@@ -385,7 +385,7 @@ def participants_view(request, year):
 def lecturers_view(request: HttpRequest, year: int) -> HttpResponse:
     year = int(year)
 
-    workshops = Workshop.objects.filter(type__year=year).prefetch_related('lecturer', 'lecturer__user')
+    workshops = Workshop.objects.filter(type__year=year, status=WorkshopStatus.Z.name).prefetch_related('lecturer', 'lecturer__user')
 
     people: Dict[int, Dict[str, any]] = {}
     for workshop in workshops:
@@ -407,12 +407,10 @@ def lecturers_view(request: HttpRequest, year: int) -> HttpResponse:
                 'address': lecturer.user_info.address,
                 'phone': lecturer.user_info.phone,
                 'tshirt_size': lecturer.user_info.tshirt_size,
-                'points': 0.0,
                 'comments': lecturer.user_info.comments,
                 'start_date': lecturer.user_info.start_date,
                 'end_date': lecturer.user_info.end_date,
                 'workshops': [workshop.info_for_client_link()],
-                'status': lecturer.status,
             }
 
     people_list = list(people.values())
