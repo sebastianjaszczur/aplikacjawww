@@ -40,7 +40,7 @@ def get_context(request):
             context['resources'] = visible_resources
         else:
             user_profile = UserProfile.objects.get(user=request.user)
-            context['resources'] = visible_resources.filter(year__in=user_profile.participation_years())
+            context['resources'] = visible_resources.filter(year__in=user_profile.all_participation_years())
 
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = Article.objects.filter(on_menubar=True).all()

@@ -336,7 +336,8 @@ class ResourceYearPermission(models.Model):
     year = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
-        return "{} - {}".format(self.year, self.path)
+        return "{} - {}".format(self.year,
+                                self.display_name if self.display_name != "" else self.root_url)
 
     def clean(self):
         super().clean()
@@ -346,3 +347,4 @@ class ResourceYearPermission(models.Model):
 
     class Meta:
         permissions = [('access_all_resources', 'Access all resources'), ]
+        ordering = ['year', 'display_name']
