@@ -638,6 +638,14 @@ template_for_workshop_page_view = as_article("template_for_workshop_page")
 
 
 def resource_auth_view(request):
+    """
+    View checking permission for resource (header X-Original-URI). Returns 200
+    when currently logged in user should be granted access to resource and 403
+    when access should be denied.
+
+    See https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/
+    for intended usage.
+    """
     if not request.user.is_authenticated:
         return HttpResponseForbidden("You need to login.")
     if request.user.has_perm('wwwapp.access_all_resources'):
@@ -650,6 +658,7 @@ def resource_auth_view(request):
     scheme, netloc, path, query, fragment = urllib.parse.urlsplit(url)
     path = os.path.normpath(path)  # normalize path
     path_parts = path.split('/')
+
     query = Q(pk__isnull=True)  # always false
     for i in range(len(path_parts)):
         path_prefix = '/'.join(path_parts[:i+1])
@@ -664,6 +673,7 @@ def resource_auth_view(request):
             prefix_url = prefix_url[2:]
         query |= Q(root_url=prefix_url)
 
+    # We check all root_url that are prefixes of received url
     for resource in ResourceYearPermission.objects.filter(query):
         if user_profile.is_participating_in(resource.year):
             return HttpResponse("Welcome!")

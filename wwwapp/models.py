@@ -1,6 +1,5 @@
 from datetime import date
-from typing import Dict
-from enum import Enum
+from typing import Dict, Set
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -24,13 +23,25 @@ class UserProfile(models.Model):
         return self.status_for(year) == 'Z' \
                or Workshop.objects.filter(type__year=year, lecturer=self, status='Z').exists()
 
-    def participation_years(self):
+    def all_participation_years(self) -> Set[int]:
+        """
+        All years user was qualified or had a lecture
+        :return: list of years (integers)
+        """
         return self.participant_years().union(self.lecturer_years())
 
-    def participant_years(self):
+    def participant_years(self) -> Set[int]:
+        """
+        Years user qualified
+        :return: list of years (integers)
+        """
         return set([profile.year for profile in self.workshop_profile.filter(status=WorkshopUserProfile.STATUS_ACCEPTED)])
 
-    def lecturer_years(self):
+    def lecturer_years(self) -> Set[int]:
+        """
+        Years user had a lecture
+        :return: list of years (integers)
+        """
         return set([workshop.type.year for workshop in Workshop.objects.filter(lecturer=self, status='Z')])
     
     @property
@@ -312,11 +323,16 @@ class WorkshopParticipant(models.Model):
 
 
 class ResourceYearPermission(models.Model):
+    """
+    Resource associated with a WWW edition (year). Resource can be accessed by
+    users who qualified or had a lecture on year. User is granted access to
+    root_url and recursively to all files and subdirectories inside.
+    """
     display_name = models.CharField(max_length=50, blank=True)
     access_url = models.URLField(blank=True,
                                  help_text="URL dla przycisku w menu. Przycisk nie jest wyświetlany jeśli url jest pusty")
     root_url = models.CharField(max_length=256, null=False, blank=False,
-                                help_text="URL bez protokołu. bez \"/\" na końcu.")
+                                help_text='URL bez protokołu, bez "/" na końcu. np. "internet.warsztatywww.pl/www15"')
     year = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
