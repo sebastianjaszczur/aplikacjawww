@@ -345,6 +345,34 @@ class ResourceYearPermission(models.Model):
             raise ValidationError("Wyświetlana nazwa musi być ustawiona jeśli "
                                   "URL dostępu jest ustawiony")
 
+        if self.root_url[-1] == "/":
+            self.root_url = self.root_url[:-1]
+        if "://" in self.root_url:
+            raise ValidationError("Root url nie może zawierać protokołu")
+
+    @staticmethod
+    def resources_for_url(url: str):
+        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(url)
+        path = os.path.normpath(path)  # normalize path
+        path_parts = path.split('/')
+
+        query = Q(pk__isnull=True)  # always false
+        for i in range(len(path_parts)):
+            path_prefix = '/'.join(path_parts[:i + 1])
+            prefix_url = urllib.parse.urlunsplit((
+                '',  # remove scheme
+                netloc,
+                path_prefix,
+                '',  # remove query
+                ''  # remove fragment
+            ))
+            if prefix_url[:2] == "//":
+                prefix_url = prefix_url[2:]
+            query |= Q(root_url=prefix_url)
+
+        # We check all root_url that are prefixes of received url
+        return ResourceYearPermission.objects.filter(query)
+
     class Meta:
         permissions = [('access_all_resources', 'Access all resources'), ]
         ordering = ['year', 'display_name']

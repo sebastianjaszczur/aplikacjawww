@@ -655,26 +655,7 @@ def resource_auth_view(request):
 
     url = request.META.get('HTTP_X_ORIGINAL_URI', '')
 
-    scheme, netloc, path, query, fragment = urllib.parse.urlsplit(url)
-    path = os.path.normpath(path)  # normalize path
-    path_parts = path.split('/')
-
-    query = Q(pk__isnull=True)  # always false
-    for i in range(len(path_parts)):
-        path_prefix = '/'.join(path_parts[:i+1])
-        prefix_url = urllib.parse.urlunsplit((
-            '',  # remove scheme
-            netloc,
-            path_prefix,
-            '',  # remove query
-            ''   # remove fragment
-        ))
-        if prefix_url[:2] == "//":
-            prefix_url = prefix_url[2:]
-        query |= Q(root_url=prefix_url)
-
-    # We check all root_url that are prefixes of received url
-    for resource in ResourceYearPermission.objects.filter(query):
+    for resource in ResourceYearPermission.resources_for_url(url):
         if user_profile.is_participating_in(resource.year):
             return HttpResponse("Welcome!")
     return HttpResponseForbidden("What about NO!")
