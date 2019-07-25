@@ -21,7 +21,7 @@ from django.urls import reverse
 from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
     UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
 from .models import Article, UserProfile, Workshop, WorkshopParticipant, \
-    WorkshopUserProfile, WorkshopStatus
+    WorkshopUserProfile
 from .templatetags.wwwtags import qualified_mark
 
 
@@ -380,12 +380,13 @@ def participants_view(request, year):
 
     return render(request, 'participants.html', context)
 
+
 @login_required()
 @permission_required('wwwapp.see_all_workshops', raise_exception=True)
 def lecturers_view(request: HttpRequest, year: int) -> HttpResponse:
     year = int(year)
 
-    workshops = Workshop.objects.filter(type__year=year, status=WorkshopStatus.Z.name).prefetch_related('lecturer', 'lecturer__user')
+    workshops = Workshop.objects.filter(type__year=year, status=Workshop.STATUS_ACCEPTED).prefetch_related('lecturer', 'lecturer__user')
 
     people: Dict[int, Dict[str, any]] = {}
     for workshop in workshops:

@@ -210,21 +210,19 @@ class WorkshopType(models.Model):
         return '%d: %s' % (self.year, self.name)
 
 
-class WorkshopStatus(Enum):
-    """
-    Enumeration type for workshop status.
-    This will need to be refactored later so the names are more relevant.
-    TODO: FIXME: BUG: IMPORTANT: This class should remind us to refactor the enums in the whole project -.-
-    """
-    Z = "Zaakceptowane"
-    O = "Odrzucone"
-    X = "Odwołane"
-
-
 class Workshop(models.Model):
     """
     Workshop taking place during a specific workshop/year
     """
+    STATUS_ACCEPTED = 'Z'
+    STATUS_REJECTED = 'O'
+    STATUS_CANCELLED = 'X'
+    STATUS_CHOICES = [
+        (STATUS_ACCEPTED, 'Zaakceptowane'),
+        (STATUS_REJECTED, 'Odrzucone'),
+        (STATUS_CANCELLED, 'Odwołane')
+    ]
+
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
     title = models.CharField(max_length=50)
     proposition_description = models.TextField(max_length=100000, blank=True)
@@ -232,7 +230,7 @@ class Workshop(models.Model):
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10,
-                              choices=[(tag.name, tag.value) for tag in WorkshopStatus],
+                              choices=STATUS_CHOICES,
                               null=True, default=None, blank=True)
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
