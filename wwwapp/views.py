@@ -453,7 +453,7 @@ def data_for_plan_view(request):
     users = []
     user_ids = set()
 
-    for user_type, profiles in [('Lectuler', lecturer_profiles_raw),
+    for user_type, profiles in [('Lecturer', lecturer_profiles_raw),
                                 ('Participant', participant_profiles_raw)]:
         for up in profiles:
             users.append({
