@@ -335,7 +335,7 @@ class ResourceYearPermission(models.Model):
     access_url = models.URLField(blank=True,
                                  help_text="URL dla przycisku w menu. Przycisk nie jest wyświetlany jeśli url jest pusty")
     root_path = models.CharField(max_length=256, null=False, blank=False,
-                                help_text='bez "/" na końcu i na początku. np. "internety/www15"')
+                                 help_text='bez "/" na końcu. np. "/internety/www15"')
     year = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
@@ -350,8 +350,8 @@ class ResourceYearPermission(models.Model):
 
         if self.root_path.endswith("/"):
             self.root_path = self.root_path[:-1]
-        if self.root_path.startswith("/"):
-            self.root_path = self.root_path[1:]
+        if not self.root_path.startswith("/"):
+            self.root_path = "/" + self.root_path
 
     @staticmethod
     def resources_for_uri(uri: str):
