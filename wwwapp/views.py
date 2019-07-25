@@ -285,6 +285,9 @@ def workshop_participants_view(request, name):
     workshop = get_object_or_404(Workshop, name=name)
     has_perm_to_edit = can_edit_workshop(workshop, request.user)
 
+    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
+        return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
+
     if not (has_perm_to_edit or request.user.has_perm('wwwapp.see_all_workshops')):
         return HttpResponseForbidden()
 
