@@ -1,5 +1,7 @@
 import re
 from datetime import date
+from typing import Dict
+from enum import Enum
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -209,6 +211,18 @@ class WorkshopType(models.Model):
 
 
 class Workshop(models.Model):
+    """
+    Workshop taking place during a specific workshop/year
+    """
+    STATUS_ACCEPTED = 'Z'
+    STATUS_REJECTED = 'O'
+    STATUS_CANCELLED = 'X'
+    STATUS_CHOICES = [
+        (STATUS_ACCEPTED, 'Zaakceptowane'),
+        (STATUS_REJECTED, 'Odrzucone'),
+        (STATUS_CANCELLED, 'Odwołane')
+    ]
+
     name = models.SlugField(max_length=50, null=False, blank=False, unique=True)
     title = models.CharField(max_length=50)
     proposition_description = models.TextField(max_length=100000, blank=True)
@@ -216,7 +230,7 @@ class Workshop(models.Model):
     category = models.ManyToManyField(WorkshopCategory, blank=True)
     lecturer = models.ManyToManyField(UserProfile, blank=True)
     status = models.CharField(max_length=10,
-                              choices=[('Z', 'Zaakceptowane'), ('O', 'Odrzucone'), ('X', 'Odwołane')],
+                              choices=STATUS_CHOICES,
                               null=True, default=None, blank=True)
     page_content = models.TextField(max_length=100000, blank=True)
     page_content_is_public = models.BooleanField(default=False)
@@ -239,6 +253,12 @@ class Workshop(models.Model):
 
     def __str__(self):
         return str(self.type.year) + ': ' + (' (' + self.status + ') ' if self.status else '') + self.title
+
+    """
+    Retrieve information needed to display a meaningful link to the workshop page
+    """
+    def info_for_client_link(self) -> Dict[str, str]:
+        return {'name': self.name, 'title': str(self.title)}
 
     def registered_count(self):
         return self.workshopparticipant_set.count()

@@ -4,6 +4,7 @@ import sys
 import mimetypes
 from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
+from typing import Dict
 
 from django.conf import settings
 from django.contrib import messages
@@ -12,7 +13,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Q
-from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponse, HttpRequest, HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.urls import reverse
@@ -378,6 +379,48 @@ def participants_view(request, year):
     context['people'] = people
 
     return render(request, 'participants.html', context)
+
+
+@login_required()
+@permission_required('wwwapp.see_all_workshops', raise_exception=True)
+def lecturers_view(request: HttpRequest, year: int) -> HttpResponse:
+    year = int(year)
+
+    workshops = Workshop.objects.filter(type__year=year, status=Workshop.STATUS_ACCEPTED).prefetch_related('lecturer', 'lecturer__user')
+
+    people: Dict[int, Dict[str, any]] = {}
+    for workshop in workshops:
+        for lecturer in workshop.lecturer.all():
+            if lecturer.id in people:
+                people[lecturer.id]['workshops'].append(workshop.info_for_client_link())
+                continue
+
+            birth = lecturer.user_info.get_birth_date()
+            is_adult = None
+            if birth is not None:
+                is_adult = settings.WORKSHOPS_START_DATE >= birth + relativedelta(years=18)
+
+            people[lecturer.id] = {
+                'user': lecturer.user,
+                'birth': birth,
+                'is_adult': is_adult,
+                'pesel': lecturer.user_info.pesel,
+                'address': lecturer.user_info.address,
+                'phone': lecturer.user_info.phone,
+                'tshirt_size': lecturer.user_info.tshirt_size,
+                'comments': lecturer.user_info.comments,
+                'start_date': lecturer.user_info.start_date,
+                'end_date': lecturer.user_info.end_date,
+                'workshops': [workshop.info_for_client_link()],
+            }
+
+    people_list = list(people.values())
+
+    context = get_context(request)
+    context['title'] = 'Prowadzący'
+    context['people'] = people_list
+
+    return render(request, 'lecturers.html', context)
 
 
 def register_to_workshop_view(request):
