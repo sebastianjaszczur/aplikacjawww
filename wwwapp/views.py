@@ -453,21 +453,15 @@ def data_for_plan_view(request):
     users = []
     user_ids = set()
 
-    def dict_for_user(up):
-        return {'uid': up.id, 'name': up.user.get_full_name(),
-                'start': up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1,
-                'end': up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30}
-
-    for up in participant_profiles_raw:
-        user_data = dict_for_user(up)
-        user_data['type'] = 'Participant'
-        users.append(user_data)
-        user_ids.add(up.id)
-    for up in lecturer_profiles_raw:
-        user_data = dict_for_user(up)
-        user_data['type'] = 'Lecturer'
-        users.append(user_data)
-        user_ids.add(up.id)
+    for user_type, profiles in [('Lectuler', lecturer_profiles_raw),
+                                ('Participant', participant_profiles_raw)]:
+        for up in profiles:
+            users.append({
+                 'uid': up.id, 'name': up.user.get_full_name(), 'type': user_type,
+                 'start': up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1,
+                 'end': up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
+            })
+            user_ids.add(up.id)
 
     data['users'] = users
 
