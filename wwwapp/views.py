@@ -2,7 +2,6 @@ import datetime
 import os
 import sys
 import mimetypes
-import urllib
 from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
 from typing import Dict
@@ -653,9 +652,9 @@ def resource_auth_view(request):
 
     user_profile = UserProfile.objects.get(user=request.user)
 
-    url = request.META.get('HTTP_X_ORIGINAL_URI', '')
+    uri = request.META.get('HTTP_X_ORIGINAL_URI', '')
 
-    for resource in ResourceYearPermission.resources_for_url(url):
+    for resource in ResourceYearPermission.resources_for_uri(uri):
         if user_profile.is_participating_in(resource.year):
             return HttpResponse("Welcome!")
     return HttpResponseForbidden("What about NO!")

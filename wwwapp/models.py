@@ -1,3 +1,5 @@
+import os
+import urllib.parse
 from datetime import date
 from typing import Dict, Set
 
@@ -5,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.query_utils import Q
 
 
 class UserProfile(models.Model):
@@ -331,13 +334,13 @@ class ResourceYearPermission(models.Model):
     display_name = models.CharField(max_length=50, blank=True)
     access_url = models.URLField(blank=True,
                                  help_text="URL dla przycisku w menu. Przycisk nie jest wyświetlany jeśli url jest pusty")
-    root_url = models.CharField(max_length=256, null=False, blank=False,
-                                help_text='URL bez protokołu, bez "/" na końcu. np. "internet.warsztatywww.pl/www15"')
+    root_path = models.CharField(max_length=256, null=False, blank=False,
+                                help_text='bez "/" na końcu i na początku. np. "internety/www15"')
     year = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
         return "{} - {}".format(self.year,
-                                self.display_name if self.display_name != "" else self.root_url)
+                                self.display_name if self.display_name != "" else self.root_path)
 
     def clean(self):
         super().clean()
@@ -345,30 +348,20 @@ class ResourceYearPermission(models.Model):
             raise ValidationError("Wyświetlana nazwa musi być ustawiona jeśli "
                                   "URL dostępu jest ustawiony")
 
-        if self.root_url[-1] == "/":
-            self.root_url = self.root_url[:-1]
-        if "://" in self.root_url:
-            raise ValidationError("Root url nie może zawierać protokołu")
+        if self.root_path.endswith("/"):
+            self.root_path = self.root_path[:-1]
+        if self.root_path.startswith("/"):
+            self.root_path = self.root_path[1:]
 
     @staticmethod
-    def resources_for_url(url: str):
-        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(url)
+    def resources_for_uri(uri: str):
+        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(uri)
         path = os.path.normpath(path)  # normalize path
         path_parts = path.split('/')
 
         query = Q(pk__isnull=True)  # always false
         for i in range(len(path_parts)):
-            path_prefix = '/'.join(path_parts[:i + 1])
-            prefix_url = urllib.parse.urlunsplit((
-                '',  # remove scheme
-                netloc,
-                path_prefix,
-                '',  # remove query
-                ''  # remove fragment
-            ))
-            if prefix_url[:2] == "//":
-                prefix_url = prefix_url[2:]
-            query |= Q(root_url=prefix_url)
+            query |= Q(root_path='/'.join(path_parts[:i+1]))
 
         # We check all root_url that are prefixes of received url
         return ResourceYearPermission.objects.filter(query)
