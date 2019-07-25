@@ -1,0 +1,85 @@
+# nginx -p ./ -c nginx.conf
+
+# display_name=Internet WWW11, access_url=http://localhost:8080/internet/www11, path=internet/www11, year=2015
+# display_name=Internet WWW12, access_url=http://localhost:8080/internet/www12, path=internet/www12, year=2016 - nie ma plików bo zaginęły :P
+# display_name=Internet WWW13, access_url=http://localhost:8080/internet/www13, path=internet/www13, year=2017
+# display_name=Internet WWW14, access_url=http://localhost:8080/internet/www14, path=internet/www14, year=2018
+
+worker_processes auto;
+daemon off;
+pid nginx.pid;
+error_log /dev/stdout;
+
+events {
+	worker_connections 768;
+	# multi_accept on;
+}
+
+http {
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+	# server_tokens off;
+
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+	
+	error_log /dev/stdout;
+	access_log /dev/stdout;
+
+	server {
+		listen 8080 default_server;
+		listen [::]:8080 default_server;
+		
+		try_files $uri $uri/ =404;
+		
+		location / {
+			# This should be configured with wsgi but I'm too lazy to do that for testing
+			proxy_pass http://localhost:8000;
+		
+			location = /resource_auth/ {
+				internal; # disallow external access to this endpoint
+				proxy_pass http://localhost:8000/resource_auth/;
+				proxy_pass_request_body off;
+				proxy_set_header Content-Length "";
+				proxy_set_header X-Original-URI $request_uri;
+			}
+		}
+		
+		location /internet {
+			alias /media/krzys_h/Archiwum/WakacyjneWarsztatyWielodyscyplinarne/Internet;
+			index index.html index.htm;
+			autoindex on;
+			
+		    auth_request /resource_auth/;
+			error_page 403 =200 /login/;
+			disable_symlinks on;
+			
+			# Earlier internets don't have any specific configuration
+			
+			location /internet/www14/ {
+				# We need to fix the paths because a lot of things were specified relative to / ¯\_(ツ)_/¯
+				sub_filter 'href="/' 'href="/internet/www14/';
+				sub_filter 'src="/' 'src="/internet/www14/';
+				sub_filter 'href=\\"/' 'href=\\"/internet/www14/';
+				sub_filter 'src=\\"/' 'src=\\"/internet/www14/';
+				sub_filter 'Index of /internet/www14/' 'Index of /'; # required for the scripts to correctly detect the root index page
+				sub_filter_once off;
+				sub_filter_types text/plain; # text/html is always included, but we also need to process the cancer1.txt and cancer2.txt files
+				
+				# Our magical header/footer config
+				location ~* ^/internet/www14.*/$ {
+					add_before_body /internet/www14/cancer1.txt;
+					add_after_body /internet/www14/cancer2.txt;
+				}
+			}
+			
+			# I don't have WWW15 files to test but it will be almost identical to WWW14
+		}
+	}
+}
