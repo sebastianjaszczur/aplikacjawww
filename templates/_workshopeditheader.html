@@ -2,12 +2,11 @@
   <div>
     {% if has_perm_to_edit %}
       <a href="{% url 'workshop' workshop.name %}">Edycja zgłoszenia</a> |
-      <a href="{% url 'workshop_page' workshop.name %}">Edycja strony Twoich warsztatów</a> |
-      <a href="{% url 'workshop_participants' workshop.name %}">Uczestnicy i ocenianie</a>
+      <a href="{% url 'workshop_page_edit' workshop.name %}">Edycja strony warsztatów</a> |
     {% else %}
       <a href="{% url 'workshop' workshop.name %}">Podgląd zgłoszenia</a> |
-      <a href="{% url 'workshop_page' workshop.name %}">Link do głównej strony warsztatów</a> |
-      <a href="{% url 'workshop_participants' workshop.name %}">Uczestnicy i ocenianie</a>
     {% endif %}
+    <a href="{% url 'workshop_page' workshop.name %}">Podgląd strony warsztatów</a> |
+    <a href="{% url 'workshop_participants' workshop.name %}">Uczestnicy i ocenianie</a>
   </div>
 {% endif %}

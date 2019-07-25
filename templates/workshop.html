@@ -6,9 +6,7 @@
   <div class="container">
     <article class="col-sm-12 maincontent">
       <h1>{{ title }}</h1>
-      {% if workshop.is_publicly_visible %}
-        {% include '_workshopeditheader.html' %}
-      {% endif %}
+      {% include '_workshopeditheader.html' %}
       {% if has_perm_to_edit %}
         <div role="tabpanel">
           <hr>
