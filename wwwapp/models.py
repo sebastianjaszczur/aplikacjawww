@@ -5,7 +5,7 @@ from typing import Dict, Set
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import models
 from django.db.models.query_utils import Q
 
@@ -358,10 +358,13 @@ class ResourceYearPermission(models.Model):
         scheme, netloc, path, query, fragment = urllib.parse.urlsplit(uri)
         path = os.path.normpath(path)  # normalize path
         path_parts = path.split('/')
+        if path_parts[0] != "":
+            raise SuspiciousOperation("Path has to start with /")
+        path_parts = path_parts[1:]
 
         query = Q(pk__isnull=True)  # always false
-        for i in range(len(path_parts)):
-            query |= Q(root_path='/'.join(path_parts[:i+1]))
+        for i in range(len(path_parts)+1):
+            query |= Q(root_path='/'+'/'.join(path_parts[:i]))
 
         # We check all root_url that are prefixes of received url
         return ResourceYearPermission.objects.filter(query)
