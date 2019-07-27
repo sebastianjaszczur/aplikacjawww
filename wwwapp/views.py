@@ -474,7 +474,7 @@ def data_for_plan_view(request):
             })
     data['participation'] = participation
 
-    return JsonResponse(data)
+    return JsonResponse(data, json_dumps_params={'indent': 4})
 
 
 def qualification_problems_view(request, workshop_name):
