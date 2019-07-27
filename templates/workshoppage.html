@@ -19,19 +19,19 @@
       {% if workshop.page_content_is_public or has_perm_to_edit %}
         {% if has_perm_to_edit %}
           {% if workshop.is_qualifying and workshop.qualification_problems %}
-            Twoje zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
+            <p>Twoje zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.</p>
           {% elif workshop.is_qualifying %}
-            Nie wstawiłeś jeszcze zadań kwalifikacyjnych!
+            <div class="alert alert-danger" role="alert">Nie wstawiłeś jeszcze zadań kwalifikacyjnych!</div>
           {% else %}
-            Na Twoje warsztaty nie obowiązuje kwalifikacja.
+            <p>Na Twoje warsztaty nie obowiązuje kwalifikacja.</p>
           {% endif %}
         {% else %}
           {% if workshop.is_qualifying and workshop.qualification_problems %}
-            Zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
+            <p>Zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.</p>
           {% elif workshop.is_qualifying %}
-            Nie ma jeszcze zadań kwalifikacyjnych.
+            <p>Nie ma jeszcze zadań kwalifikacyjnych.</p>
           {% else %}
-            Na te warsztaty nie obowiązuje kwalifikacja.
+            <p>Na te warsztaty nie obowiązuje kwalifikacja.</p>
           {% endif %}
         {% endif %}
 
@@ -48,11 +48,11 @@
             {{ workshop.page_content | bleach }}
           </div>
         {% else %}
-          Nie opublikowałeś jeszcze opisu!
+          <div class="alert alert-danger" role="alert">Nie opublikowałeś jeszcze opisu!</div>
         {% endif %}
 
       {% else %}
-        Prowadzący warsztatów nie wstawił jeszcze opisu.
+        <p>Prowadzący warsztatów nie wstawił jeszcze opisu.</p>
       {% endif %}
     </article>
   </div>
