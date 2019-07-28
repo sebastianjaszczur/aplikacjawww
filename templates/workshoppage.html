@@ -13,7 +13,6 @@
 
       {% if has_perm_to_view_details %}
         {% include '_workshopeditheader.html' %}
-        <hr>
       {% endif %}
 
       {% if workshop.page_content_is_public or has_perm_to_edit %}

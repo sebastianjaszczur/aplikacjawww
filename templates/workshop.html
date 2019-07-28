@@ -9,7 +9,6 @@
       {% include '_workshopeditheader.html' %}
       {% if has_perm_to_edit %}
         <div role="tabpanel">
-          <hr>
           <form action="" method="post">
             {% csrf_token %}
             {{ form | crispy }}
