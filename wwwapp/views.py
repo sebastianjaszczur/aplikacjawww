@@ -257,7 +257,7 @@ def workshop_page_edit_view(request, name):
             workshop.lecturer.add(user_profile)
             workshop.save()
             messages.info(request, 'Zapisano.')
-            return redirect('workshop_page', form.instance.name)
+            return redirect('workshop_page_edit', form.instance.name)
     else:
         if not workshop.page_content:
             workshop_template = Article.objects.get(
