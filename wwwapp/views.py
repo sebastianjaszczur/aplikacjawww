@@ -480,33 +480,38 @@ def unregister_from_workshop_view(request):
 def data_for_plan_view(request):
     data = {}
 
-    user_profiles_raw = set(up for up in UserProfile.objects.all() if WorkshopUserProfile.objects.filter(user_profile=up, year=settings.CURRENT_YEAR, status='Z').exists())
+    participant_profiles_raw = UserProfile.objects.filter(workshop_profile__year=settings.CURRENT_YEAR, workshop_profile__status='Z')
 
-    workshops_raw = Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR)
+    lecturer_profiles_raw = set()
     workshop_ids = set()
     workshops = []
-    for workshop in workshops_raw:
-        record_to_add = dict()
-        record_to_add['wid'] = workshop.id
+    for workshop in Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR):
+        workshop_data = {'wid': workshop.id,
+                         'name': workshop.title,
+                         'lecturers': [lect.id for lect in
+                                       workshop.lecturer.all()]}
+        for lecturer in workshop.lecturer.all():
+            if lecturer not in participant_profiles_raw:
+                lecturer_profiles_raw.add(lecturer)
         workshop_ids.add(workshop.id)
-        record_to_add['name'] = workshop.title
-        record_to_add['lecturers'] = [lect.id for lect in workshop.lecturer.all()]
-        for lect in workshop.lecturer.all():
-            if lect not in user_profiles_raw:
-                user_profiles_raw.add(lect)
-        workshops.append(record_to_add)
+        workshops.append(workshop_data)
     data['workshops'] = workshops
 
     users = []
     user_ids = set()
-    for up in user_profiles_raw:
-        record_to_add = dict()
-        record_to_add['uid'] = up.id
-        user_ids.add(up.id)
-        record_to_add['name'] = up.user.get_full_name()
-        record_to_add['start'] = up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1
-        record_to_add['end'] = up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
-        users.append(record_to_add)
+
+    for user_type, profiles in [('Lecturer', lecturer_profiles_raw),
+                                ('Participant', participant_profiles_raw)]:
+        for up in profiles:
+            users.append({
+                'uid': up.id,
+                'name': up.user.get_full_name(),
+                'type': user_type,
+                'start': up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1,
+                'end': up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
+            })
+            user_ids.add(up.id)
+
     data['users'] = users
 
     participation = []
@@ -518,7 +523,7 @@ def data_for_plan_view(request):
             })
     data['participation'] = participation
 
-    return JsonResponse(data)
+    return JsonResponse(data, json_dumps_params={'indent': 4})
 
 
 def qualification_problems_view(request, workshop_name):

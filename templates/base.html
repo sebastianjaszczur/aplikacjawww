@@ -88,6 +88,9 @@
                     <li role="separator" class="divider"></li>
                     <li><a href="{% url 'admin:index' %}">Django admin</a></li>
                   {% endif %}
+                  {% if perms.wwwapp.export_workshop_registration %}
+                    <li><a href="{% url 'dataForPlan' %}">Dane do planu</a></li>
+                  {% endif %}
                 </ul>
               </li>
             {% endif %}
