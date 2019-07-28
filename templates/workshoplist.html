@@ -31,7 +31,11 @@
                   </td>
                   <td>
                     {% if workshop.is_publicly_visible %}
-                      <a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }}</a>
+                      {% if link_to_edit %}
+                        <a href="{% url 'workshop_page_edit' workshop.name %}">{{ workshop.title }}</a>
+                      {% else %}
+                        <a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }}</a>
+                      {% endif %}
                     {% else %}
                       <a href="{% url 'workshop' workshop.name %}">{{ workshop.title }}</a>
                     {% endif %}

@@ -542,17 +542,17 @@ def article_name_list_view(request):
 @login_required()
 def your_workshops_view(request):
     workshops = Workshop.objects.filter(lecturer__user=request.user)
-    return render_workshops(request, 'Twoje warsztaty', workshops)
+    return render_workshops(request, 'Twoje warsztaty', True, workshops)
 
 
 @login_required()
 @permission_required('wwwapp.see_all_workshops', raise_exception=True)
 def all_workshops_view(request):
     workshops = Workshop.objects.all()
-    return render_workshops(request, 'Wszystkie warsztaty', workshops)
+    return render_workshops(request, 'Wszystkie warsztaty', False, workshops)
 
 
-def render_workshops(request, title, workshops):
+def render_workshops(request, title, link_to_edit, workshops):
     context = get_context(request)
 
     years = set(workshop.type.year for workshop in workshops)
@@ -562,6 +562,7 @@ def render_workshops(request, title, workshops):
          'workshops': [workshop for workshop in workshops if workshop.type.year == year]}
         for year in years]
     context['title'] = title
+    context['link_to_edit'] = link_to_edit
 
     return render(request, 'workshoplist.html', context)
 
