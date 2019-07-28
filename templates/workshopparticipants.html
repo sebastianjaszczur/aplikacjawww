@@ -49,7 +49,7 @@
                        data-id="{{ workshop_participant.id }}">
                 <a href="#" class="savec">Zapisz</a>
               {% else %}
-                {{ workshop_participant.qualification_result | default_if_none:'' }}
+                {{ workshop_participant.comment | default_if_none:'' }}
               {% endif %}
             </td>
             <td class="qualified-mark">
