@@ -21,25 +21,28 @@ from django.urls import reverse
 from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
     UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
 from .models import Article, UserProfile, Workshop, WorkshopParticipant, \
-    WorkshopUserProfile
+    WorkshopUserProfile, ResourceYearPermission
 from .templatetags.wwwtags import qualified_mark
 
 
 def get_context(request):
     context = {}
 
-    articles_on_menubar = Article.objects.filter(on_menubar=True).all()
-    if not request.user.is_authenticated:
-        has_workshops = False
-    else:
+    context['has_workshops'] = False
+
+    if request.user.is_authenticated:
         if Workshop.objects.filter(lecturer__user=request.user).exists():
-            has_workshops = True
+            context['has_workshops'] = True
+
+        visible_resources = ResourceYearPermission.objects.exclude(access_url__exact="")
+        if request.user.has_perm('wwwapp.access_all_resources'):
+            context['resources'] = visible_resources
         else:
-            has_workshops = False
+            user_profile = UserProfile.objects.get(user=request.user)
+            context['resources'] = visible_resources.filter(year__in=user_profile.all_participation_years())
 
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
-    context['articles_on_menubar'] = articles_on_menubar
-    context['has_workshops'] = has_workshops
+    context['articles_on_menubar'] = Article.objects.filter(on_menubar=True).all()
     context['current_year'] = settings.CURRENT_YEAR
 
     return context
@@ -631,3 +634,27 @@ def as_article(name):
 
 index_view = as_article("index")
 template_for_workshop_page_view = as_article("template_for_workshop_page")
+
+
+def resource_auth_view(request):
+    """
+    View checking permission for resource (header X-Original-URI). Returns 200
+    when currently logged in user should be granted access to resource and 403
+    when access should be denied.
+
+    See https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/
+    for intended usage.
+    """
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("You need to login.")
+    if request.user.has_perm('wwwapp.access_all_resources'):
+        return HttpResponse("Glory to WWW and the ELITARNY MIMUW!!!")
+
+    user_profile = UserProfile.objects.get(user=request.user)
+
+    uri = request.META.get('HTTP_X_ORIGINAL_URI', '')
+
+    for resource in ResourceYearPermission.resources_for_uri(uri):
+        if user_profile.is_participating_in(resource.year):
+            return HttpResponse("Welcome!")
+    return HttpResponseForbidden("What about NO!")

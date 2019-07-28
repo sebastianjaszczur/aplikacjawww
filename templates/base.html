@@ -66,6 +66,17 @@
 
             <li><a href="{% url 'program' %}">Program</a></li>
 
+            {% if resources %}
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Internety <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  {% for resource in resources %}
+                    <li><a href="{{ resource.access_url }}">{{ resource.display_name }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endif %}
+
             {% if perms.wwwapp.see_all_users %}
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>

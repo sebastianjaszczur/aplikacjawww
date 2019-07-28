@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from .models import Article, UserProfile, ArticleContentHistory, \
     WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant, UserInfo, \
-    WorkshopUserProfile
+    WorkshopUserProfile, ResourceYearPermission
 
 admin.site.unregister(User)
 
@@ -51,3 +51,5 @@ admin.site.register(WorkshopCategory)
 admin.site.register(WorkshopType)
 admin.site.register(WorkshopParticipant)
 admin.site.register(WorkshopUserProfile)
+
+admin.site.register(ResourceYearPermission)

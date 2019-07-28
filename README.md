@@ -16,5 +16,9 @@ Django-based application to manage registration of people for [scientific summer
 - `pip install -r requirements.txt`
 - `./runserver.sh`
 
+#### INTERNETy
+
+For the INTERNETy resources authentication a /resource\_auth endpoint is provided. An example nginx config is in `nginx.conf.example` file.
+
 ### Online version:
 App currently available at https://warsztatywww.pl/

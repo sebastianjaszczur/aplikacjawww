@@ -1,12 +1,13 @@
-import re
+import os
+import urllib.parse
 from datetime import date
-from typing import Dict
-from enum import Enum
+from typing import Dict, Set
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import models
+from django.db.models.query_utils import Q
 
 
 class UserProfile(models.Model):
@@ -24,6 +25,27 @@ class UserProfile(models.Model):
     def is_participating_in(self, year):
         return self.status_for(year) == 'Z' \
                or Workshop.objects.filter(type__year=year, lecturer=self, status='Z').exists()
+
+    def all_participation_years(self) -> Set[int]:
+        """
+        All years user was qualified or had a lecture
+        :return: list of years (integers)
+        """
+        return self.participant_years().union(self.lecturer_years())
+
+    def participant_years(self) -> Set[int]:
+        """
+        Years user qualified
+        :return: list of years (integers)
+        """
+        return set([profile.year for profile in self.workshop_profile.filter(status=WorkshopUserProfile.STATUS_ACCEPTED)])
+
+    def lecturer_years(self) -> Set[int]:
+        """
+        Years user had a lecture
+        :return: list of years (integers)
+        """
+        return set([workshop.type.year for workshop in Workshop.objects.filter(lecturer=self, status='Z')])
     
     @property
     def status(self):
@@ -301,3 +323,52 @@ class WorkshopParticipant(models.Model):
 
     class Meta:
         unique_together = [('workshop', 'participant')]
+
+
+class ResourceYearPermission(models.Model):
+    """
+    Resource associated with a WWW edition (year). Resource can be accessed by
+    users who qualified or had a lecture on year. User is granted access to
+    root_url and recursively to all files and subdirectories inside.
+    """
+    display_name = models.CharField(max_length=50, blank=True)
+    access_url = models.URLField(blank=True,
+                                 help_text="URL dla przycisku w menu. Przycisk nie jest wyświetlany jeśli url jest pusty")
+    root_path = models.CharField(max_length=256, null=False, blank=False,
+                                 help_text='bez "/" na końcu. np. "/internety/www15"')
+    year = models.IntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return "{} - {}".format(self.year,
+                                self.display_name if self.display_name != "" else self.root_path)
+
+    def clean(self):
+        super().clean()
+        if self.access_url != "" and self.display_name == "":
+            raise ValidationError("Wyświetlana nazwa musi być ustawiona jeśli "
+                                  "URL dostępu jest ustawiony")
+
+        if self.root_path.endswith("/"):
+            self.root_path = self.root_path[:-1]
+        if not self.root_path.startswith("/"):
+            self.root_path = "/" + self.root_path
+
+    @staticmethod
+    def resources_for_uri(uri: str):
+        scheme, netloc, path, query, fragment = urllib.parse.urlsplit(uri)
+        path = os.path.normpath(path)  # normalize path
+        path_parts = path.split('/')
+        if path_parts[0] != "":
+            raise SuspiciousOperation("Path has to start with /")
+        path_parts = path_parts[1:]
+
+        query = Q(pk__isnull=True)  # always false
+        for i in range(len(path_parts)+1):
+            query |= Q(root_path='/'+'/'.join(path_parts[:i]))
+
+        # We check all root_url that are prefixes of received url
+        return ResourceYearPermission.objects.filter(query)
+
+    class Meta:
+        permissions = [('access_all_resources', 'Access all resources'), ]
+        ordering = ['year', 'display_name']
