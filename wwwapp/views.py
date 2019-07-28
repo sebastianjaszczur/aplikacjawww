@@ -440,7 +440,8 @@ def data_for_plan_view(request):
     workshop_ids = set()
     workshops = []
     for workshop in Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR):
-        workshop_data = {'wid': workshop.id, 'name': workshop.title,
+        workshop_data = {'wid': workshop.id,
+                         'name': workshop.title,
                          'lecturers': [lect.id for lect in
                                        workshop.lecturer.all()]}
         for lecturer in workshop.lecturer.all():
@@ -457,9 +458,11 @@ def data_for_plan_view(request):
                                 ('Participant', participant_profiles_raw)]:
         for up in profiles:
             users.append({
-                 'uid': up.id, 'name': up.user.get_full_name(), 'type': user_type,
-                 'start': up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1,
-                 'end': up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
+                'uid': up.id,
+                'name': up.user.get_full_name(),
+                'type': user_type,
+                'start': up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1,
+                'end': up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
             })
             user_ids.add(up.id)
 
