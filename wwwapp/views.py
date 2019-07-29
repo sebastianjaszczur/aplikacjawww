@@ -170,7 +170,6 @@ def my_profile_view(request):
 
 
 def workshop_view(request, name=None):
-    context = get_context(request)
     new = (name is None)
     if new:
         workshop = None
@@ -209,53 +208,15 @@ def workshop_view(request, name=None):
     else:
         form = None
 
-    context['addWorkshop'] = new
+    context = get_context(request)
     context['title'] = title
     context['workshop'] = workshop
-    context['form'] = form
     context['has_perm_to_edit'] = has_perm_to_edit
+    context['has_perm_to_view_details'] = has_perm_to_edit or has_perm_to_see_all
+
+    context['form'] = form
 
     return render(request, 'workshop.html', context)
-
-
-def workshop_page_view(request, name):
-    context = get_context(request)
-
-    workshop = get_object_or_404(Workshop, name=name)
-    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
-        return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
-
-    title = workshop.title
-    has_perm_to_edit = can_edit_workshop(workshop, request.user)
-
-    if has_perm_to_edit:
-        if request.method == 'POST':
-            form = WorkshopPageForm(request.POST, request.FILES, instance=workshop)
-            if form.is_valid():
-                workshop = form.save(commit=False)
-                workshop.save()
-                form.save_m2m()
-                user_profile = UserProfile.objects.get(user=request.user)
-                workshop.lecturer.add(user_profile)
-                workshop.save()
-                messages.info(request, 'Zapisano.')
-                return redirect('workshop_page', form.instance.name)
-        else:
-            if not workshop.page_content:
-                workshop_template = Article.objects.get(name="template_for_workshop_page").content
-                workshop.page_content = workshop_template
-                workshop.save()
-            form = WorkshopPageForm(instance=workshop)
-    else:
-        form = None
-
-    context['title'] = title
-    context['workshop'] = workshop
-    context['form'] = form
-    context['has_perm_to_edit'] = has_perm_to_edit
-    context['has_perm_to_see_all'] = request.user.has_perm('wwwapp.see_all_workshops')
-
-    return render(request, 'workshoppage.html', context)
 
 
 def can_edit_workshop(workshop, user):
@@ -265,22 +226,75 @@ def can_edit_workshop(workshop, user):
         return False
 
 
+def workshop_page_view(request, name):
+    workshop = get_object_or_404(Workshop, name=name)
+    has_perm_to_edit = can_edit_workshop(workshop, request.user)
+
+    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
+        return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
+
+    context = get_context(request)
+    context['workshop'] = workshop
+    context['has_perm_to_edit'] = has_perm_to_edit
+    context['has_perm_to_view_details'] = \
+        has_perm_to_edit or request.user.has_perm('wwwapp.see_all_workshops')
+
+    return render(request, 'workshoppage.html', context)
+
+
+def workshop_page_edit_view(request, name):
+    workshop = get_object_or_404(Workshop, name=name)
+
+    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
+        return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
+    if not can_edit_workshop(workshop, request.user):
+        return HttpResponseForbidden()
+
+    if request.method == 'POST':
+        form = WorkshopPageForm(request.POST, request.FILES,
+                                instance=workshop)
+        if form.is_valid():
+            workshop = form.save(commit=False)
+            workshop.save()
+            form.save_m2m()
+            user_profile = UserProfile.objects.get(user=request.user)
+            workshop.lecturer.add(user_profile)
+            workshop.save()
+            messages.info(request, 'Zapisano.')
+            return redirect('workshop_page_edit', form.instance.name)
+    else:
+        if not workshop.page_content:
+            workshop_template = Article.objects.get(
+                name="template_for_workshop_page").content
+            workshop.page_content = workshop_template
+            workshop.save()
+        form = WorkshopPageForm(instance=workshop)
+
+    context = get_context(request)
+    context['workshop'] = workshop
+    context['has_perm_to_edit'] = True
+    context['has_perm_to_view_details'] = True
+
+    context['form'] = form
+
+    return render(request, 'workshoppage.html', context)
+
+
 @login_required()
 def workshop_participants_view(request, name):
     workshop = get_object_or_404(Workshop, name=name)
+    has_perm_to_edit = can_edit_workshop(workshop, request.user)
 
-    can_edit = can_edit_workshop(workshop, request.user)
-    can_see = can_edit or request.user.has_perm('wwwapp.see_all_workshops')
-
-    if not can_see:
+    if not (has_perm_to_edit or request.user.has_perm('wwwapp.see_all_workshops')):
         return HttpResponseForbidden()
 
     context = get_context(request)
-
     context['workshop'] = workshop
+    context['has_perm_to_edit'] = has_perm_to_edit
+    context['has_perm_to_view_details'] = True
+
     context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
             'workshop', 'participant', 'participant__user')
-    context['has_perm_to_edit'] = can_edit
     
     return render(request, 'workshopparticipants.html', context)
 
@@ -579,17 +593,17 @@ def article_name_list_view(request):
 @login_required()
 def your_workshops_view(request):
     workshops = Workshop.objects.filter(lecturer__user=request.user)
-    return render_workshops(request, 'Twoje warsztaty', workshops)
+    return render_workshops(request, 'Twoje warsztaty', True, workshops)
 
 
 @login_required()
 @permission_required('wwwapp.see_all_workshops', raise_exception=True)
 def all_workshops_view(request):
     workshops = Workshop.objects.all()
-    return render_workshops(request, 'Wszystkie warsztaty', workshops)
+    return render_workshops(request, 'Wszystkie warsztaty', False, workshops)
 
 
-def render_workshops(request, title, workshops):
+def render_workshops(request, title, link_to_edit, workshops):
     context = get_context(request)
 
     years = set(workshop.type.year for workshop in workshops)
@@ -599,6 +613,7 @@ def render_workshops(request, title, workshops):
          'workshops': [workshop for workshop in workshops if workshop.type.year == year]}
         for year in years]
     context['title'] = title
+    context['link_to_edit'] = link_to_edit
 
     return render(request, 'workshoplist.html', context)
 

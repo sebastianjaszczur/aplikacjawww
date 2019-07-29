@@ -5,43 +5,53 @@
 {% block content %}
   <div class="container">
     <article class="col-sm-12 maincontent">
-      <h1>{{ title }}</h1>
+      <h1>{{ workshop.title }}</h1>
+
       {% if workshop.status == 'X' %}
         <h3 style="color: red;">Te warsztaty są odwołane!</h3>
       {% endif %}
-      {% if has_perm_to_edit %}
+
+      {% if has_perm_to_view_details %}
         {% include '_workshopeditheader.html' %}
-        <hr>
-        {% if workshop.is_qualifying and workshop.qualification_problems %}
-          Twoje zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
-        {% elif workshop.is_qualifying%}
-          Nie wstawiłeś jeszcze zadań kwalifikacyjnych!
+      {% endif %}
+
+      {% if workshop.page_content_is_public or has_perm_to_edit %}
+        {% if has_perm_to_edit %}
+          {% if workshop.is_qualifying and workshop.qualification_problems %}
+            <p>Twoje zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.</p>
+          {% elif workshop.is_qualifying %}
+            <div class="alert alert-danger" role="alert">Nie wstawiłeś jeszcze zadań kwalifikacyjnych!</div>
+          {% else %}
+            <p>Na Twoje warsztaty nie obowiązuje kwalifikacja.</p>
+          {% endif %}
         {% else %}
-          Na Twoje warsztaty nie obowiązuje kwalifikacja.
+          {% if workshop.is_qualifying and workshop.qualification_problems %}
+            <p>Zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.</p>
+          {% elif workshop.is_qualifying %}
+            <p>Nie ma jeszcze zadań kwalifikacyjnych.</p>
+          {% else %}
+            <p>Na te warsztaty nie obowiązuje kwalifikacja.</p>
+          {% endif %}
         {% endif %}
-        <div role="tabpanel" style="margin: 1em 0;">
-          <form action="" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form | crispy }}
-            <button class="btn btn-default">Zapisz</button>
-          </form>
-        </div>
-      {% elif workshop.page_content_is_public %}
-        {% if has_perm_to_see_all %}
-          {% include '_workshopeditheader.html' %}
-        {% endif %}
-        {% if workshop.is_qualifying and workshop.qualification_problems %}
-          Zadania kwalifikacyjne są <a target="_blank" href="{% url 'qualification_problems' workshop.name%}">tutaj</a>.
-        {% elif workshop.is_qualifying %}
-          Nie ma jeszcze zadań kwalifikacyjnych.
+
+        {% if form %}
+          <div role="tabpanel" style="margin: 1em 0;">
+            <form action="" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ form | crispy }}
+              <button class="btn btn-default">Zapisz</button>
+            </form>
+          </div>
+        {% elif workshop.page_content_is_public %}
+          <div role="tabpanel" style="margin: 1em 0;">
+            {{ workshop.page_content | bleach }}
+          </div>
         {% else %}
-          Na te warsztaty nie obowiązuje kwalifikacja.
+          <div class="alert alert-danger" role="alert">Nie opublikowałeś jeszcze opisu!</div>
         {% endif %}
-        <div role="tabpanel" style="margin: 1em 0;">
-          {{ workshop.page_content | bleach }}
-        </div>
+
       {% else %}
-        Prowadzący warsztatów nie wstawił jeszcze opisu.
+        <p>Prowadzący warsztatów nie wstawił jeszcze opisu.</p>
       {% endif %}
     </article>
   </div>
