@@ -230,7 +230,7 @@ def workshop_page_view(request, name):
     workshop = get_object_or_404(Workshop, name=name)
     has_perm_to_edit = can_edit_workshop(workshop, request.user)
 
-    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
+    if not workshop.is_publicly_visible():  # Accepted or cancelled
         return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
 
     context = get_context(request)
@@ -245,7 +245,7 @@ def workshop_page_view(request, name):
 def workshop_page_edit_view(request, name):
     workshop = get_object_or_404(Workshop, name=name)
 
-    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
+    if not workshop.is_publicly_visible():  # Accepted or cancelled
         return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
     if not can_edit_workshop(workshop, request.user):
         return HttpResponseForbidden()
@@ -285,7 +285,7 @@ def workshop_participants_view(request, name):
     workshop = get_object_or_404(Workshop, name=name)
     has_perm_to_edit = can_edit_workshop(workshop, request.user)
 
-    if not workshop.is_publicly_visible():  # Zaakceptowane lub odwołane
+    if not workshop.is_publicly_visible():  # Accepted or cancelled
         return HttpResponseForbidden("Warsztaty nie zostały zaakceptowane")
 
     if not (has_perm_to_edit or request.user.has_perm('wwwapp.see_all_workshops')):
