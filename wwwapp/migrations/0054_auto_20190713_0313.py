@@ -14,14 +14,22 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='userinfo',
+            name='end_date',
+        ),
+        migrations.RemoveField(
+            model_name='userinfo',
+            name='start_date',
+        ),
+        migrations.RemoveField(
+            model_name='userinfo',
             name='meeting_point',
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='userinfo',
             name='end_date',
             field=models.DateField(blank=True, null=True),
         ),
-        migrations.AlterField(
+        migrations.AddField(
             model_name='userinfo',
             name='start_date',
             field=models.DateField(blank=True, null=True),
