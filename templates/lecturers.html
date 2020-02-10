@@ -8,22 +8,22 @@
     <article class="col-sm-12 maincontent">
       <h1>Wszyscy prowadzący</h1>
       <div class="table-responsive">
-        <table id="participants-table" class="table" style="width:100%!important;">
+        <table id="participants-table" class="table" style="width:100%!important;" data-order='[[ 6, "desc" ], [ 1, "desc" ]]'>
           <thead>
             <tr>
-              <th></th>
-              <th>Imię i nazwisko</th>
-              <th>Data Urodzenia</th>
-              <th>Pełnoletni</th>
-              <th>Email</th>
-              <th>Warsztaty</th>
-              <th>Komentarz</th>
-              <th>Pesel</th>
-              <th>Adres</th>
-              <th>Numer telefonu</th>
-              <th>Rozmiar Koszulki</th>
-              <th>Data Przyjazdu</th>
-              <th>Data Wyjazdu</th>
+              <th data-visible="true"  data-searchable="false" data-orderable="false"></th>
+              <th data-visible="true"  data-searchable="true"  data-orderable="true">Imię i nazwisko</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Data Urodzenia</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Pełnoletni</th>
+              <th data-visible="true"  data-searchable="true"  data-orderable="true">Email</th>
+              <th data-visible="true"  data-searchable="true"  data-orderable="false">Warsztaty</th>
+              <th data-visible="true"  data-searchable="true"  data-orderable="false">Komentarz</th>
+              <th data-visible="false" data-searchable="false" data-orderable="false">Pesel</th>
+              <th data-visible="false" data-searchable="true"  data-orderable="false">Adres</th>
+              <th data-visible="true"  data-searchable="true"  data-orderable="false">Numer telefonu</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Rozmiar Koszulki</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Data Przyjazdu</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Data Wyjazdu</th>
             </tr>
           </thead>
           <tbody>
@@ -120,29 +120,6 @@
                 }
            },
         ],
-        "columnDefs": [
-          {
-            "orderable": false,
-            targets: [0, 5]
-          },
-          {
-            visible: true,
-            targets: [0, 1, 4, 5, 6, 9]
-          },
-          {
-            visible: false,
-            targets: "_all"
-          },
-          {
-            "searchable": true,
-            // Name, Email, Workshops, Comment, Address, Phone number
-            targets: [1, 4, 5, 6, 8, 9]
-          },
-          {
-            "searchable": false,
-            targets: "_all"
-          }
-          ],
         "language": {
           "url": "{% static 'datatables/Polish.json' %}",
         },
@@ -150,7 +127,6 @@
           $("td:first", nRow).html(iDisplayIndex +1);
           return nRow;
         },
-        "order": [[ 6, "desc" ], [ 1, "desc" ]],
       });
     }
     );

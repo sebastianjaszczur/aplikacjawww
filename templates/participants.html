@@ -8,28 +8,28 @@
     <article class="col-sm-12 maincontent">
       <h1>Wszyscy uczestnicy</h1>
       <div class="table-responsive">
-        <table id="participants-table" class="table" style="width:100%!important;">
+        <table id="participants-table" class="table" style="width:100%!important;" data-order='[[ 1, "desc" ], [ 11, "desc" ]]'>
           <thead>
             <tr>
-              <th></th>
-              <th>Imię i nazwisko</th>
-              <th>Data Urodzenia</th>
-              <th>Pełnoletni</th>
-              <th>Email</th>
-              <th>Szkoła</th>
-              <th>Rok Matury</th>
-              <th>Punkty</th>
-              <th>Suma ilości warsztatów</th>
-              <th>Ilość Zakwalifikowanych Warsztatów</th>
-              <th>List motywacyjny</th>
-              <th>Status</th>
-              <th>Komentarz</th>
-              <th>Pesel</th>
-              <th>Adres</th>
-              <th>Numer telefonu</th>
-              <th>Rozmiar Koszulki</th>
-              <th>Data Przyjazdu</th>
-              <th>Data Wyjazdu</th>
+              <th data-visible="true"  data-searchable="false" data-orderable="false"></th>
+              <th data-visible="true"  data-searchable="true"  data-orderable="true">Imię i nazwisko</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Data Urodzenia</th>
+              <th data-visible="true"  data-searchable="false" data-orderable="true">Pełnoletni</th>
+              <th data-visible="false" data-searchable="true"  data-orderable="true">Email</th>
+              <th data-visible="false" data-searchable="true"  data-orderable="true">Szkoła</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Rok Matury</th>
+              <th data-visible="true"  data-searchable="false" data-orderable="true">Punkty</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Suma ilości warsztatów</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Ilość Zakwalifikowanych Warsztatów</th>
+              <th data-visible="true"  data-searchable="false" data-orderable="true">List motywacyjny</th>
+              <th data-visible="true"  data-searchable="false" data-orderable="true">Status</th>
+              <th data-visible="false" data-searchable="false" data-orderable="false">Komentarz</th>
+              <th data-visible="false" data-searchable="true"  data-orderable="false">Pesel</th>
+              <th data-visible="false" data-searchable="true"  data-orderable="false">Adres</th>
+              <th data-visible="false" data-searchable="true"  data-orderable="false">Numer telefonu</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Rozmiar Koszulki</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Data Przyjazdu</th>
+              <th data-visible="false" data-searchable="false" data-orderable="true">Data Wyjazdu</th>
             </tr>
           </thead>
           <tbody>
@@ -141,28 +141,6 @@
                 }
            },
         ],
-        "columnDefs": [
-          {
-            "orderable": false,
-            targets: [0, 12, 14]
-          },
-          {
-            visible: true,
-            targets: [0, 1, 3, 7, 10, 11]
-          },
-          {
-            visible: false,
-            targets: "_all"
-          },
-          {
-            "searchable": true,
-            targets: [1, 4, 5, 12, 14]
-          },
-          {
-            "searchable": false,
-            targets: "_all"
-          }
-          ],
         "language": {
           "url": "{% static 'datatables/Polish.json' %}",
         },
@@ -170,7 +148,6 @@
           $("td:first", nRow).html(iDisplayIndex +1);
           return nRow;
         },
-        "order": [[ 1, "desc" ], [ 11, "desc" ]],
       });
     }
     );
