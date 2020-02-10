@@ -57,7 +57,7 @@
                 <td>
                   {{ person.matura_exam_year | question_mark_on_none_value }}
                 </td>
-                <td>
+                <td data-order="{{ person.points | floatformat }}">
                   <a tabindex="0" data-html="true" role="button" data-trigger="focus" data-toggle="popover" data-placement="bottom" title="Komentarze" data-content="<ul>{% for info in person.infos %} <li> {{ info }} </li> {% endfor %}</ul>">
                     {{ person.points | floatformat }}%
                   </a>
@@ -142,9 +142,6 @@
            },
         ],
         "columnDefs": [
-          {
-            "type": "percent", targets: 4
-          },
           {
             "orderable": false,
             targets: [0, 12, 14]
