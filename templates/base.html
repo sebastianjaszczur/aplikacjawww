@@ -2,6 +2,7 @@
 <html lang="en">
   {% load staticfiles %}
   {% load compress %}
+  {% load i18n %}
 
   <head>
     <meta charset="utf-8">
@@ -175,6 +176,7 @@
       <script type="text/javascript" src="{% static 'js/pdfmake.min.js' %}"></script>
       <script type="text/javascript" src="{% static 'js/vfs_fonts.js' %}"></script>
       <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
+      <script type="text/javascript" src="{% static 'js/datatables.intl.js' %}"></script>
 
       <script src="{% static 'js/moment.js' %}"></script>
       <script src="{% static 'js/moment-locale-pl.js' %}"></script>
@@ -183,6 +185,8 @@
       <script src="{% static 'js/ajax.requests.js' %}"></script>
       <script src="{% static 'js/warsztatywww.js' %}"></script>
     {% endcompress %}
+    {% get_current_language as LANGUAGE_CODE %}
+    <script>$.fn.dataTable.ext.order.intl('{{ LANGUAGE_CODE }}');</script>
 
     {% block script %}{% endblock %}
     <!-- Mathjax / LaTeX support-->
