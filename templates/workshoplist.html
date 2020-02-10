@@ -8,7 +8,7 @@
       {% for entry in workshops %}
         <h2>{{ entry.year }}</h2>
         <div class="table-responsive">
-          <table id="workshop_list" class="table" style="width:100%!important;" data-order='[[ 10, "desc" ]]'>
+          <table class="table workshop-table" style="width:100%!important;" data-order='[[ 10, "desc" ]]'>
             <thead>
             <tr>
               <th data-visible="true" data-searchable="false" data-orderable="false"></th>
@@ -108,7 +108,7 @@
 {% block script %}
   <script>
   $(document).ready( function () {
-    const table = $('#workshop_list').DataTable({
+    const table = $('.workshop-table').DataTable({
       dom: 'Bfrtip',
       responsive: true,
       colReorder: true,
