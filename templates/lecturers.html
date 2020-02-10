@@ -31,12 +31,12 @@
               <tr>
                 <td>
                 </td>
-                <td>
+                <td data-order="{{ person.user.last_name }} {{ person.user.first_name }}">
                   <a href="{% url 'profile' person.user.id %}">
                     {{ person.user.get_full_name | question_mark_on_empty_string }}
                   </a>
                 </td>
-                <td>
+                <td data-order="{{ person.birth | date:"U" }}">
                   {{ person.birth | question_mark_on_none_value }}
                 </td>
                 <td>
@@ -68,10 +68,10 @@
                 <td>
                   {{ person.tshirt_size }}
                 </td>
-                <td>
+                <td data-order="{{ person.start_date | date:"U" }}">
                   {{ person.start_date }}
                 </td>
-                <td>
+                <td data-order="{{ person.end_date | date:"U" }}">
                   {{ person.end_date }}
                 </td>
               </tr>

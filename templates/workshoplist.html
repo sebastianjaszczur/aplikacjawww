@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+
 {% load staticfiles %}
+{% load wwwtags %}
 
 {% block content %}
   <div class="container">
@@ -40,9 +42,9 @@
                       <a href="{% url 'workshop' workshop.name %}">{{ workshop.title }}</a>
                     {% endif %}
                   </td>
-                  <td>
+                  <td data-order="{% for lecturer in workshop.lecturer.all %}{{ lecturer.user.last_name }} {{ lecturer.user.first_name }} {% endfor %}">
                     {% for lecturer in workshop.lecturer.all %}
-                      <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.first_name }} {{ lecturer.user.last_name }}</a><br/>
+                      <a href="{% url 'profile' lecturer.user.id %}">{{ lecturer.user.get_full_name | question_mark_on_empty_string }}</a><br/>
                     {% endfor %}
                   </td>
                   <td>
