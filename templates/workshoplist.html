@@ -109,7 +109,7 @@
   <script>
   $(document).ready( function () {
     const table = $('#workshop_list').DataTable({
-      dom: 'Bfrtip',
+      dom: 'Bfrti',
       responsive: true,
       colReorder: true,
       buttons: [
@@ -168,7 +168,7 @@
         return nRow;
       },
       "order": [[ 10, "desc" ]],
-      "pageLength": 50,
+      "paging": false,
     });
   });
 
