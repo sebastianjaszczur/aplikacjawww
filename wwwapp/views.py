@@ -95,9 +95,9 @@ def profile_view(request, user_id):
         context['profile'] = profile
 
     if can_see_all_workshops or is_my_profile:
-        context['lecturer_workshops'] = profile.workshop_set.all()
+        context['lecturer_workshops'] = profile.lecturer_workshops.all()
     else:
-        context['lecturer_workshops'] = profile.workshop_set.filter(Q(status='Z') | Q(status='X'))
+        context['lecturer_workshops'] = profile.lecturer_workshops.filter(Q(status='Z') | Q(status='X'))
     context['can_see_all_workshops'] = can_see_all_workshops
 
     can_qualify = request.user.has_perm('wwwapp.change_workshop_user_profile')

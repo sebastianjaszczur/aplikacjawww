@@ -250,7 +250,7 @@ class Workshop(models.Model):
     proposition_description = models.TextField(max_length=100000, blank=True)
     type = models.ForeignKey(WorkshopType, on_delete=models.PROTECT, null=False)
     category = models.ManyToManyField(WorkshopCategory, blank=True)
-    lecturer = models.ManyToManyField(UserProfile, blank=True)
+    lecturer = models.ManyToManyField(UserProfile, blank=True, related_name='lecturer_workshops')
     status = models.CharField(max_length=10,
                               choices=STATUS_CHOICES,
                               null=True, default=None, blank=True)
