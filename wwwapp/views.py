@@ -100,9 +100,9 @@ def profile_view(request, user_id):
                 participation['workshops'] = [w for w in participation['workshops'] if w.is_publicly_visible()]
 
     if can_see_all_workshops or is_my_profile:
-        context['lecturer_workshops'] = profile.lecturer_workshops.all()
+        context['lecturer_workshops'] = profile.lecturer_workshops.all().order_by('type__year')
     else:
-        context['lecturer_workshops'] = profile.lecturer_workshops.filter(Q(status='Z') | Q(status='X'))
+        context['lecturer_workshops'] = profile.lecturer_workshops.filter(Q(status='Z') | Q(status='X')).order_by('type__year')
     context['can_see_all_workshops'] = can_see_all_workshops
 
     can_qualify = request.user.has_perm('wwwapp.change_workshop_user_profile')
