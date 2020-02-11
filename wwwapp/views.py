@@ -84,13 +84,21 @@ def profile_view(request, user_id):
 
     is_my_profile = (request.user == user)
     can_see_all_users = request.user.has_perm('wwwapp.see_all_users')
+    can_see_all_workshops = request.user.has_perm('wwwapp.see_all_workshops')
 
     context['title'] = "{0.first_name} {0.last_name}".format(user)
     context['profile_page'] = profile_page
     context['is_my_profile'] = is_my_profile
+    context['gender'] = profile.gender
 
     if can_see_all_users or is_my_profile:
         context['profile'] = profile
+
+    if can_see_all_workshops or is_my_profile:
+        context['lecturer_workshops'] = profile.workshop_set.all()
+    else:
+        context['lecturer_workshops'] = profile.workshop_set.filter(Q(status='Z') | Q(status='X'))
+    context['can_see_all_workshops'] = can_see_all_workshops
 
     can_qualify = request.user.has_perm('wwwapp.change_workshop_user_profile')
     context['can_qualify'] = can_qualify
