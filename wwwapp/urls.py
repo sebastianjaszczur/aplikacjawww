@@ -1,11 +1,11 @@
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import logout_then_login
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic import RedirectView, TemplateView
 
-from wwwapp.settings import CURRENT_YEAR, DEBUG
-from . import views, mail_views
+from . import settings, views, mail_views
 from .auth import login_view, ScopedOAuthRedirect, ScopedOAuthCallback, \
     create_user_from_unmerged_access_view
 
@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^profile/(?P<user_id>[0-9]+)/$', views.profile_view, name='profile'),
     url(r'^profile/$', views.my_profile_view, name='myProfile'),
     url(r'^article/(?P<name>[a-zA-Z0-9\-_]+)/$', views.article_view, name='article'),
+    url(r'^upload/(?P<type>article|workshop)/(?P<name>[a-zA-Z0-9\-_]+)/$', views.upload_file, name='upload'),
     url(r'^articleNameList/$', views.article_name_list_view, name='articleNameList'),
     url(r'^addArticle/$', views.article_view, name='addArticle'),
     url(r'^workshop/(?P<name>[a-zA-Z0-9\-_]+)/$', views.workshop_page_view, name='workshop_page'),
@@ -41,21 +42,24 @@ urlpatterns = [
     url(r'^yourWorkshops/$', views.your_workshops_view, name='yourWorkshops'),
     url(r'^allWorkshops/$', views.all_workshops_view, name='allWorkshops'),
     url(r'^dataForPlan/$', views.data_for_plan_view, name='dataForPlan'),
-    url(r'^participants/$', RedirectView.as_view(url='/%d/participants/' % CURRENT_YEAR, permanent=False), name='participants'),
+    url(r'^participants/$', RedirectView.as_view(url='/%d/participants/' % settings.CURRENT_YEAR, permanent=False), name='participants'),
     url(r'^([0-9]+)/participants/$', views.participants_view, name='year_participants'),
-    url(r'^lecturers/$', RedirectView.as_view(url='/%d/lecturers/' % CURRENT_YEAR, permanent=False), name='lecturers'),
+    url(r'^lecturers/$', RedirectView.as_view(url='/%d/lecturers/' % settings.CURRENT_YEAR, permanent=False), name='lecturers'),
     url(r'^([0-9]+)/lecturers/$', views.lecturers_view, name='year_lecturers'),
     url(r'^emails/$', views.emails_view, name='emails'),
     url(r'^filterEmails/(?:(?P<year>[0-9]+)/(?P<filter_id>[a-zA-Z0-9\-_]+)/)?$', mail_views.filtered_emails_view, name='filter_emails'),
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page_view, name='template_for_workshop_page'),
-    url(r'^program/$', RedirectView.as_view(url='/%d/program/' % CURRENT_YEAR, permanent=False), name='program'),
+    url(r'^program/$', RedirectView.as_view(url='/%d/program/' % settings.CURRENT_YEAR, permanent=False), name='program'),
     url(r'^([0-9]+)/program/$', views.program_view, name='year_program'),
     url(r'^resource_auth/$', views.resource_auth_view, name='resource_auth'),
     url(r'^robots\.txt/$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     url(r'^$', views.index_view, name='index'),
 ]
 
-if DEBUG:
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
     import debug_toolbar
     urlpatterns = [
         url(r'^__debug__/', include(debug_toolbar.urls)),

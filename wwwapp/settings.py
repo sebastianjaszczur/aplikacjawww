@@ -233,9 +233,10 @@ TINYMCE_DEFAULT_CONFIG = {
     'height': 500,
     'branding': False,
     'image_advtab': True,
+    'paste_data_images': True,
     'relative_urls': False,
     'remove_script_host': True,
-    'link_list': '/articleNameList/'
+    'link_list': '/articleNameList/',
 }
 
 CURRENT_YEAR = 2019

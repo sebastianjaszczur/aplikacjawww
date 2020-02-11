@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, DateInput
 from django.forms import ModelForm, FileInput, FileField
+from django.forms.fields import ImageField
+from django.forms.forms import Form
+from django.urls import reverse
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 from tinymce.widgets import TinyMCE
 
@@ -120,12 +123,16 @@ class ArticleForm(ModelForm):
             'on_menubar': 'Umieść w menu',
             'content': 'Treść',
         }
-        widgets = {
-            'content': TinyMCE()
-        }
 
     def __init__(self, user, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
+        mce_attrs = {}
+        if kwargs['instance']:
+            mce_attrs['automatic_uploads'] = True
+            mce_attrs['images_upload_url'] = reverse('upload', kwargs={'type': 'article', 'name': kwargs['instance'].name})
+            mce_attrs['file_picker_types'] = 'image'
+            mce_attrs['file_picker_callback'] = 'tinymce_local_file_picker'
+        self.fields['content'].widget = TinyMCE(mce_attrs=mce_attrs)
         if not user.has_perm('wwwapp.can_put_on_menubar'):
             del self.fields['on_menubar']
 
@@ -165,9 +172,6 @@ class WorkshopPageForm(ModelForm):
         fields = ['qualification_problems', 'is_qualifying',
                   'qualification_threshold', 'max_points',
                   'page_content', 'page_content_is_public']
-        widgets = {
-            'page_content': TinyMCE(),
-        }
         labels = {
             'is_qualifying': 'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',
             'qualification_threshold': 'Minimalna liczba punktów potrzeba do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)',
@@ -175,3 +179,17 @@ class WorkshopPageForm(ModelForm):
             'page_content': 'Strona warsztatów',
             'page_content_is_public': 'Zaznacz, jeśli opis jest gotowy i może już być publiczny.'
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+        mce_attrs = {}
+        if kwargs['instance']:
+            mce_attrs['automatic_uploads'] = True
+            mce_attrs['images_upload_url'] = reverse('upload', kwargs={'type': 'workshop', 'name': kwargs['instance'].name})
+            mce_attrs['file_picker_types'] = 'image'
+            mce_attrs['file_picker_callback'] = 'tinymce_local_file_picker'
+        self.fields['page_content'].widget = TinyMCE(mce_attrs=mce_attrs)
+
+
+class TinyMCEUpload(Form):
+    file = ImageField()

@@ -1,3 +1,26 @@
+function tinymce_local_file_picker(cb, value, meta) {
+    // https://www.tiny.cloud/docs/demo/file-picker/
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.onchange = function () {
+        var file = this.files[0];
+
+        var reader = new FileReader();
+        reader.onload = function () {
+            var id = 'blobid' + (new Date()).getTime();
+            var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+            var base64 = reader.result.split(',')[1];
+            var blobInfo = blobCache.create(id, file, base64);
+            blobCache.add(blobInfo);
+
+            cb(blobInfo.blobUri(), { title: file.name });
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+
 function send_points(field_name, elem, save_btn) {
     var workshop_participant_id = elem.data('id');
     var saved_value = elem.val();

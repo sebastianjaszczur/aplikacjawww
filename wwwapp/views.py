@@ -1,7 +1,11 @@
 import datetime
+import hashlib
+import json
 import os
 import sys
 import mimetypes
+from urllib.parse import urljoin
+
 from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
 from typing import Dict
@@ -14,12 +18,15 @@ from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpRequest, HttpResponseForbidden
+from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
-    UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
+    UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm, TinyMCEUpload
 from .models import Article, UserProfile, Workshop, WorkshopParticipant, \
     WorkshopUserProfile, ResourceYearPermission
 from .templatetags.wwwtags import qualified_mark
@@ -686,3 +693,49 @@ def resource_auth_view(request):
         if user_profile.is_participating_in(resource.year):
             return HttpResponse("Welcome!")
     return HttpResponseForbidden("What about NO!")
+
+
+@login_required()
+@require_http_methods(["POST"])
+@csrf_exempt
+def upload_file(request, type, name):
+    """
+    Handle a file upload from TinyMCE
+    """
+
+    target_dir = None
+    if type == "article":
+        article = get_object_or_404(Article, name=name)
+        target_dir = "images/articles/{}/".format(article.name)
+        if not request.user.has_perm('wwwapp.change_article'):
+            return HttpResponseForbidden()
+    elif type == "workshop":
+        workshop = get_object_or_404(Workshop, name=name)
+        if not can_edit_workshop(workshop, request.user) or not workshop.is_publicly_visible() or workshop.type.year != settings.CURRENT_YEAR:
+            return HttpResponseForbidden()
+        target_dir = "images/workshops/{}/".format(workshop.name)
+    else:
+        raise SuspiciousOperation()
+    assert target_dir is not None
+
+    form = TinyMCEUpload(request.POST, request.FILES)
+    if not form.is_valid():
+        data = {'errors': [v for k, v in form.errors.items()]}
+        return HttpResponseBadRequest(json.dumps(data))
+
+    os.makedirs(os.path.join(settings.MEDIA_ROOT, target_dir), exist_ok=True)
+
+    f = request.FILES['file']
+
+    h = hashlib.sha256()
+    for chunk in f.chunks():
+        h.update(chunk)
+    h = h.hexdigest()
+
+    name = h + os.path.splitext(f.name)[1]
+
+    with open(os.path.join(settings.MEDIA_ROOT, target_dir, name), 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+    return JsonResponse({'location': urljoin(urljoin(settings.MEDIA_URL, target_dir), name)})
