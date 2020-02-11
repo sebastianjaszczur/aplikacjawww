@@ -21,6 +21,10 @@
           <hr>
           <form action="" method="post">
             {% csrf_token %}
+            {% block script %}
+              {{ block.super }}
+              {{ form.media }}
+            {% endblock %}
             {{ form.as_p }}
             <button class="btn btn-default">Zapisz</button>
           </form>

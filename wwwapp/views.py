@@ -589,8 +589,13 @@ def article_view(request, name=None):
 
 
 def article_name_list_view(request):
-    names = Article.objects.values_list('name', flat=True)
-    return JsonResponse(list(names), safe=False)
+    articles = Article.objects.all()
+    article_list = [{'title': 'Artykuł: ' + (article.title or article.name), 'value': reverse('article', kwargs={'name': article.name})} for article in articles]
+
+    workshops = Workshop.objects.filter(Q(status='Z') | Q(status='X')).order_by('-type__year')
+    workshop_list = [{'title': 'Warsztaty (' + str(workshop.type.year) + '): ' + workshop.title, 'value': reverse('workshop_page', kwargs={'name': workshop.name})} for workshop in workshops]
+
+    return JsonResponse(article_list + workshop_list, safe=False)
 
 
 @login_required()

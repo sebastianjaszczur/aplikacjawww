@@ -4,11 +4,12 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, DateInput
 from django.forms import ModelForm, FileInput, FileField
 from django_select2.forms import Select2MultipleWidget, Select2Widget
+from tinymce.widgets import TinyMCE
 
 from . import settings
 from .models import UserProfile, Article, Workshop, WorkshopCategory, \
     WorkshopType, UserInfo, WorkshopUserProfile
-from .widgets import RichTextarea, RenderHTML
+from .widgets import RenderHTML
 
 
 class UserProfilePageForm(ModelForm):
@@ -16,7 +17,7 @@ class UserProfilePageForm(ModelForm):
         model = UserProfile
         fields = ['profile_page']
         labels = {'profile_page': "Strona profilowa"}
-        widgets = {'profile_page': RichTextarea()}
+        widgets = {'profile_page': TinyMCE()}
 
 
 class UserCoverLetterForm(ModelForm):
@@ -24,7 +25,7 @@ class UserCoverLetterForm(ModelForm):
         model = UserProfile
         fields = ['cover_letter']
         labels = {'cover_letter': "List motywacyjny"}
-        widgets = {'cover_letter': RichTextarea()}
+        widgets = {'cover_letter': TinyMCE()}
 
 
 class UserInfoPageForm(ModelForm):
@@ -120,7 +121,7 @@ class ArticleForm(ModelForm):
             'content': 'Treść',
         }
         widgets = {
-            'content': RichTextarea()
+            'content': TinyMCE()
         }
 
     def __init__(self, user, *args, **kwargs):
@@ -147,7 +148,7 @@ class WorkshopForm(ModelForm):
         model = Workshop
         fields = ['title', 'name', 'type', 'category', 'proposition_description']
         widgets = {
-            'proposition_description': RichTextarea()
+            'proposition_description': TinyMCE()
         }
         labels = {
             'title': 'Tytuł',
@@ -165,7 +166,7 @@ class WorkshopPageForm(ModelForm):
                   'qualification_threshold', 'max_points',
                   'page_content', 'page_content_is_public']
         widgets = {
-            'page_content': RichTextarea(),
+            'page_content': TinyMCE(),
         }
         labels = {
             'is_qualifying': 'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',

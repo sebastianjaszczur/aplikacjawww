@@ -68,6 +68,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'django_select2',
     'django_bleach',
+    'tinymce',
     'compressor',
     'wwwapp',
     'django_cleanup',
@@ -216,6 +217,26 @@ TEMPLATES = [
         },
     },
 ]
+
+TINYMCE_JS_URL = os.path.join(STATIC_URL, "tinymce/js/tinymce/tinymce.min.js")
+TINYMCE_JS_ROOT = os.path.join(STATIC_URL, "tinymce/js/tinymce")
+TINYMCE_DEFAULT_CONFIG = {
+    'theme': 'silver',
+    'plugins': 'preview paste searchreplace autolink code visualblocks visualchars image link media codesample table charmap hr nonbreaking anchor toc advlist lists wordcount imagetools textpattern quickbars emoticons',
+    'removed_menuitems': 'newdocument',
+    'toolbar': 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | image media link codesample',
+    'content_css': [
+        '/static/css/bootstrap.min.css',
+        '/static/css/main.css',
+    ],
+    'content_style': 'body { margin: 2rem; }',
+    'height': 500,
+    'branding': False,
+    'image_advtab': True,
+    'relative_urls': False,
+    'remove_script_host': True,
+    'link_list': '/articleNameList/'
+}
 
 CURRENT_YEAR = 2019
 WORKSHOPS_START_DATE = datetime.date(2019, 7, 1)

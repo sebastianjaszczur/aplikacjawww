@@ -1,30 +1,3 @@
-
-var editors = $('textarea[data-ckeditor-config]');
-
-function load_script(url, callback) {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.onload = callback;
-    script.src = url;
-    document.body.appendChild(script);
-}
-
-if(editors.length !== 0) {
-    load_script(ckeditor_js_path, function() {
-        editors.each(function(){
-            var config = $(this).data('ckeditor-config');
-            config.height = Math.max($(window).height() - 460, 300);
-
-	        CKEDITOR.replace(this, config);
-
-        });
-    });
-
-    load_script(ckeditor_highlight_js_path, function() {
-        hljs.initHighlightingOnLoad();
-    });
-}
-
 function send_points(field_name, elem, save_btn) {
     var workshop_participant_id = elem.data('id');
     var saved_value = elem.val();

@@ -29,8 +29,6 @@
     {% compress css %}
       <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
       <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
-      <!-- Highlight for code / codesnippets-->
-      <link rel="stylesheet" href="{% static 'ckeditor/plugins/codesnippet/lib/highlight/styles/default.css' %}">
 
       <!-- Datatables -->
       <link rel="stylesheet" href="{% static 'css/datatables.min.css' %}">
@@ -166,10 +164,6 @@
       <script src="{% static 'js/jQuery.headroom.min.js' %}"></script>
       <script src="{% static 'js/template.js' %}"></script>
       <script src="{% static 'js/jquery.cookie.js' %}"></script>
-      <script>
-            var ckeditor_js_path = "{% static 'ckeditor/ckeditor.js' %}";
-            var ckeditor_highlight_js_path = "{% static 'ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js' %}";
-          </script>
 
       <!-- Datatables -->
       <script type="text/javascript" src="{% static 'js/pdfmake.min.js' %}"></script>

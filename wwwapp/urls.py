@@ -17,6 +17,7 @@ urlpatterns = [
             permanent=False),
         name="favicon"
     ),
+    url(r'^tinymce/', include('tinymce.urls')),
     url(r'^logout/$', logout_then_login, name='logout'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', login_view, name='login'),

@@ -11,6 +11,10 @@
         <div role="tabpanel">
           <form action="" method="post">
             {% csrf_token %}
+            {% block script %}
+              {{ block.super }}
+              {{ form.media }}
+            {% endblock %}
             {{ form | crispy }}
             <button class="btn btn-default">Zapisz</button>
           </form>

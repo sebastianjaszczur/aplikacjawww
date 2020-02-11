@@ -172,6 +172,10 @@
 {% endblock %}
 
 {% block script %}
+  {{ block.super }}
+  {{ user_profile_page_form.media }}
+  {{ user_cover_letter_form.media }}
+
   <script>
     $(document).ready(function() {
       paginate_content("pagination_content");

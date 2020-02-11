@@ -1,6 +1,7 @@
 Django<2.0
 django-all-access==0.9.0
 django-crispy-forms
+django-tinymce
 django-bleach
 django-compressor
 django-cleanup
