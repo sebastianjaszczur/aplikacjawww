@@ -110,8 +110,8 @@
 {% block script %}
   <script>
   $(document).ready( function () {
-    const table = $('.workshop-table').DataTable({
-      dom: 'Bfrtip',
+    const table = $('#workshop_list').DataTable({
+      dom: 'Bfrti',
       responsive: true,
       colReorder: true,
       buttons: [
@@ -151,6 +151,7 @@
         $("td:first", nRow).html(iDisplayIndex +1);
         return nRow;
       },
+      "paging": false,
     });
   });
 
