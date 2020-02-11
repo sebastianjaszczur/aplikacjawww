@@ -87,7 +87,7 @@
   <script>
     $(document).ready(() => {
       const table = $('#participants-table').DataTable({
-        dom: 'Bfrtip',
+        dom: 'Bfrtipl',
         responsive: true,
         colReorder: true,
         buttons: [
@@ -151,6 +151,8 @@
           return nRow;
         },
         "order": [[ 6, "desc" ], [ 1, "desc" ]],
+        "pageLength": 50,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
       });
     }
     );
