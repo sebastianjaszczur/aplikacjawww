@@ -80,12 +80,18 @@
               <tr>
                 <th>Edycje WWW:</th>
                 <td>
-                  {% for edition in profile.workshop_profile.all %}
-                    {% if edition.status == 'Z' %}
-                      <span class="qualified">✔{{ edition.year }}</span>
+                  {% for participation in participation_data %}
+                    {% if participation.status == 'Z' %}
+                      <span class="qualified">✔
                     {% else %}
-                      <span class="not-qualified">✘{{ edition.year }}</span>
+                      <span class="not-qualified">✘
                     {% endif %}
+                    {% if participation.workshops %}
+                      <span data-toggle="tooltip" data-placement="bottom" title="<b>Prowadzący:</b>{% for workshop in participation.workshops %}<br/>{{ workshop.title }}{% if workshop.status != 'Z' %} <i>({{ workshop.get_status_display }})</i>{% endif %}{% endfor %}" style="text-decoration: underline;">{{ participation.year }}</span>
+                    {% else %}
+                      <span data-toggle="tooltip" data-placement="bottom" title="<b>Uczestnik</b>">{{ participation.year }}</span>
+                    {% endif %}
+                    </span>
                   {% endfor %}
                   {% if has_workshop_profile %}
                     <form method="post" class="inline">
@@ -203,6 +209,8 @@
 {% block script %}
   <script>
     $(document).ready(function() {
+      $('[data-toggle="tooltip"]').tooltip({html: true});
+
       paginate_content("pagination_content");
 
       if(["#data", "#profile_page", "#cover_letter", "#user_info"].indexOf(location.hash) != -1) {

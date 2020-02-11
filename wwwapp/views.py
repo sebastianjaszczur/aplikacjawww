@@ -93,6 +93,11 @@ def profile_view(request, user_id):
 
     if can_see_all_users or is_my_profile:
         context['profile'] = profile
+        context['participation_data'] = profile.all_participation_data()
+        if not can_see_all_workshops and not is_my_profile:
+            # If the current user can't see non-public workshops, remove them from the list
+            for participation in context['participation_data']:
+                participation['workshops'] = [w for w in participation['workshops'] if w.is_publicly_visible()]
 
     if can_see_all_workshops or is_my_profile:
         context['lecturer_workshops'] = profile.lecturer_workshops.all()

@@ -23,8 +23,26 @@ class UserProfile(models.Model):
     cover_letter = models.TextField(max_length=100000, blank=True, default="")
 
     def is_participating_in(self, year):
-        return self.status_for(year) == 'Z' \
-               or Workshop.objects.filter(type__year=year, lecturer=self, status='Z').exists()
+        return self.status_for(year) == 'Z' or self.lecturer_workshops.filter(type__year=year, status='Z').exists()
+
+    def all_participation_data(self):
+        """
+        Returns the participation data from UserWorkshopProfile joined with data about lectures
+        """
+        participant_data = self.workshop_profile.filter(status__isnull=False)
+        lecturer_data = self.lecturer_workshops.filter(status__isnull=False)
+        years = set([profile.year for profile in participant_data] + [workshop.type.year for workshop in lecturer_data])
+        data = []
+        for year in years:
+            profile = next(iter([x for x in participant_data if x.year == year]), None)
+            workshops = [x for x in lecturer_data if x.type.year == year]
+            status = None
+            if profile:
+                status = profile.status
+            if workshops and status != 'Z':
+                status = 'Z' if any([workshop.status == 'Z' for workshop in workshops]) else 'O'
+            data.append({'year': year, 'status': status, 'workshops': workshops})
+        return data
 
     def all_participation_years(self) -> Set[int]:
         """
@@ -45,7 +63,7 @@ class UserProfile(models.Model):
         Years user had a lecture
         :return: list of years (integers)
         """
-        return set([workshop.type.year for workshop in Workshop.objects.filter(lecturer=self, status='Z')])
+        return set([workshop.type.year for workshop in self.lecturer_workshops.filter(status='Z')])
     
     @property
     def status(self):
