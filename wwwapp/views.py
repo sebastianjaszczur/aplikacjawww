@@ -84,13 +84,26 @@ def profile_view(request, user_id):
 
     is_my_profile = (request.user == user)
     can_see_all_users = request.user.has_perm('wwwapp.see_all_users')
+    can_see_all_workshops = request.user.has_perm('wwwapp.see_all_workshops')
 
     context['title'] = "{0.first_name} {0.last_name}".format(user)
     context['profile_page'] = profile_page
     context['is_my_profile'] = is_my_profile
+    context['gender'] = profile.gender
 
     if can_see_all_users or is_my_profile:
         context['profile'] = profile
+        context['participation_data'] = profile.all_participation_data()
+        if not can_see_all_workshops and not is_my_profile:
+            # If the current user can't see non-public workshops, remove them from the list
+            for participation in context['participation_data']:
+                participation['workshops'] = [w for w in participation['workshops'] if w.is_publicly_visible()]
+
+    if can_see_all_workshops or is_my_profile:
+        context['lecturer_workshops'] = profile.lecturer_workshops.all().order_by('type__year')
+    else:
+        context['lecturer_workshops'] = profile.lecturer_workshops.filter(Q(status='Z') | Q(status='X')).order_by('type__year')
+    context['can_see_all_workshops'] = can_see_all_workshops
 
     can_qualify = request.user.has_perm('wwwapp.change_workshop_user_profile')
     context['can_qualify'] = can_qualify

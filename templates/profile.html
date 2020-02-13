@@ -75,17 +75,23 @@
         </div>
       {% else %}
         {% if profile %}
-          <table class=table>
+          <table class="table">
             <tbody>
               <tr>
                 <th>Edycje WWW:</th>
                 <td>
-                  {% for edition in profile.workshop_profile.all %}
-                    {% if edition.status == 'Z' %}
-                      <span class="qualified">✔{{ edition.year }}</span>
+                  {% for participation in participation_data %}
+                    {% if participation.status == 'Z' %}
+                      <span class="qualified">✔
                     {% else %}
-                      <span class="not-qualified">✘{{ edition.year }}</span>
+                      <span class="not-qualified">✘
                     {% endif %}
+                    {% if participation.workshops %}
+                      <span data-toggle="tooltip" data-placement="bottom" title="<b>Prowadzący:</b>{% for workshop in participation.workshops %}<br/>{{ workshop.title }}{% if workshop.status != 'Z' %} <i>({{ workshop.get_status_display }})</i>{% endif %}{% endfor %}" style="text-decoration: underline;">{{ participation.year }}</span>
+                    {% else %}
+                      <span data-toggle="tooltip" data-placement="bottom" title="<b>Uczestnik</b>">{{ participation.year }}</span>
+                    {% endif %}
+                    </span>
                   {% endfor %}
                   {% if has_workshop_profile %}
                     <form method="post" class="inline">
@@ -145,7 +151,36 @@
               Edytuj
             </a>
           {% endif %}
+        {% endif %}
 
+        {% if lecturer_workshops %}
+          <h3>Prowadził{% if gender == 'F' %}a{% endif %} warsztaty:</h3>
+          <ul>
+            {% for workshop in lecturer_workshops %}
+              <li>
+                {{ workshop.type.year }}:
+                {% if workshop.is_publicly_visible %}
+                  {% if workshop.page_content_is_public %}
+                    <a href="{% url 'workshop_page' workshop.name %}">{{ workshop.title }}</a>
+                  {% else %}
+                    {% if can_see_all_workshops %}
+                      <a href="{% url 'workshop' workshop.name %}">{{ workshop.title }}</a>
+                    {% else %}
+                      {{ workshop.title }}
+                    {% endif %}
+                  {% endif %}
+                {% else %}
+                  <a href="{% url 'workshop' workshop.name %}">{{ workshop.title }}</a>
+                {% endif %}
+                {% if workshop.status != 'Z' %}
+                    <small>({{ workshop.get_status_display | default_if_none:"Propozycja" }})</small>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% if profile %}
           {% if profile.cover_letter %}
             <hr/>
             <h3>List motywacyjny</h3>
@@ -174,6 +209,8 @@
 {% block script %}
   <script>
     $(document).ready(function() {
+      $('[data-toggle="tooltip"]').tooltip({html: true});
+
       paginate_content("pagination_content");
 
       if(["#data", "#profile_page", "#cover_letter", "#user_info"].indexOf(location.hash) != -1) {
