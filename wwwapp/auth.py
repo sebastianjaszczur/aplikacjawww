@@ -19,8 +19,6 @@ from .views import get_context
 
 
 def login_view(request):
-    context = get_context(request)
-
     # Forget AccountAccesses to merge if user goes somewhere then back to login.
     if 'merge_access' in request.session:
         del request.session['merge_access']
@@ -35,7 +33,6 @@ def login_view(request):
         else:
             client = access.api_client
             user_info = client.get_profile_info(raw_token=access.access_token)
-            context['info'] = user_info
 
             user = request.user
             try:
@@ -52,6 +49,10 @@ def login_view(request):
                         user_profile.gender = user_info['gender']
                     user.save()
                     user_profile.save()
+
+    # Make sure to call get_context after UserInfo and UserProfile get created, since they are required
+    # to figure out what to show on the menu bar
+    context = get_context(request)
     return render(request, 'login.html', context)
 
 
