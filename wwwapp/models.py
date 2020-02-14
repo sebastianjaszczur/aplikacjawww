@@ -33,7 +33,7 @@ class UserProfile(models.Model):
         lecturer_data = self.lecturer_workshops.filter(status__isnull=False)
         years = set([profile.year for profile in participant_data] + [workshop.type.year for workshop in lecturer_data])
         data = []
-        for year in years:
+        for year in sorted(years):
             profile = next(iter([x for x in participant_data if x.year == year]), None)
             workshops = [x for x in lecturer_data if x.type.year == year]
             status = None
