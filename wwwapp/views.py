@@ -38,8 +38,11 @@ def get_context(request):
         if request.user.has_perm('wwwapp.access_all_resources'):
             context['resources'] = visible_resources
         else:
-            user_profile = UserProfile.objects.get(user=request.user)
-            context['resources'] = visible_resources.filter(year__in=user_profile.all_participation_years())
+            try:
+                user_profile = UserProfile.objects.get(user=request.user)
+                context['resources'] = visible_resources.filter(year__in=user_profile.all_participation_years())
+            except UserProfile.DoesNotExist:
+                context['resources'] = []
 
     context['google_analytics_key'] = settings.GOOGLE_ANALYTICS_KEY
     context['articles_on_menubar'] = Article.objects.filter(on_menubar=True).all()
