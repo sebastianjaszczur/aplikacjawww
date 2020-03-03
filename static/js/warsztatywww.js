@@ -50,11 +50,13 @@ function send_points(elem, save_btn, workshop_participant_id) {
             'url': '/savePoints/',
             'data': data,
             'error': function(xhr, textStatus, errorThrown) {
+                mark_changed();
                 alert('Błąd: ' + errorThrown);
             },
             'method': 'POST',
             'success': function(value) {
                 if(value.error) {
+                    mark_changed();
                     alert('Błąd:\n' + value.error);
                 } else {
                     saved_value = value[field_name];
