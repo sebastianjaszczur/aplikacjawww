@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import logging
 import re
 
 from allaccess.models import AccountAccess
@@ -14,7 +15,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.utils.encoding import smart_bytes, force_text
 
-from .models import UserProfile, UserInfo
+from .models import UserProfile
 from .views import get_context
 
 
@@ -26,29 +27,12 @@ def login_view(request):
         del request.session['merge_access_info']
 
     if request.user.is_authenticated:
-        try:
-            access = request.user.accountaccess_set.all()[0]
-        except IndexError:
-            access = None
-        else:
-            client = access.api_client
-            user_info = client.get_profile_info(raw_token=access.access_token)
-
-            user = request.user
-            try:
-                user_profile = UserProfile.objects.get(user=user)
-            except UserProfile.DoesNotExist:
-                new_user_info = UserInfo()
-                new_user_info.save()
-                user_profile, just_created = UserProfile.objects.get_or_create(user=user, user_info=new_user_info)
-
-                # I'm not sure if this condition is necessary.
-                if just_created:
-                    standarize_user_info(user_info)
-                    if 'gender' in user_info:
-                        user_profile.gender = user_info['gender']
-                    user.save()
-                    user_profile.save()
+        # This should never happen if the login flow worked correctly but I'm leaving this here just in case there are any broken users in the database already
+        # (aka I'm too afraid to remove it)
+        user_profile, just_created = UserProfile.objects.get_or_create(user=request.user)
+        if just_created:
+            # TODO: untested - this should trigger the Django admin email thing?
+            logging.getLogger('django').error('User profile was missing for {}. This should have never happened.')
 
     # Make sure to call get_context after UserInfo and UserProfile get created, since they are required
     # to figure out what to show on the menu bar
@@ -190,7 +174,13 @@ def create_user(access, info):
     if 'last_name' in info:
         kwargs['last_name'] = info['last_name']
 
-    return User.objects.create_user(**kwargs)
+    user = User.objects.create_user(**kwargs)
+
+    user_profile = UserProfile.objects.get_or_create(user=user)
+    if 'gender' in info:
+        user_profile.gender = info['gender']
+
+    return user
 
 
 # The view called when a user decides not to merge into any suggested accounts.

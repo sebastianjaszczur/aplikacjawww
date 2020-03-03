@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.db import models
 from django.db.models.query_utils import Q
+from django.db.models.signals import post_save, pre_save
+from django.dispatch.dispatcher import receiver
 
 
 class UserProfile(models.Model):
@@ -81,6 +83,18 @@ class UserProfile(models.Model):
     class Meta:
         permissions = [('see_all_users', 'Can see all users'),
                        ('export_workshop_registration', 'Can download workshop registration data')]
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.get_or_create(user=instance)
+
+
+@receiver(pre_save, sender=UserProfile)
+def create_user_info(instance, raw, using, update_fields, **kwargs):
+    if not hasattr(instance, 'user_info'):
+        instance.user_info = UserInfo.objects.create()
 
 
 class WorkshopUserProfile(models.Model):
