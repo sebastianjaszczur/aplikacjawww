@@ -1,0 +1,28 @@
+[
+{
+    "model": "allaccess.provider",
+    "pk": 1,
+    "fields": {
+        "name": "facebook",
+        "request_token_url": "",
+        "authorization_url": "https://www.facebook.com/v3.3/dialog/oauth",
+        "access_token_url": "https://graph.facebook.com/v3.3/oauth/access_token",
+        "profile_url": "https://graph.facebook.com/v3.3/me?fields=id,first_name,last_name,email,gender",
+        "consumer_key": "",
+        "consumer_secret": ""
+    }
+},
+{
+    "model": "allaccess.provider",
+    "pk": 2,
+    "fields": {
+        "name": "google",
+        "request_token_url": "",
+        "authorization_url": "https://accounts.google.com/o/oauth2/auth",
+        "access_token_url": "https://accounts.google.com/o/oauth2/token",
+        "profile_url": "https://www.googleapis.com/plus/v1/people/me",
+        "consumer_key": "",
+        "consumer_secret": ""
+    }
+}
+]
