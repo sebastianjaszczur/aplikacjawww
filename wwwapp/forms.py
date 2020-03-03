@@ -195,7 +195,8 @@ class WorkshopParticipantPointsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(WorkshopParticipantPointsForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs.update({'class': 'form-control'})
+            # autocomplete=off fixes a problem on Firefox where the form fields don't reset on reload, making the save button visibility desync
+            field.widget.attrs.update({'class': 'form-control', 'autocomplete': 'off'})
             field.required = False
 
     class Meta:
