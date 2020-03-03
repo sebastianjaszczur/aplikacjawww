@@ -176,9 +176,11 @@ def create_user(access, info):
 
     user = User.objects.create_user(**kwargs)
 
-    user_profile = UserProfile.objects.get_or_create(user=user)
+    # The UserProfile should already exist at this point due to model hooks
+    user_profile = UserProfile.objects.get(user=user)
     if 'gender' in info:
         user_profile.gender = info['gender']
+        user_profile.save()
 
     return user
 
