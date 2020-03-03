@@ -1,28 +1,24 @@
+function tinymce_local_file_picker(cb, value, meta) {
+    // https://www.tiny.cloud/docs/demo/file-picker/
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.onchange = function () {
+        var file = this.files[0];
 
-var editors = $('textarea[data-ckeditor-config]');
+        var reader = new FileReader();
+        reader.onload = function () {
+            var id = 'blobid' + (new Date()).getTime();
+            var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+            var base64 = reader.result.split(',')[1];
+            var blobInfo = blobCache.create(id, file, base64);
+            blobCache.add(blobInfo);
 
-function load_script(url, callback) {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.onload = callback;
-    script.src = url;
-    document.body.appendChild(script);
-}
-
-if(editors.length !== 0) {
-    load_script(ckeditor_js_path, function() {
-        editors.each(function(){
-            var config = $(this).data('ckeditor-config');
-            config.height = Math.max($(window).height() - 460, 300);
-
-	        CKEDITOR.replace(this, config);
-
-        });
-    });
-
-    load_script(ckeditor_highlight_js_path, function() {
-        hljs.initHighlightingOnLoad();
-    });
+            cb(blobInfo.blobUri(), { title: file.name });
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
 }
 
 function send_points(field_name, elem, save_btn) {
