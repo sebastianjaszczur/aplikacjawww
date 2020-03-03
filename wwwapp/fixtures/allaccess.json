@@ -7,7 +7,7 @@
         "request_token_url": "",
         "authorization_url": "https://www.facebook.com/v3.3/dialog/oauth",
         "access_token_url": "https://graph.facebook.com/v3.3/oauth/access_token",
-        "profile_url": "https://graph.facebook.com/v3.3/me?fields=id,first_name,last_name,email,gender",
+        "profile_url": "https://graph.facebook.com/v3.3/me?fields=id,first_name,last_name,email",
         "consumer_key": "",
         "consumer_secret": ""
     }
