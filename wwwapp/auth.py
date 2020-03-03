@@ -42,14 +42,6 @@ def login_view(request):
                 new_user_info.save()
                 user_profile, just_created = UserProfile.objects.get_or_create(user=user, user_info=new_user_info)
 
-                # I'm not sure if this condition is necessary.
-                if just_created:
-                    standarize_user_info(user_info)
-                    if 'gender' in user_info:
-                        user_profile.gender = user_info['gender']
-                    user.save()
-                    user_profile.save()
-
     # Make sure to call get_context after UserInfo and UserProfile get created, since they are required
     # to figure out what to show on the menu bar
     context = get_context(request)
@@ -69,11 +61,6 @@ def standarize_user_info(user_info):
             user_info['last_name'] = user_info['family_name']
         elif 'name' in user_info and 'familyName' in user_info['name']:
             user_info['last_name'] = user_info['name']['familyName']
-    if 'gender' in user_info:
-        if user_info['gender'].lower() == 'm' or user_info['gender'].lower() == 'male':
-            user_info['gender'] = 'M'
-        elif user_info['gender'].lower() == 'f' or user_info['gender'].lower() == 'female':
-            user_info['gender'] = 'F'
     if 'email' not in user_info:
         if 'emails' in user_info and user_info['emails'] and 'value' in user_info['emails'][0]:
             user_info['email'] = user_info['emails'][0]['value']
