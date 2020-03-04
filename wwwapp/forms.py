@@ -11,7 +11,7 @@ from tinymce.widgets import TinyMCE
 
 from . import settings
 from .models import UserProfile, Article, Workshop, WorkshopCategory, \
-    WorkshopType, UserInfo, WorkshopUserProfile
+    WorkshopType, UserInfo, WorkshopUserProfile, WorkshopParticipant
 from .widgets import RenderHTML
 
 
@@ -189,6 +189,25 @@ class WorkshopPageForm(ModelForm):
             mce_attrs['file_picker_types'] = 'image'
             mce_attrs['file_picker_callback'] = 'tinymce_local_file_picker'
         self.fields['page_content'].widget = TinyMCE(mce_attrs=mce_attrs)
+
+
+class WorkshopParticipantPointsForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(WorkshopParticipantPointsForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            # autocomplete=off fixes a problem on Firefox where the form fields don't reset on reload, making the save button visibility desync
+            field.widget.attrs.update({'class': 'form-control', 'autocomplete': 'off'})
+            field.required = False
+
+    class Meta:
+        model = WorkshopParticipant
+        fields = ['qualification_result', 'comment']
+
+    def clean(self):
+        # Only apply changes to the fields that were actually sent
+        for k, v in self.cleaned_data.items():
+            if k not in self.data:
+                self.cleaned_data[k] = getattr(self.instance, k, self.cleaned_data[k])
 
 
 class TinyMCEUpload(Form):

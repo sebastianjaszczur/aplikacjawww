@@ -21,28 +21,48 @@ function tinymce_local_file_picker(cb, value, meta) {
     input.click();
 }
 
-function send_points(field_name, elem, save_btn) {
-    var workshop_participant_id = elem.data('id');
+function send_points(elem, save_btn, workshop_participant_id) {
+    var field_name = elem.attr('name');
     var saved_value = elem.val();
-    var qualified_mark = elem.parent().parent().find('.qualified-mark');
+    var qualified_mark = elem.parents('tr').find('.qualified-mark');
 
-    save_btn.addClass('invisibile').click(function() {
+    var mark_changed = function () {
+        save_btn.attr('disabled', false);
+        save_btn.find('.glyphicon').removeClass('glyphicon-floppy-open glyphicon-floppy-saved').addClass('glyphicon-floppy-disk');
+    };
+
+    var mark_saving = function () {
+        save_btn.attr('disabled', true);
+        save_btn.find('.glyphicon').removeClass('glyphicon-floppy-disk glyphicon-floppy-saved').addClass('glyphicon-floppy-open');
+    };
+
+    var mark_saved = function () {
+        save_btn.attr('disabled', true);
+        save_btn.find('.glyphicon').removeClass('glyphicon-floppy-disk glyphicon-floppy-open').addClass('glyphicon-floppy-saved');
+    };
+
+    mark_saved();
+    save_btn.click(function() {
         var data = {'id': workshop_participant_id};
         data[field_name] = elem.val();
+        mark_saving();
         $.ajax({
             'url': '/savePoints/',
             'data': data,
             'error': function(xhr, textStatus, errorThrown) {
+                mark_changed();
                 alert('Błąd: ' + errorThrown);
             },
             'method': 'POST',
             'success': function(value) {
                 if(value.error) {
-                    alert('Błąd: ' + value.error);
+                    mark_changed();
+                    alert('Błąd:\n' + value.error);
                 } else {
                     saved_value = value[field_name];
+                    elem.val(""); // For whatever reason, this is required to get the field to reformat with the correct comma. Don't ask.
                     elem.val(saved_value);
-                    save_btn.addClass('invisibile');
+                    mark_saved();
                     qualified_mark.html(value.mark);
                 }
             }
@@ -51,20 +71,15 @@ function send_points(field_name, elem, save_btn) {
 
     elem.on('change keyup mouseup', function() {
         if(elem.val() != saved_value)
-            save_btn.removeClass('invisibile');
+            mark_changed();
     });
 }
 
-$('.points-input').each(function() {
-    var elem = $(this);
-    var save_btn = elem.parent().find('.save');
-	send_points('points', elem, save_btn);
-});
-
-$('.comment-input').each(function() {
-    var elem = $(this);
-    var save_btn = elem.parent().find('.savec');
-    send_points('comment', elem, save_btn);
+$('button[data-save]').each(function() {
+    var save_btn = $(this);
+    var elem = $(save_btn.data('save'));
+    var workshop_participant_id = save_btn.data('participantId');
+    send_points(elem, save_btn, workshop_participant_id);
 });
 
 function handle_registration_change(workshop_name_txt, register) {
