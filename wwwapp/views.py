@@ -1,7 +1,11 @@
 import datetime
+import hashlib
+import json
 import os
 import sys
 import mimetypes
+from urllib.parse import urljoin
+
 from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
 from typing import Dict
@@ -10,16 +14,20 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError, SuspiciousOperation
+from django.core.exceptions import SuspiciousOperation
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpRequest, HttpResponseForbidden
+from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
-    UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm
+    UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm, WorkshopParticipantPointsForm, \
+    TinyMCEUpload
 from .models import Article, UserProfile, Workshop, WorkshopParticipant, \
     WorkshopUserProfile, ResourceYearPermission
 from .templatetags.wwwtags import qualified_mark
@@ -314,37 +322,29 @@ def workshop_participants_view(request, name):
 
     context['workshop_participants'] = WorkshopParticipant.objects.filter(workshop=workshop).prefetch_related(
             'workshop', 'participant', 'participant__user')
+
+    for participant in context['workshop_participants']:
+        participant.form = WorkshopParticipantPointsForm(instance=participant, auto_id='%s_'+str(participant.id))
     
     return render(request, 'workshopparticipants.html', context)
 
 
 def save_points_view(request):
+    if 'id' not in request.POST:
+        raise SuspiciousOperation()
+
     workshop_participant = WorkshopParticipant.objects.get(id=request.POST['id'])
 
-    can_edit = can_edit_workshop(workshop_participant.workshop, request.user)
-    if not can_edit:
-        return JsonResponse({'error': 'Brak uprawnień.'})
+    has_perm_to_edit = can_edit_workshop(workshop_participant.workshop, request.user)
+    if not has_perm_to_edit:
+        return HttpResponseForbidden()
 
-    try:
-        result_points = (request.POST['points'].strip() if 'points' in request.POST else None)
-        result_comment = (request.POST['comment'].strip() if 'comment' in request.POST else None)
-        if result_points is not None:
-            if result_points == "":
-                workshop_participant.qualification_result = None
-            else:
-                workshop_participant.qualification_result = result_points
-        if result_comment is not None:
-            workshop_participant.comment = result_comment
-        workshop_participant.save()
-    except (ValidationError, ValueError) as e:
-        print(e)
-        return JsonResponse({'error': 'Niepoprawny format liczby'})
-    except Exception as e:
-        print(e)
-        raise e
-    workshop_participant = WorkshopParticipant.objects.get(id=workshop_participant.id)
+    form = WorkshopParticipantPointsForm(request.POST, instance=workshop_participant)
+    if not form.is_valid():
+        return JsonResponse({'error': form.errors.as_text()})
+    workshop_participant = form.save()
 
-    return JsonResponse({'points': str(workshop_participant.qualification_result),
+    return JsonResponse({'qualification_result': workshop_participant.qualification_result,
                          'comment': workshop_participant.comment,
                          'mark': qualified_mark(workshop_participant.is_qualified())})
 
@@ -460,11 +460,13 @@ def lecturers_view(request: HttpRequest, year: int) -> HttpResponse:
 
 
 def register_to_workshop_view(request):
-    workshop_name = request.POST['workshop_name']
-
     if not request.user.is_authenticated:
         return JsonResponse({'redirect': reverse('login'), 'error': u'Jesteś niezalogowany'})
 
+    if 'workshop_name' not in request.POST:
+        raise SuspiciousOperation()
+
+    workshop_name = request.POST['workshop_name']
     workshop = get_object_or_404(Workshop, name=workshop_name)
 
     if workshop.type.year != settings.CURRENT_YEAR:
@@ -482,11 +484,13 @@ def register_to_workshop_view(request):
 
 
 def unregister_from_workshop_view(request):
-    workshop_name = request.POST['workshop_name']
-    data = {}
     if not request.user.is_authenticated:
         return JsonResponse({'redirect': reverse('login'), 'error': u'Jesteś niezalogowany'})
 
+    if 'workshop_name' not in request.POST:
+        raise SuspiciousOperation()
+
+    workshop_name = request.POST['workshop_name']
     workshop = get_object_or_404(Workshop, name=workshop_name)
     profile = UserProfile.objects.get(user=request.user)
     workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
@@ -505,8 +509,7 @@ def unregister_from_workshop_view(request):
     context = get_context(request)
     context['workshop'] = workshop
     context['registered'] = False
-    data['content'] = render_to_response('_programworkshop.html', context).content.decode()
-    return JsonResponse(data)
+    return JsonResponse({'content': render_to_response('_programworkshop.html', context).content.decode()})
 
 
 @permission_required('wwwapp.export_workshop_registration')
@@ -605,8 +608,13 @@ def article_view(request, name=None):
 
 
 def article_name_list_view(request):
-    names = Article.objects.values_list('name', flat=True)
-    return JsonResponse(list(names), safe=False)
+    articles = Article.objects.all()
+    article_list = [{'title': 'Artykuł: ' + (article.title or article.name), 'value': reverse('article', kwargs={'name': article.name})} for article in articles]
+
+    workshops = Workshop.objects.filter(Q(status='Z') | Q(status='X')).order_by('-type__year')
+    workshop_list = [{'title': 'Warsztaty (' + str(workshop.type.year) + '): ' + workshop.title, 'value': reverse('workshop_page', kwargs={'name': workshop.name})} for workshop in workshops]
+
+    return JsonResponse(article_list + workshop_list, safe=False)
 
 
 @login_required()
@@ -697,3 +705,49 @@ def resource_auth_view(request):
         if user_profile.is_participating_in(resource.year):
             return HttpResponse("Welcome!")
     return HttpResponseForbidden("What about NO!")
+
+
+@login_required()
+@require_http_methods(["POST"])
+@csrf_exempt
+def upload_file(request, type, name):
+    """
+    Handle a file upload from TinyMCE
+    """
+
+    target_dir = None
+    if type == "article":
+        article = get_object_or_404(Article, name=name)
+        target_dir = "images/articles/{}/".format(article.name)
+        if not request.user.has_perm('wwwapp.change_article'):
+            return HttpResponseForbidden()
+    elif type == "workshop":
+        workshop = get_object_or_404(Workshop, name=name)
+        if not can_edit_workshop(workshop, request.user) or not workshop.is_publicly_visible() or workshop.type.year != settings.CURRENT_YEAR:
+            return HttpResponseForbidden()
+        target_dir = "images/workshops/{}/".format(workshop.name)
+    else:
+        raise SuspiciousOperation()
+    assert target_dir is not None
+
+    form = TinyMCEUpload(request.POST, request.FILES)
+    if not form.is_valid():
+        data = {'errors': [v for k, v in form.errors.items()]}
+        return HttpResponseBadRequest(json.dumps(data))
+
+    os.makedirs(os.path.join(settings.MEDIA_ROOT, target_dir), exist_ok=True)
+
+    f = request.FILES['file']
+
+    h = hashlib.sha256()
+    for chunk in f.chunks():
+        h.update(chunk)
+    h = h.hexdigest()
+
+    name = h + os.path.splitext(f.name)[1]
+
+    with open(os.path.join(settings.MEDIA_ROOT, target_dir, name), 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+    return JsonResponse({'location': urljoin(urljoin(settings.MEDIA_URL, target_dir), name)})

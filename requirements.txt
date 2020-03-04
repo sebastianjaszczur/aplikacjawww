@@ -1,6 +1,7 @@
 Django<2.0
 django-all-access==0.9.0
 django-crispy-forms
+django-tinymce
 django-bleach
 django-compressor
 django-cleanup
@@ -9,6 +10,7 @@ django-select2<7.0.0
 dj-static
 raven
 python-dateutil
+Pillow
 Faker
 mypy==0.700
 django-stubs

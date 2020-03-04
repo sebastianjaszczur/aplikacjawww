@@ -53,11 +53,6 @@ def standarize_user_info(user_info):
             user_info['last_name'] = user_info['family_name']
         elif 'name' in user_info and 'familyName' in user_info['name']:
             user_info['last_name'] = user_info['name']['familyName']
-    if 'gender' in user_info:
-        if user_info['gender'].lower() == 'm' or user_info['gender'].lower() == 'male':
-            user_info['gender'] = 'M'
-        elif user_info['gender'].lower() == 'f' or user_info['gender'].lower() == 'female':
-            user_info['gender'] = 'F'
     if 'email' not in user_info:
         if 'emails' in user_info and user_info['emails'] and 'value' in user_info['emails'][0]:
             user_info['email'] = user_info['emails'][0]['value']
@@ -174,15 +169,7 @@ def create_user(access, info):
     if 'last_name' in info:
         kwargs['last_name'] = info['last_name']
 
-    user = User.objects.create_user(**kwargs)
-
-    # The UserProfile should already exist at this point due to model hooks
-    user_profile = UserProfile.objects.get(user=user)
-    if 'gender' in info:
-        user_profile.gender = info['gender']
-        user_profile.save()
-
-    return user
+    return User.objects.create_user(**kwargs)
 
 
 # The view called when a user decides not to merge into any suggested accounts.
