@@ -30,29 +30,29 @@
                 {{ workshop_participant.participant.user.get_full_name }}
               </a>
             </td>
-            <td>
+            <td style="vertical-align: middle;">
               {{ workshop_participant.participant.user.email }}
             </td>
-            <td style="width: 12.5%;">
+            <td style="vertical-align: middle; width: 12.5%;">
               {% if has_perm_to_edit %}
                 {{ workshop_participant.form.qualification_result }}
               {% else %}
                 {{ workshop_participant.qualification_result | default_if_none:'' }}
               {% endif %}
             </td>
-            <td style="width: 1px; white-space: nowrap;">
+            <td style="vertical-align: middle; width: 1px; white-space: nowrap;">
               {% if has_perm_to_edit %}
                 <button class="btn btn-default" style="padding: 6px 12px;" data-save="#{{ workshop_participant.form.qualification_result.id_for_label }}" data-participant-id="{{ workshop_participant.id }}"><span class="glyphicon glyphicon-floppy-disk"></span></button>
               {% endif %}
             </td>
-            <td style="width: 20%;">
+            <td style="vertical-align: middle; width: 20%;">
               {% if has_perm_to_edit %}
                 {{ workshop_participant.form.comment }}
               {% else %}
                 {{ workshop_participant.comment | default_if_none:'' }}
               {% endif %}
             </td>
-            <td style="width: 1px; white-space: nowrap;">
+            <td style="vertical-align: middle; width: 1px; white-space: nowrap;">
               {% if has_perm_to_edit %}
                 <button class="btn btn-default" style="padding: 6px 12px;" data-save="#{{ workshop_participant.form.comment.id_for_label }}" data-participant-id="{{ workshop_participant.id }}"><span class="glyphicon glyphicon-floppy-disk"></span></button>
               {% endif %}
