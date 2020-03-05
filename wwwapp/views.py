@@ -203,12 +203,9 @@ def workshop_view(request, name=None):
         else:
             has_perm_to_edit = True
     else:
-        workshop = Workshop.objects.get(name=name)
+        workshop = get_object_or_404(Workshop, name=name)
         title = workshop.title
-        if request.user.is_authenticated:
-            has_perm_to_edit = Workshop.objects.filter(name=name, lecturer__user=request.user).exists()
-        else:
-            has_perm_to_edit = False
+        has_perm_to_edit = can_edit_workshop(workshop, request.user)
 
     # Workshop proposals are only visible to admins
     has_perm_to_see_all = request.user.has_perm('wwwapp.see_all_workshops')
@@ -245,7 +242,7 @@ def workshop_view(request, name=None):
 
 def can_edit_workshop(workshop, user):
     if user.is_authenticated:
-        return Workshop.objects.filter(id=workshop.id, lecturer__user=user).exists()
+        return workshop.lecturer.filter(user=user).exists()
     else:
         return False
 
@@ -580,7 +577,7 @@ def article_view(request, name=None):
         title = 'Nowy artykuł'
         has_perm = request.user.has_perm('wwwapp.add_article')
     else:
-        art = Article.objects.get(name=name)
+        art = get_object_or_404(Article, name=name)
         title = art.title
         has_perm = request.user.has_perm('wwwapp.change_article')
 
