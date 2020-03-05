@@ -12,5 +12,5 @@ raven
 python-dateutil
 Pillow
 Faker
-mypy==0.700
+mypy
 django-stubs
