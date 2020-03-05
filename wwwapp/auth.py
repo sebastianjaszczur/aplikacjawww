@@ -31,8 +31,9 @@ def login_view(request):
         # (aka I'm too afraid to remove it)
         user_profile, just_created = UserProfile.objects.get_or_create(user=request.user)
         if just_created:
-            # TODO: untested - this should trigger the Django admin email thing?
-            logging.getLogger('django').error('User profile was missing for {}. This should have never happened.')
+            logging.getLogger('django.request').error(
+                'User profile was missing for %s. This should have never happened.', request.user,
+                extra={'request': request})
 
     # Make sure to call get_context after UserInfo and UserProfile get created, since they are required
     # to figure out what to show on the menu bar
