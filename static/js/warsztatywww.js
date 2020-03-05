@@ -1,3 +1,11 @@
+function load_script(url, callback) {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.onload = callback;
+    script.src = url;
+    document.body.appendChild(script);
+}
+
 function tinymce_local_file_picker(cb, value, meta) {
     // https://www.tiny.cloud/docs/demo/file-picker/
     var input = document.createElement('input');
@@ -117,6 +125,22 @@ function handle_registration_change(workshop_name_txt, register) {
         }
     });
 }
+
+// Lazy load pdfmake for DataTables because it's BIIIIIG
+window.pdfMake = true;
+var originalPdfHtml5Action = $.fn.dataTableExt.buttons.pdfHtml5.action;
+$.fn.dataTableExt.buttons.pdfHtml5.action = function pdfHtml5Action(e, dt, button, config) {
+    var _this = this;
+    if (typeof window.pdfMake !== "object") {
+        load_script(pdfmake_js_path, function() {
+            load_script(vfs_fonts_js_path, function() {
+                originalPdfHtml5Action.call(_this, e, dt, button, config);
+            });
+        });
+    } else {
+        originalPdfHtml5Action.call(_this, e, dt, button, config);
+    }
+};
 
 $(function () {
     $('[data-toggle="popover"]').popover();

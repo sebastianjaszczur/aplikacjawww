@@ -167,10 +167,12 @@
       <script src="{% static 'js/jquery.cookie.js' %}"></script>
 
       <!-- Datatables -->
-      <script type="text/javascript" src="{% static 'js/pdfmake.min.js' %}"></script>
-      <script type="text/javascript" src="{% static 'js/vfs_fonts.js' %}"></script>
-      <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
-      <script type="text/javascript" src="{% static 'js/datatables.intl.js' %}"></script>
+      <script src="{% static 'js/datatables.min.js' %}"></script>
+      <script src="{% static 'js/datatables.intl.js' %}"></script>
+      <script>
+        var pdfmake_js_path = "{% static 'js/pdfmake.min.js' %}";
+        var vfs_fonts_js_path = "{% static 'js/vfs_fonts.js' %}";
+      </script>
 
       <script src="{% static 'js/moment.js' %}"></script>
       <script src="{% static 'js/moment-locale-pl.js' %}"></script>
