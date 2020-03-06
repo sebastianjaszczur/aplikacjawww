@@ -220,6 +220,7 @@ TEMPLATES = [
 
 TINYMCE_JS_URL = os.path.join(STATIC_URL, "tinymce/js/tinymce/tinymce.min.js")
 TINYMCE_JS_ROOT = os.path.join(STATIC_URL, "tinymce/js/tinymce")
+TINYMCE_INCLUDE_JQUERY = False
 TINYMCE_DEFAULT_CONFIG = {
     'theme': 'silver',
     'plugins': 'preview paste searchreplace autolink code visualblocks visualchars image link media codesample table charmap hr nonbreaking anchor toc advlist lists wordcount imagetools textpattern quickbars emoticons',
