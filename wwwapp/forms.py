@@ -128,10 +128,9 @@ class ArticleForm(ModelForm):
         super(ModelForm, self).__init__(*args, **kwargs)
         mce_attrs = {}
         if kwargs['instance']:
+            mce_attrs = settings.TINYMCE_DEFAULT_CONFIG_WITH_IMAGES.copy()
             mce_attrs['automatic_uploads'] = True
             mce_attrs['images_upload_url'] = reverse('upload', kwargs={'type': 'article', 'name': kwargs['instance'].name})
-            mce_attrs['file_picker_types'] = 'image'
-            mce_attrs['file_picker_callback'] = 'tinymce_local_file_picker'
         self.fields['content'].widget = TinyMCE(mce_attrs=mce_attrs)
         if not user.has_perm('wwwapp.can_put_on_menubar'):
             del self.fields['on_menubar']
@@ -184,10 +183,9 @@ class WorkshopPageForm(ModelForm):
         super(ModelForm, self).__init__(*args, **kwargs)
         mce_attrs = {}
         if kwargs['instance']:
+            mce_attrs = settings.TINYMCE_DEFAULT_CONFIG_WITH_IMAGES.copy()
             mce_attrs['automatic_uploads'] = True
             mce_attrs['images_upload_url'] = reverse('upload', kwargs={'type': 'workshop', 'name': kwargs['instance'].name})
-            mce_attrs['file_picker_types'] = 'image'
-            mce_attrs['file_picker_callback'] = 'tinymce_local_file_picker'
         self.fields['page_content'].widget = TinyMCE(mce_attrs=mce_attrs)
 
 
