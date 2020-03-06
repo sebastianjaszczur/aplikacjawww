@@ -21,6 +21,37 @@
 .slideUp { top:-100px; }
 .headroom { -webkit-transition: all 0.4s ease-out; -moz-transition: all 0.4s ease-out; -o-transition: all 0.4s ease-out; transition: all 0.4s ease-out; }
 
+/* Fix navbar image on mobile, see https://github.com/warsztatywww/aplikacjawww/issues/117 */
+.navbar-header {
+	display: table;
+}
+@media (max-width: 768px) {
+	.navbar-header {
+		width: 100%;
+	}
+}
+.navbar-brand {
+	display: table-cell;
+	float: none;
+	padding: 0 !important;
+}
+@media (max-width: 768px) {
+	.navbar-brand {
+		padding: 0 15px !important;
+	}
+}
+.navbar-brand img {
+	margin: 0 !important;
+}
+.navbar-toggle {
+	display: table-cell;
+	float: none;
+}
+@media (min-width: 768px) {
+	.navbar-toggle {
+		display: none;
+	}
+}
 
 /* Highlights (in jumbotron in most cases) */
 .highlight { margin-top:40px; }
