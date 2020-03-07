@@ -46,7 +46,11 @@ class Command(BaseCommand):
                 print("WARNING: {} returned {}".format(url, r.status_code))
                 return m.group(0)
             else:
-                ext = mimetypes.guess_extension(r.headers['Content-Type'])
+                if 'Content-Type' not in r.headers:
+                    raise Exception("Server didn't provide a Content-Type for the file")
+                ext = mimetypes.guess_extension(r.headers['Content-Type'].split(";")[0])
+                if ext is None:
+                    raise Exception("Unable to determine file extension for " + r.headers['Content-Type'])
                 fname = hashlib.sha256(r.content).hexdigest() + ext
                 fpath = os.path.join(settings.MEDIA_ROOT, path, fname)
                 print("Saving to {}".format(fpath))
