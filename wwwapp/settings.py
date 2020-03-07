@@ -239,9 +239,9 @@ TINYMCE_DEFAULT_CONFIG = {
     'link_list': '/articleNameList/',
 }
 
-CURRENT_YEAR = 2019
-WORKSHOPS_START_DATE = datetime.date(2019, 7, 1)
-WORKSHOPS_END_DATE = datetime.date(2019, 7, 13)
+CURRENT_YEAR = 2020
+WORKSHOPS_START_DATE = datetime.date(2020, 7, 3)
+WORKSHOPS_END_DATE = datetime.date(2020, 7, 15)
 
 COMPRESS_ENABLED = True
 
