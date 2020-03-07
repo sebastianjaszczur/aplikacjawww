@@ -21,6 +21,76 @@
 .slideUp { top:-100px; }
 .headroom { -webkit-transition: all 0.4s ease-out; -moz-transition: all 0.4s ease-out; -o-transition: all 0.4s ease-out; transition: all 0.4s ease-out; }
 
+/* Change the point at which the navbar collapses */
+/* https://stackoverflow.com/questions/19827605/change-bootstrap-navbar-collapse-breakpoint-without-using-less/36289507#36289507 */
+@media (max-width: 1200px) {
+  .navbar-header {
+      float: none;
+  }
+  .navbar-left,.navbar-right {
+      float: none !important;
+  }
+  .navbar-toggle {
+      display: block;
+  }
+  .navbar-collapse {
+      border-top: 1px solid transparent;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .navbar-fixed-top {
+      top: 0;
+      border-width: 0 0 1px;
+  }
+  .navbar-collapse.collapse {
+      display: none!important;
+  }
+  .navbar-nav {
+      float: none!important;
+      margin-top: 7.5px;
+  }
+  .navbar-nav>li {
+      float: none;
+  }
+  .navbar-nav>li>a {
+      padding-top: 10px;
+      padding-bottom: 10px;
+  }
+  .collapse.in{
+      display:block !important;
+  }
+}
+
+/* Fix navbar image on mobile, see https://github.com/warsztatywww/aplikacjawww/issues/117 */
+.navbar-header {
+	display: table;
+}
+@media (max-width: 1200px) {
+	.navbar-header {
+		width: 100%;
+	}
+}
+.navbar-brand {
+	display: table-cell;
+	float: none;
+	padding: 0 !important;
+}
+@media (max-width: 1200px) {
+	.navbar-brand {
+		padding: 0 15px !important;
+	}
+}
+.navbar-brand img {
+	margin: 0 !important;
+}
+.navbar-toggle {
+	display: table-cell;
+	float: none;
+}
+@media (min-width: 1200px) {
+	.navbar-toggle {
+		display: none;
+	}
+}
 
 /* Highlights (in jumbotron in most cases) */
 .highlight { margin-top:40px; }
