@@ -12,7 +12,6 @@ from tinymce.widgets import TinyMCE
 from . import settings
 from .models import UserProfile, Article, Workshop, WorkshopCategory, \
     WorkshopType, UserInfo, WorkshopUserProfile, WorkshopParticipant
-from .widgets import RenderHTML
 
 
 class UserProfilePageForm(ModelForm):
@@ -184,7 +183,14 @@ class WorkshopForm(ModelForm):
 
         if self.instance.status:
             self.fields['proposition_description'].disabled = True
-            self.fields['proposition_description'].widget = RenderHTML()
+
+        if not self.instance.is_editable():
+            for field in self.fields.values():
+                field.disabled = True
+
+        mce_attrs = {}
+        mce_attrs['readonly'] = self.fields['proposition_description'].disabled  # does not seem to respect the Django field settings for some reason
+        self.fields['proposition_description'].widget = TinyMCE(mce_attrs=mce_attrs)
 
     class Meta:
         model = Workshop
@@ -226,7 +232,13 @@ class WorkshopPageForm(ModelForm):
             mce_attrs = settings.TINYMCE_DEFAULT_CONFIG_WITH_IMAGES.copy()
             mce_attrs['automatic_uploads'] = True
             mce_attrs['images_upload_url'] = reverse('upload', kwargs={'type': 'workshop', 'name': kwargs['instance'].name})
+        if not self.instance.is_editable():
+            mce_attrs['readonly'] = True  # does not seem to respect the Django field settings for some reason
         self.fields['page_content'].widget = TinyMCE(mce_attrs=mce_attrs)
+
+        if not self.instance.is_editable():
+            for field in self.fields.values():
+                field.disabled = True
 
 
 class WorkshopParticipantPointsForm(ModelForm):
@@ -236,6 +248,10 @@ class WorkshopParticipantPointsForm(ModelForm):
             # autocomplete=off fixes a problem on Firefox where the form fields don't reset on reload, making the save button visibility desync
             field.widget.attrs.update({'class': 'form-control', 'autocomplete': 'off'})
             field.required = False
+
+        if not self.instance.workshop.is_editable():
+            for field in self.fields.values():
+                field.disabled = True
 
     class Meta:
         model = WorkshopParticipant
