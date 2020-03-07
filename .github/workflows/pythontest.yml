@@ -6,8 +6,6 @@ name: Python test
 on:
   push:
     branches: '**'
-  pull_request:
-    branches: '**'
 
 jobs:
   build:
@@ -35,11 +33,8 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Django check
-      run: |
-        ./manage.py check
+      run: ./manage.py check
     - name: Django migrations
-      run: |
-        ./manage.py makemigrations --check --dry-run
+      run: ./manage.py makemigrations --check --dry-run
     - name: Django test
-      run: |
-        ./manage.py test
+      run: ./manage.py test
