@@ -40,6 +40,8 @@ class Command(BaseCommand):
     def update_description(text, path, dryrun):
         def update_img(m):
             url = m.group(1)
+            if not url.startswith("http://") and not url.startswith("https://"):
+                return m.group(0)
             print("Downloading {}".format(url))
             r = requests.get(url)
             if r.status_code != 200:
