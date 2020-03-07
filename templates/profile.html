@@ -208,6 +208,11 @@
 
 {% block script %}
   {{ block.super }}
+
+  <script>
+  /* Fixes a bug in django-tinymce with TINYMCE_INCLUDE_JQUERY = False, see https://github.com/aljosa/django-tinymce/issues/234 */
+  var django = {jQuery: jQuery};
+  </script>
   {{ user_profile_page_form.media }}
   {{ user_cover_letter_form.media }}
 
