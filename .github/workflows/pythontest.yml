@@ -3,9 +3,7 @@
 
 name: Python test
 
-on:
-  push:
-    branches: '**'
+on: [push, pull_request]
 
 jobs:
   build:
