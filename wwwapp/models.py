@@ -1,6 +1,6 @@
 import os
 import urllib.parse
-from datetime import date
+import datetime
 from typing import Dict, Set
 
 from django.conf import settings
@@ -140,7 +140,7 @@ class PESELField(models.CharField):
             raise ValidationError('Data urodzenia zawarta w numerze PESEL nie istnieje.')
 
     @staticmethod
-    def _extract_date(pesel: str) -> date or None:
+    def _extract_date(pesel: str) -> datetime.date or None:
         """
         Takes PESEL (string that starts with at least 6 digits) and returns
         birth date associated with it.
@@ -153,7 +153,7 @@ class PESELField(models.CharField):
         count, month = divmod(month, 20)
         year += years_from_month[count]
         try:
-            return date(year, month, day)
+            return datetime.date(year, month, day)
         except ValueError:
             return None
 
@@ -183,7 +183,7 @@ class UserInfo(models.Model):
     class Meta:
         permissions = (('see_user_info', 'Can see user info'),)
 
-    def get_birth_date(self) -> date or None:
+    def get_birth_date(self) -> datetime.date or None:
         """
         Retrieves the birth date from the provided PESEL number.
         Returns a date class instance or None if the PESEL is malformed or not present.
@@ -296,7 +296,8 @@ class Workshop(models.Model):
     max_points = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
 
     def is_editable(self):
-        return not hasattr(self, 'type') or self.type.year == settings.CURRENT_YEAR
+        return (not hasattr(self, 'type') or self.type.year == settings.CURRENT_YEAR) and \
+               datetime.datetime.now().date() < settings.WORKSHOPS_START_DATE
 
     def clean(self):
         super(Workshop, self).clean()

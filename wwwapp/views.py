@@ -466,10 +466,7 @@ def register_to_workshop_view(request):
     workshop_name = request.POST['workshop_name']
     workshop = get_object_or_404(Workshop, name=workshop_name)
 
-    if workshop.type.year != settings.CURRENT_YEAR:
-        return JsonResponse({'error': 'Kwalifikacja na te warsztaty została dawno zakończona.'})
-
-    if datetime.datetime.now().date() >= settings.WORKSHOPS_START_DATE:
+    if not workshop.is_editable():
         return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
 
     WorkshopParticipant(participant=UserProfile.objects.get(user=request.user), workshop=workshop).save()
@@ -492,10 +489,7 @@ def unregister_from_workshop_view(request):
     profile = UserProfile.objects.get(user=request.user)
     workshop_participant = WorkshopParticipant.objects.get(workshop=workshop, participant=profile)
 
-    if workshop.type.year != settings.CURRENT_YEAR:
-        return JsonResponse({'error': 'Kwalifikacja na te warsztaty została dawno zakończona.'})
-
-    if datetime.datetime.now().date() >= settings.WORKSHOPS_START_DATE:
+    if not workshop.is_editable():
         return JsonResponse({'error': u'Kwalifikacja na te warsztaty została zakończona.'})
 
     if workshop_participant.qualification_result is not None or workshop_participant.comment:
