@@ -1,3 +1,5 @@
+#!/usr/bin/python2
+# flake8: noqa
 import random
 from copy import deepcopy
 import json
