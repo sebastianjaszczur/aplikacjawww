@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load bleach_tags %}
+{% load crispy_forms_tags %}
 
 {% block content %}
   <div class="container">
@@ -25,7 +26,7 @@
               {{ block.super }}
               {{ form.media }}
             {% endblock %}
-            {{ form.as_p }}
+            {{ form | crispy }}
             <button class="btn btn-default">Zapisz</button>
           </form>
         </div>
