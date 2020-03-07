@@ -177,6 +177,11 @@ class WorkshopForm(ModelForm):
         self.helper.form_tag = False
         self.helper.disable_csrf = True
         self.helper.include_media = False
+
+        year = self.instance.type.year if hasattr(self.instance, 'type') else settings.CURRENT_YEAR
+        self.fields['category'].queryset = WorkshopCategory.objects.filter(year=year)
+        self.fields['type'].queryset = WorkshopType.objects.filter(year=year)
+
         if self.instance.status:
             self.fields['proposition_description'].disabled = True
             self.fields['proposition_description'].widget = RenderHTML()
