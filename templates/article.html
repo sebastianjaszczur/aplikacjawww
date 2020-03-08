@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% load bleach_tags %}
-{% load crispy_forms_tags %}
 
 {% block content %}
   <div class="container">
@@ -12,31 +11,11 @@
         </header>
       {% endif %}
       {{ article.content | bleach }}
-      {% if perms.wwwapp.change_article %}
-        {% if not addArticle %}
-          <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" class="btn btn-default">
-            Edytuj
-          </a>
-        {% endif %}
-        <div {% if not addArticle %} id="collapseOne" class="panel-collapse collapse out"{% endif %} role="tabpanel">
-          <hr>
-          <form action="" method="post">
-            {% csrf_token %}
-            {% crispy form %}
-            <button class="btn btn-default">Zapisz</button>
-          </form>
-        </div>
+      {% if can_edit %}
+        <a href="{% url 'article_edit' article.name %}" class="btn btn-default">
+          Edytuj
+        </a>
       {% endif %}
     </article>
   </div>
-{% endblock %}
-
-{% block script %}
-  {{ block.super }}
-
-  <script>
-  /* Fixes a bug in django-tinymce with TINYMCE_INCLUDE_JQUERY = False, see https://github.com/aljosa/django-tinymce/issues/234 */
-  var django = {jQuery: jQuery};
-  </script>
-  {{ form.media }}
 {% endblock %}

@@ -101,7 +101,7 @@
                 {% endfor %}
                 {% if perms.wwwapp.add_article %}
                   <li role="separator" class="divider"></li>
-                  <li><a href="{% url 'addArticle' %}">Nowy artykuł</a></li>
+                  <li><a href="{% url 'article_add' %}">Nowy artykuł</a></li>
                 {% endif %}
               </ul>
             </li>
