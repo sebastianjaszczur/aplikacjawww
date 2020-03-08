@@ -12,7 +12,7 @@ def forwards_func(apps, schema_editor):
     db_alias = schema_editor.connection.alias
 
     for user_info in UserInfo.objects.using(db_alias).all():
-        if not UserProfile.objects.filter(user_info__pk=user_info.pk).exists():
+        if not UserProfile.objects.using(db_alias).filter(user_info__pk=user_info.pk).exists():
             raise Exception(
                 'Orphaned UserInfo object found (pk=%d). Please verify and remove it manually first.' % user_info.pk)
 
