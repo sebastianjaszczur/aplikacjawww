@@ -40,13 +40,19 @@ class Command(BaseCommand):
     def update_description(text, path, dryrun):
         def update_img(m):
             url = m.group(1)
+            if not url.startswith("http://") and not url.startswith("https://"):
+                return m.group(0)
             print("Downloading {}".format(url))
             r = requests.get(url)
             if r.status_code != 200:
                 print("WARNING: {} returned {}".format(url, r.status_code))
                 return m.group(0)
             else:
-                ext = mimetypes.guess_extension(r.headers['Content-Type'])
+                if 'Content-Type' not in r.headers:
+                    raise Exception("Server didn't provide a Content-Type for the file")
+                ext = mimetypes.guess_extension(r.headers['Content-Type'].split(";")[0])
+                if ext is None:
+                    raise Exception("Unable to determine file extension for " + r.headers['Content-Type'])
                 fname = hashlib.sha256(r.content).hexdigest() + ext
                 fpath = os.path.join(settings.MEDIA_ROOT, path, fname)
                 print("Saving to {}".format(fpath))
