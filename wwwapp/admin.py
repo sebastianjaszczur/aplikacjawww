@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 from .models import Article, UserProfile, ArticleContentHistory, \
     WorkshopCategory, Workshop, WorkshopType, WorkshopParticipant, UserInfo, \
@@ -11,6 +12,16 @@ admin.site.unregister(User)
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
+    readonly_fields = ['userinfo_link', ]
+
+    def userinfo_link(self, instance):
+        # TODO: Render it as an inline instead - I just can't get it to work with a nested relation like that...
+        if instance.id:
+            userinfo_url = reverse('admin:wwwapp_userinfo_change', args=(instance.id,))
+            return u'<a href="%s">UserInfo details</a>' % userinfo_url
+        return u''
+    userinfo_link.allow_tags = True
+    userinfo_link.short_description = ''
 
 
 class UserProfileAdmin(UserAdmin):

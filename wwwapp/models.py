@@ -14,7 +14,6 @@ from django.dispatch.dispatcher import receiver
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    user_info = models.OneToOneField('UserInfo', on_delete=models.CASCADE)
 
     gender = models.CharField(max_length=10, choices=[('M', 'Mężczyzna'), ('F', 'Kobieta'),],
                               null=True, default=None, blank=True)
@@ -171,6 +170,8 @@ POSSIBLE_TSHIRT_SIZES = [
 
 class UserInfo(models.Model):
     """Info needed for camp, not for qualification."""
+    user_profile = models.OneToOneField('UserProfile', on_delete=models.CASCADE, related_name='user_info', editable=False)
+
     pesel = PESELField(max_length=11, blank=True, default="")
     address = models.TextField(max_length=1000, blank=True, default="")
     phone = models.CharField(max_length=50, blank=True, default="")
@@ -191,6 +192,9 @@ class UserInfo(models.Model):
         if not self.pesel or len(self.pesel) < 6:
             return None
         return PESELField._extract_date(self.pesel)
+
+    def __str__(self):
+        return "{0}".format(self.user_profile)
 
 
 class ArticleContentHistory(models.Model):
