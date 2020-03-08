@@ -510,15 +510,17 @@ def unregister_from_workshop_view(request):
 
 
 @permission_required('wwwapp.export_workshop_registration')
-def data_for_plan_view(request):
+def data_for_plan_view(request, year: int) -> HttpResponse:
+    year = int(year)
+
     data = {}
 
-    participant_profiles_raw = UserProfile.objects.filter(workshop_profile__year=settings.CURRENT_YEAR, workshop_profile__status='Z')
+    participant_profiles_raw = UserProfile.objects.filter(workshop_profile__year=year, workshop_profile__status='Z')
 
     lecturer_profiles_raw = set()
     workshop_ids = set()
     workshops = []
-    for workshop in Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR):
+    for workshop in Workshop.objects.filter(status='Z', type__year=year):
         workshop_data = {'wid': workshop.id,
                          'name': workshop.title,
                          'lecturers': [lect.id for lect in
@@ -533,6 +535,11 @@ def data_for_plan_view(request):
     users = []
     user_ids = set()
 
+    def clean_date(date: datetime.date or None, min: datetime.date, max: datetime.date, default: datetime.date) -> datetime.date:
+        if date is None or date < min or date > max:
+            return default
+        return date
+
     for user_type, profiles in [('Lecturer', lecturer_profiles_raw),
                                 ('Participant', participant_profiles_raw)]:
         for up in profiles:
@@ -540,20 +547,19 @@ def data_for_plan_view(request):
                 'uid': up.id,
                 'name': up.user.get_full_name(),
                 'type': user_type,
-                'start': up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1,
-                'end': up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
+                'start': clean_date(up.user_info.start_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_START_DATE),
+                'end': clean_date(up.user_info.end_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_END_DATE)
             })
             user_ids.add(up.id)
 
     data['users'] = users
 
     participation = []
-    for wp in WorkshopParticipant.objects.all():
-        if wp.workshop.id in workshop_ids and wp.participant.id in user_ids:
-            participation.append({
-                'wid': wp.workshop.id,
-                'uid': wp.participant.id,
-            })
+    for wp in WorkshopParticipant.objects.filter(workshop__id__in=workshop_ids, participant__id__in=user_ids):
+        participation.append({
+            'wid': wp.workshop.id,
+            'uid': wp.participant.id,
+        })
     data['participation'] = participation
 
     return JsonResponse(data, json_dumps_params={'indent': 4})
