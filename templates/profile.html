@@ -16,6 +16,7 @@
             <form id="profile_data_form" action="#data" method="post" class="form-horizontal">
               <input type="hidden" name="page" value="data">
               {% include "_profilesubmit.html" %}
+              {% csrf_token %}
               {% crispy user_form %}
               {% crispy user_profile_form %}
             </form>
@@ -25,7 +26,7 @@
               <input type="hidden" name="page" value="profile_page">
               {% csrf_token %}
               {% include "_profilesubmit.html" %}
-              {{ user_profile_page_form.profile_page }}
+              {% crispy user_profile_page_form %}
             </form>
           </div>
           <div title="List motywacyjny" id="cover_letter">
@@ -59,7 +60,7 @@
               <input type="hidden" name="page" value="cover_letter">
               {% csrf_token %}
               <button class="btn btn-default big-button">Zapisz</button>
-              {{ user_cover_letter_form.cover_letter }}
+              {% crispy user_cover_letter_form %}
             </form>
           </div>
           <div title="Informacje" id="user_info">
@@ -68,7 +69,6 @@
               {% csrf_token %}
               <button class="btn btn-default big-button">Zapisz</button>
               {% crispy user_info_page_form %}
-
             </form>
           </div>
         </div>
@@ -213,8 +213,11 @@
   /* Fixes a bug in django-tinymce with TINYMCE_INCLUDE_JQUERY = False, see https://github.com/aljosa/django-tinymce/issues/234 */
   var django = {jQuery: jQuery};
   </script>
+  {{ user_form.media }}
+  {{ user_profile_form.media }}
   {{ user_profile_page_form.media }}
   {{ user_cover_letter_form.media }}
+  {{ user_info_page_form.media }}
 
   <script>
     $(document).ready(function() {

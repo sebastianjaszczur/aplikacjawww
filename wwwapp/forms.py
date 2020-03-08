@@ -16,6 +16,13 @@ from .widgets import RenderHTML
 
 
 class UserProfilePageForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserProfilePageForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
+
     class Meta:
         model = UserProfile
         fields = ['profile_page']
@@ -24,6 +31,13 @@ class UserProfilePageForm(ModelForm):
 
 
 class UserCoverLetterForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(UserCoverLetterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
+
     class Meta:
         model = UserProfile
         fields = ['cover_letter']
@@ -35,6 +49,9 @@ class UserInfoPageForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserInfoPageForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
         self.helper.label_class = 'col-lg-3'
         self.helper.field_class = 'col-lg-9'
 
@@ -82,6 +99,9 @@ class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-10'
     
@@ -100,6 +120,9 @@ class UserForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
         self.helper.label_class = 'col-lg-2'
         self.helper.field_class = 'col-lg-10'
 
@@ -126,6 +149,10 @@ class ArticleForm(ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
         mce_attrs = {}
         if kwargs['instance']:
             mce_attrs = settings.TINYMCE_DEFAULT_CONFIG_WITH_IMAGES.copy()
@@ -146,6 +173,10 @@ class WorkshopForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(WorkshopForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
         if self.instance.status:
             self.fields['proposition_description'].disabled = True
             self.fields['proposition_description'].widget = RenderHTML()
@@ -181,6 +212,10 @@ class WorkshopPageForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.include_media = False
         mce_attrs = {}
         if kwargs['instance']:
             mce_attrs = settings.TINYMCE_DEFAULT_CONFIG_WITH_IMAGES.copy()
