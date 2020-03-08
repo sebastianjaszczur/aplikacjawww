@@ -90,10 +90,10 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.get_or_create(user=instance)
 
 
-@receiver(pre_save, sender=UserProfile)
-def create_user_info(instance, raw, using, update_fields, **kwargs):
-    if not hasattr(instance, 'user_info'):
-        instance.user_info = UserInfo.objects.create()
+@receiver(post_save, sender=UserProfile)
+def create_user_info(sender, instance, created, **kwargs):
+    if created:
+        UserInfo.objects.get_or_create(user_profile=instance)
 
 
 class WorkshopUserProfile(models.Model):
