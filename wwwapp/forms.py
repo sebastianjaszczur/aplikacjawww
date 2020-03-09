@@ -204,6 +204,11 @@ class WorkshopForm(ModelForm):
             'proposition_description': 'Opis propozycji warsztatów',
         }
 
+    def clean(self):
+        super(WorkshopForm, self).clean()
+        if not self.instance.is_workshop_editable():
+            raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
+
 
 class WorkshopPageForm(ModelForm):
     qualification_problems = FileField(required=False, widget=FileInput(), label='Zadania kwalifikacyjne (zalecany format PDF):')
@@ -240,6 +245,11 @@ class WorkshopPageForm(ModelForm):
             for field in self.fields.values():
                 field.disabled = True
 
+    def clean(self):
+        super(WorkshopPageForm, self).clean()
+        if not self.instance.is_workshop_editable():
+            raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
+
 
 class WorkshopParticipantPointsForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -258,6 +268,10 @@ class WorkshopParticipantPointsForm(ModelForm):
         fields = ['qualification_result', 'comment']
 
     def clean(self):
+        super(WorkshopParticipantPointsForm, self).clean()
+        if not self.instance.workshop.is_qualification_editable():
+            raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
+
         # Only apply changes to the fields that were actually sent
         for k, v in self.cleaned_data.items():
             if k not in self.data:
