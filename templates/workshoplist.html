@@ -56,17 +56,21 @@
                       <p>{{ workshop.type }}</p>
                   </td>
                   <td>
-                    {% if workshop.is_qualifying and workshop.qualification_threshold %}
+                    {% if workshop.is_qualifying and workshop.qualification_threshold and workshop.is_publicly_visible %}
                       <p>{{ workshop.qualified_count }}</p>
                     {% else %}
                       <p>-</p>
                     {% endif %}
                   </td>
                   <td>
-                    <p>{{ workshop.registered_count }}</p>
+                    {% if workshop.is_publicly_visible %}
+                      <p>{{ workshop.registered_count }}</p>
+                    {% else %}
+                      <p>-</p>
+                    {% endif %}
                   </td>
                   <td>
-                    {% if workshop.is_qualifying %}
+                    {% if workshop.is_qualifying and workshop.is_publicly_visible %}
                       {% if workshop.qualification_threshold %}
                         <span class="qualified">✔</span> TAK
                       {% else %}
@@ -77,7 +81,7 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% if workshop.is_qualifying %}
+                    {% if workshop.is_qualifying and workshop.is_publicly_visible %}
                       {% if workshop.qualification_problems %}
                         <span class="qualified">✔</span> TAK
                       {% else %}
@@ -88,10 +92,14 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% if workshop.page_content_is_public %}
-                      <span class="qualified">✔</span> TAK
+                    {% if workshop.is_publicly_visible %}
+                      {% if workshop.page_content_is_public %}
+                        <span class="qualified">✔</span> TAK
+                      {% else %}
+                        <span class="not-qualified">✘</span> NIE
+                      {% endif %}
                     {% else %}
-                      <span class="not-qualified">✘</span> NIE
+                      <p>-</p>
                     {% endif %}
                   </td>
                   <td>
