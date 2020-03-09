@@ -184,7 +184,7 @@ class WorkshopForm(ModelForm):
         if self.instance.status:
             self.fields['proposition_description'].disabled = True
 
-        if not self.instance.is_editable():
+        if not self.instance.is_workshop_editable():
             for field in self.fields.values():
                 field.disabled = True
 
@@ -232,11 +232,11 @@ class WorkshopPageForm(ModelForm):
             mce_attrs = settings.TINYMCE_DEFAULT_CONFIG_WITH_IMAGES.copy()
             mce_attrs['automatic_uploads'] = True
             mce_attrs['images_upload_url'] = reverse('upload', kwargs={'type': 'workshop', 'name': kwargs['instance'].name})
-        if not self.instance.is_editable():
+        if not self.instance.is_workshop_editable():
             mce_attrs['readonly'] = True  # does not seem to respect the Django field settings for some reason
         self.fields['page_content'].widget = TinyMCE(mce_attrs=mce_attrs)
 
-        if not self.instance.is_editable():
+        if not self.instance.is_workshop_editable():
             for field in self.fields.values():
                 field.disabled = True
 
@@ -249,7 +249,7 @@ class WorkshopParticipantPointsForm(ModelForm):
             field.widget.attrs.update({'class': 'form-control', 'autocomplete': 'off'})
             field.required = False
 
-        if not self.instance.workshop.is_editable():
+        if not self.instance.workshop.is_qualification_editable():
             for field in self.fields.values():
                 field.disabled = True
 

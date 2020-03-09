@@ -295,13 +295,15 @@ class Workshop(models.Model):
     qualification_threshold = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
     max_points = models.DecimalField(null=True, blank=True, decimal_places=1, max_digits=5)
 
-    def is_editable(self):
-        return (not hasattr(self, 'type') or self.type.year == settings.CURRENT_YEAR) and \
-               datetime.datetime.now().date() < settings.WORKSHOPS_START_DATE
+    def is_workshop_editable(self) -> bool:
+        return not hasattr(self, 'type') or self.type.year == settings.CURRENT_YEAR
+
+    def is_qualification_editable(self) -> bool:
+        return self.is_workshop_editable() and datetime.datetime.now().date() < settings.WORKSHOPS_START_DATE
 
     def clean(self):
         super(Workshop, self).clean()
-        if not self.is_editable():
+        if not self.is_workshop_editable():
             raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
         if self.max_points is None and self.qualification_threshold is not None:
             raise ValidationError('Maksymalna liczba punktów musi być ustawiona jeśli próg kwalifikacji jest ustawiony')
@@ -342,7 +344,7 @@ class WorkshopParticipant(models.Model):
 
     def clean(self):
         super(WorkshopParticipant, self).clean()
-        if not self.workshop.is_editable():
+        if not self.workshop.is_qualification_editable():
             raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
 
     def is_qualified(self):
