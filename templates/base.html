@@ -178,6 +178,10 @@
 
       <script src="{% static 'js/ajax.requests.js' %}"></script>
       <script src="{% static 'js/warsztatywww.js' %}"></script>
+      <script>
+        const datatables_locale_url = "{% static 'datatables/Polish.json' %}";
+      </script>
+      <script src="{% static 'js/datatables_config.js' %}"></script>
     {% endcompress %}
     {% get_current_language as LANGUAGE_CODE %}
     <script>$.fn.dataTable.ext.order.intl('{{ LANGUAGE_CODE }}');</script>

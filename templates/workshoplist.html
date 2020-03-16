@@ -95,7 +95,15 @@
                     {% endif %}
                   </td>
                   <td>
-                    <p>{{ workshop.get_status_display | default_if_none:"Brak" }}</p>
+                    {% if workshop.status == 'Z' %}
+                      <span class="qualified"> {{ workshop.get_status_display }} </span>
+                    {% elif workshop.status == 'O' %}
+                      <span class="not-qualified"> {{ workshop.get_status_display }} </span>
+                    {% elif workshop.status == 'X' %}
+                      <span class="maybe-qualified"> {{ workshop.get_status_display }} </span>
+                    {% else %}
+                      {{ workshop.get_status_display|default_if_none:"Brak" }}
+                    {% endif %}
                   </td>
                 </tr>
               {% endfor %}
@@ -110,49 +118,11 @@
 {% block script %}
   <script>
   $(document).ready( function () {
-    const table = $('.workshop-table').DataTable({
-      dom: 'Bfrti',
-      responsive: true,
-      colReorder: true,
-      buttons: [
-        {
-          extend: 'colvis',
-          columns: ':gt(0)'
-        },
-        {
-          extend: 'copy',
-          exportOptions: {
-            columns: ':visible'
-          }
-        },
-        {
-          extend: 'excel',
-          exportOptions: {
-            columns: ':visible'
-          }
-        },
-        {
-          extend: 'pdf',
-          exportOptions: {
-            columns: ':visible'
-          }
-        },
-        {
-          extend: 'print',
-          exportOptions: {
-            columns: ':visible'
-          }
-        },
-      ],
-      "language": {
-        "url": "{% static 'datatables/Polish.json' %}",
-      },
-      "fnRowCallback" : function(nRow, aData, iDisplayIndex){
-        $("td:first", nRow).html(iDisplayIndex +1);
-        return nRow;
-      },
-      "paging": false,
-    });
+    const table = $('.workshop-table').DataTable(gen_datatables_config(
+      {
+        dom: 'Bfrtil',
+        paging: false,
+      }));
   });
 
   $(function () {

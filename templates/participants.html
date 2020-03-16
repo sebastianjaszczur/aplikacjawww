@@ -72,7 +72,13 @@
                   {{ person.has_letter | qualified_mark }}
                 </td>
                 <td>
-                  {{ person.status }}
+                  {% if person.status == 'Z' %}
+                    <span class="qualified"> {{ person.status_display }} </span>
+                  {% elif person.status == 'O' %}
+                    <span class="not-qualified"> {{ person.status_display }} </span>
+                  {% else %}
+                    {{ person.status_display|default_if_none:"Brak" }}
+                  {% endif %}
                 </td>
                 <td>
                   {{ person.comments }}
@@ -107,51 +113,7 @@
 {% block script %}
   <script>
     $(document).ready(() => {
-      const table = $('#participants-table').DataTable({
-        dom: 'Bfrtipl',
-        responsive: true,
-        colReorder: true,
-        buttons: [
-            {
-                extend: 'colvis',
-                columns: ':gt(0)'
-            },
-            {
-                extend: 'copy',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'excel',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'pdf',
-                exportOptions: {
-                    columns: ':visible'
-                }
-           },
-           {
-                extend: 'print',
-                exportOptions: {
-                    columns: ':visible'
-                }
-           },
-        ],
-        "language": {
-          "url": "{% static 'datatables/Polish.json' %}",
-        },
-        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
-          $("td:first", nRow).html(iDisplayIndex +1);
-          return nRow;
-        },
-        "pageLength": 50,
-        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-      });
-    }
-    );
+      const table = $('#participants-table').DataTable(gen_datatables_config({}));
+    });
   </script>
 {% endblock %}

@@ -373,6 +373,8 @@ def participants_view(request, year):
             if birth is not None:
                 is_adult = settings.WORKSHOPS_START_DATE >= birth + relativedelta(years=18)
 
+            workshop_profile = participant.participant.workshop_profile_for(year)
+
             people[p_id] = {
                 'user': participant.participant.user,
                 'birth': birth,
@@ -385,7 +387,8 @@ def participants_view(request, year):
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
                 'has_letter': bool(cover_letter and len(cover_letter) > 50),
-                'status': participant.participant.status_for(year),
+                'status': workshop_profile.status if workshop_profile else None,
+                'status_display': workshop_profile.get_status_display if workshop_profile else None,
                 'school': participant.participant.school,
                 'points': 0.0,
                 'infos': [],
