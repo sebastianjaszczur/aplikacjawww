@@ -1,17 +1,19 @@
 <div class="col-sm-2 text-center button-div">
   {% if registered %}
-  <a onclick="handle_registration_change('{{ workshop.name }}', false);">
-    <button class="btn btn-warning btn-circle btn-m" type="button"><i class="glyphicon glyphicon-minus"></i></button>
-    </br>
+  <div onclick="handle_registration_change('{{ workshop.name }}', false);" style="cursor: pointer;">
+    <button class="btn btn-warning btn-circle btn-m" type="button">
+      <i class="glyphicon glyphicon-minus"></i>
+    </button>
+    <br/>
     <h4 class="text-default">Wypisz się</h4>
-  </a>
+  </div>
   {% else %}
-  <a onclick="handle_registration_change('{{ workshop.name }}', true);">
+  <div onclick="handle_registration_change('{{ workshop.name }}', true);" style="cursor: pointer;">
     <button class="btn btn-success btn-circle btn-m" type="button">
       <i class="glyphicon glyphicon-plus"></i>
     </button>
-    </br>
+    <br/>
     <h4 class="text-default">Zapisz się</h4>
-  </a>
+  </div>
   {% endif %}
 </div>
