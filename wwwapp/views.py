@@ -546,13 +546,18 @@ def data_for_plan_view(request, year: int) -> HttpResponse:
     for user_type, profiles in [('Lecturer', lecturer_profiles_raw),
                                 ('Participant', participant_profiles_raw)]:
         for up in profiles:
-            users.append({
+            user = {
                 'uid': up.id,
                 'name': up.user.get_full_name(),
                 'type': user_type,
-                'start': clean_date(up.user_info.start_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_START_DATE),
-                'end': clean_date(up.user_info.end_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_END_DATE)
-            })
+            }
+            if year == settings.CURRENT_YEAR:
+                # UserInfo data is valid for the current year only
+                user.update({
+                    'start': clean_date(up.user_info.start_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_START_DATE),
+                    'end': clean_date(up.user_info.end_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_END_DATE)
+                })
+            users.append(user)
             user_ids.add(up.id)
 
     data['users'] = users
