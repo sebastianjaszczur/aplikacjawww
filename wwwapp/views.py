@@ -583,7 +583,22 @@ def qualification_problems_view(request, workshop_name):
     return response
 
 
-def article_view(request, name=None):
+def article_view(request, name):
+    context = get_context(request)
+
+    art = get_object_or_404(Article, name=name)
+    title = art.title
+    can_edit_article = request.user.has_perm('wwwapp.change_article')
+
+    context['title'] = title
+    context['article'] = art
+    context['can_edit'] = can_edit_article
+
+    return render(request, 'article.html', context)
+
+
+@login_required()
+def article_edit_view(request, name=None):
     context = get_context(request)
     new = (name is None)
     if new:
@@ -595,27 +610,26 @@ def article_view(request, name=None):
         title = art.title
         has_perm = request.user.has_perm('wwwapp.change_article')
 
-    if has_perm:
-        if request.method == 'POST':
-            form = ArticleForm(request.user, request.POST, instance=art)
-            if form.is_valid():
-                article = form.save(commit=False)
-                article.modified_by = request.user
-                article.save()
-                form.save_m2m()
-                messages.info(request, 'Zapisano.')
-                return redirect('article', form.instance.name)
-        else:
-            form = ArticleForm(request.user, instance=art)
-    else:
-        form = None
+    if not has_perm:
+        return HttpResponseForbidden()
 
-    context['addArticle'] = new
+    if request.method == 'POST':
+        form = ArticleForm(request.user, request.POST, instance=art)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.modified_by = request.user
+            article.save()
+            form.save_m2m()
+            messages.info(request, 'Zapisano.')
+            return redirect('article', form.instance.name)
+    else:
+        form = ArticleForm(request.user, instance=art)
+
     context['title'] = title
     context['article'] = art
     context['form'] = form
 
-    return render(request, 'article.html', context)
+    return render(request, 'articleedit.html', context)
 
 
 def article_name_list_view(request):
