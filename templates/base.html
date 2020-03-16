@@ -182,6 +182,9 @@
         const datatables_locale_url = "{% static 'datatables/Polish.json' %}";
       </script>
       <script src="{% static 'js/datatables_config.js' %}"></script>
+
+      <script src="{% static 'js/konami.js' %}"></script>
+      <script src="{% static 'js/thing.js' %}"></script>
     {% endcompress %}
     {% get_current_language as LANGUAGE_CODE %}
     <script>$.fn.dataTable.ext.order.intl('{{ LANGUAGE_CODE }}');</script>
