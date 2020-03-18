@@ -11,7 +11,7 @@
 		#head .btn-default:active, 
 		#head .btn-default.active { color:#fff; -webkit-box-shadow:inset 0px 0px 0px 3px #fff; -moz-box-shadow:inset 0px 0px 0px 3px #fff; box-shadow:inset 0px 0px 0px 3px #fff; background: transparent; }
 
-@media (max-width: 767px) {
+@media (max-width: 1200px) {
 	#head { min-height:420px; padding-top:160px; }
 	#head .lead { font-size: 34px; }
 }
@@ -43,11 +43,6 @@
   }
   .navbar-collapse.collapse {
       display: none!important;
-  }
-  .navbar-collapse ul {
-      text-align: center;
-      width: 100%;
-      padding-bottom: 10px;
   }
   .navbar-nav {
       float: none!important;
