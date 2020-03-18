@@ -47,7 +47,7 @@
 .navbar-nav a.btn:hover  { border:1px solid rgba(255,255,255,.6); }
 
 .navbar-collapse { border:0 none;  border-top:0 none; box-shadow: none; }
-@media (max-width: 767px) {
+@media (max-width: 1200px) {
 	.navbar-collapse ul { text-align: center;  width:100%; padding-bottom:10px; }
 	.navbar-collapse ul .btn{ max-width:50%; margin:0 auto; }
 }
