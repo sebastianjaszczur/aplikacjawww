@@ -1,37 +1,7 @@
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-import socket
 import datetime
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
-
-# openshift is our PAAS for now.
-ON_PAAS = 'OPENSHIFT_REPO_DIR' in os.environ
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
-if ON_PAAS:
-    SECRET_KEY = os.environ['OPENSHIFT_SECRET_TOKEN']
-else:
-    # SECURITY WARNING: keep the secret key used in production secret!
-    SECRET_KEY = ')_7av^!cy(wfx=k#3*7x+(=j^fzv+ot^1@sh9s9t=8$bu@r(z$'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# adjust to turn off when on Openshift, but allow an environment variable to
-# override on PAAS
-DEBUG = not ON_PAAS
-DEBUG = DEBUG or 'DEBUG' in os.environ
-if ON_PAAS and DEBUG:
-    print("*** Warning - Debug mode is on ***")
-
-if ON_PAAS:
-    ALLOWED_HOSTS = [os.environ['OPENSHIFT_APP_DNS'], socket.gethostname(), 'warsztatywww.pl', 'www.warsztatywww.pl']
-else:
-    ALLOWED_HOSTS = ["*"]
 
 # E-mail settings
 
@@ -44,16 +14,6 @@ MANAGERS = (('Sebastian Jaszczur', 'sebastian.jaszczur+aplikacjawww@gmail.com'),
             ('Marcin Wrochna', 'mwrochna+django@gmail.com'),
             ('Michał Zieliński', 'michal@zielinscy.org.pl'),
             )
-
-if ON_PAAS:
-    if 'GMAIL_ADDRESS' in os.environ and 'GMAIL_PASSWORD' in os.environ:
-        EMAIL_HOST = "smtp.gmail.com"
-        EMAIL_PORT = 587
-        EMAIL_HOST_USER = os.environ['GMAIL_ADDRESS']
-        EMAIL_USE_TLS = True
-        EMAIL_HOST_PASSWORD = os.environ['GMAIL_PASSWORD']
-    else:
-        print("ERROR: There is no Gmail credentials!")
 
 # Application definition
 
@@ -74,9 +34,6 @@ INSTALLED_APPS = (
     'django_cleanup',
 )
 
-if DEBUG:
-    INSTALLED_APPS = INSTALLED_APPS + ('debug_toolbar',)
-
 MIDDLEWARE = (
     'django.middleware.common.BrokenLinkEmailsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -88,36 +45,9 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-if DEBUG:
-    MIDDLEWARE = ('debug_toolbar.middleware.DebugToolbarMiddleware',) + MIDDLEWARE
-
 ROOT_URLCONF = 'wwwapp.urls'
 
 WSGI_APPLICATION = 'wwwapp.wsgi.application'
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-if ON_PAAS and "OPENSHIFT_POSTGRESQL_DB_USERNAME" in os.environ:
-    # determine if we are on MySQL or POSTGRESQL
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['OPENSHIFT_APP_NAME'],
-            'USER': os.environ['OPENSHIFT_POSTGRESQL_DB_USERNAME'],
-            'PASSWORD': os.environ['OPENSHIFT_POSTGRESQL_DB_PASSWORD'],
-            'HOST': os.environ['OPENSHIFT_POSTGRESQL_DB_HOST'],
-            'PORT': os.environ['OPENSHIFT_POSTGRESQL_DB_PORT'],
-        }
-    }
-else:
-    # stock django
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'database.sqlite3',
-        }
-    }
 
 # Set cripsy forms template pack
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -193,10 +123,6 @@ STATICFILES_FINDERS = (
 )
 
 MEDIA_URL = '/media/'
-if 'OPENSHIFT_DATA_DIR' in os.environ:
-    MEDIA_ROOT = os.path.join(os.environ.get('OPENSHIFT_DATA_DIR', ''), 'media')
-else:
-    MEDIA_ROOT = os.path.join(BASE_DIR, *MEDIA_URL.strip("/").split("/"))
 
 TEMPLATES = [
     {
@@ -252,20 +178,6 @@ WORKSHOPS_START_DATE = datetime.date(2020, 7, 3)
 WORKSHOPS_END_DATE = datetime.date(2020, 7, 15)
 
 COMPRESS_ENABLED = True
-
-if ON_PAAS and not DEBUG:
-    GOOGLE_ANALYTICS_KEY = 'UA-12926426-8'
-else:
-    GOOGLE_ANALYTICS_KEY = None
-
-if ON_PAAS:
-    INSTALLED_APPS = INSTALLED_APPS + (
-        'raven.contrib.django.raven_compat',
-    )
-
-    RAVEN_CONFIG = {
-        'dsn': 'https://4709ef020c9f4ab5b69d5b910829ca88:23aca2a24534495893f31c96cd893b74@sentry.civsync.com/11',
-    }
 
 INTERNAL_IPS = [
     '127.0.0.1',

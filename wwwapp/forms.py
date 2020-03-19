@@ -8,8 +8,8 @@ from django.forms.forms import Form
 from django.urls import reverse
 from django_select2.forms import Select2MultipleWidget, Select2Widget
 from tinymce.widgets import TinyMCE
+from django.conf import settings
 
-from . import settings
 from .models import UserProfile, Article, Workshop, WorkshopCategory, \
     WorkshopType, UserInfo, WorkshopUserProfile, WorkshopParticipant
 from .widgets import RenderHTML

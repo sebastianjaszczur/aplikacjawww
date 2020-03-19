@@ -4,8 +4,9 @@ from django.contrib import admin
 from django.contrib.auth.views import logout_then_login
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic import RedirectView, TemplateView
+from django.conf import settings
 
-from . import settings, views, mail_views
+from . import views, mail_views
 from .auth import login_view, ScopedOAuthRedirect, ScopedOAuthCallback, \
     create_user_from_unmerged_access_view
 
