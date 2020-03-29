@@ -43,7 +43,11 @@ class Command(BaseCommand):
             if not url.startswith("http://") and not url.startswith("https://"):
                 return m.group(0)
             print("Downloading {}".format(url))
-            r = requests.get(url)
+            try:
+                r = requests.get(url, timeout=3)
+            except Exception as e:
+                print("WARNING: {} failed to download: {}".format(url, e))
+                return m.group(0)
             if r.status_code != 200:
                 print("WARNING: {} returned {}".format(url, r.status_code))
                 return m.group(0)
