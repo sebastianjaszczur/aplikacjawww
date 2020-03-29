@@ -355,7 +355,7 @@ class WorkshopParticipant(models.Model):
         max_points = self.workshop.max_points
         if max_points is None:
             max_points = self.workshop.workshopparticipant_set.aggregate(max_points=models.Max('qualification_result'))['max_points']
-        return min(self.qualification_result / max_points * 100, settings.MAX_POINTS_PERCENT)
+        return max(min(self.qualification_result / max_points * 100, settings.MAX_POINTS_PERCENT), 0)
 
     class Meta:
         unique_together = [('workshop', 'participant')]
