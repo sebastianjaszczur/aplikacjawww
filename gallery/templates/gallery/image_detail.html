@@ -35,29 +35,29 @@
 {% endblock %}
 
 {% block bar_detail %}
-    {% if image.exif.Camera %}
+    {% if image.exif_camera %}
         <img class="exif_icon" src="{% static 'gallery/images/camera.png' %}" title="Camera"/>
-        {{ image.exif.Camera }}
+        {{ image.exif_camera }}
     {% endif %}
-    {% if image.exif.LensModel %}
+    {% if image.exif_lens %}
         <img class="exif_icon" src="{% static 'gallery/images/lens.png' %}" title="Lens"/>
-        {{ image.exif.LensModel }}
+        {{ image.exif_lens }}
     {% endif %}
-    {% if image.exif.FocalLengthIn35mmFilm %}
+    {% if image.exif_focal_length %}
         <img class="exif_icon" src="{% static 'gallery/images/35mm.png' %}" title="Focal Length (35mm)"/>
-        {{ image.exif.FocalLengthIn35mmFilm }}mm
+        {{ image.exif_focal_length }}mm
     {% endif %}
-    {% if image.exif.Aperture %}
+    {% if image.exif_aperture %}
         <img class="exif_icon" src="{% static 'gallery/images/aperture.png' %}" title="Aperture"/>
-        F/{{ image.exif.Aperture }}
+        F/{{ image.exif_aperture }}
     {% endif %}
-    {% if image.exif.Exposure %}
+    {% if image.exif_exposure %}
         <img class="exif_icon" src="{% static 'gallery/images/exposure.png' %}" title="Exposure"/>
-        {{ image.exif.Exposure }}s
+        {{ image.exif_exposure }}s
     {% endif %}
-    {% if image.exif.ISOSpeedRatings %}
+    {% if image.exif_iso %}
         <img class="exif_icon" src="{% static 'gallery/images/iso.png' %}" title="ISO"/>
-        ISO {{ image.exif.ISOSpeedRatings }}
+        ISO {{ image.exif_iso }}
     {% endif %}
 {% endblock %}
 

@@ -1,13 +1,13 @@
-from django.urls import path
+from django.conf.urls import url
 
 from gallery.views import ImageView, ImageList, AlbumView, AlbumList, ImageCreate
 
 app_name = 'gallery'
 urlpatterns = [
-    path('', AlbumList.as_view(), name='album_list'),
-    path('images/', ImageList.as_view(), name='image_list'),
-    path('image/<int:pk>/<slug>', ImageView.as_view(), name='image_detail'),
-    path('upload/', ImageCreate.as_view(), name='image_upload'),
-    path('album/<int:pk>/<slug>/', AlbumView.as_view(), name='album_detail'),
-    path('album/<int:apk>/<int:pk>/<slug>', ImageView.as_view(), name='album_image_detail')
+    url(r'^$', AlbumList.as_view(), name='album_list'),
+    url(r'^images/$', ImageList.as_view(), name='image_list'),
+    url(r'^image/(?P<pk>[0-9]+)/(?P<slug>[a-zA-Z0-9\-_]+)$', ImageView.as_view(), name='image_detail'),
+    url(r'^upload/$', ImageCreate.as_view(), name='image_upload'),
+    url(r'^album/(?P<pk>[0-9]+)/(?P<slug>[a-zA-Z0-9\-_]+)/$', AlbumView.as_view(), name='album_detail'),
+    url(r'^album/(?P<apk>[0-9]+)/(?P<pk>[0-9]+)/(?P<slug>[a-zA-Z0-9\-_]+)$', ImageView.as_view(), name='album_image_detail')
 ]

@@ -1,3 +1,4 @@
+from django.http.response import HttpResponse
 from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse
 from django.contrib import messages
@@ -87,13 +88,14 @@ class ImageCreate(GallerySettingsMixin, LoginRequiredMixin, FormView):
         return return_url
 
     def form_invalid(self, form):
-        response = super().form_invalid(form)
-        next_url = self.request.POST.get('next')
-        if next_url:
+        return HttpResponse(form.errors.as_text(), content_type='text/plain')
+        #response = super().form_invalid(form)
+        #next_url = self.request.POST.get('next')
+        #if next_url:
             # TODO: Preserve error message
-            return redirect(next_url)
-        else:
-            return response
+            #return redirect(next_url)
+        #else:
+        #    return response
 
 
 class AlbumView(GallerySettingsMixin, DetailView):

@@ -72,6 +72,9 @@ INSTALLED_APPS = (
     'compressor',
     'wwwapp',
     'django_cleanup',
+    'imagekit',
+    'gallery',
+    'django_extensions',
 )
 
 if DEBUG:
@@ -274,3 +277,8 @@ INTERNAL_IPS = [
 # Max amount of points that a participant can get during qualification (relative to configured max_points for a given workshop)
 # This allows to give some people bonus points above 100%
 MAX_POINTS_PERCENT = 200
+
+GALLERY_LOGO_PATH = 'images/logo_transparent.png'
+GALLERY_TITLE = 'Galeria WWW'
+GALLERY_FOOTER_INFO = 'Wakacyjne Warsztaty Wielodyscyplinarne'
+GALLERY_FOOTER_EMAIL = ''
