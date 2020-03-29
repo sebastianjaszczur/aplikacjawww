@@ -1,0 +1,48 @@
+{% extends "gallery/gallery_base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ album.title }}
+{% endblock %}
+
+{% block header %}
+    <script type="text/javascript" src="{% static 'gallery/js/image_upload.js' %}"></script>
+    <script type="text/javascript" src="{% static 'gallery/js/infinite_scroll.js' %}"></script>
+    {% include "gallery/partials/justify_images.html" %}
+{% endblock %}
+
+{% block bar_title %}
+    <div id="title"> {{ album.title }} </div>
+{% endblock %}
+
+
+{% block content %}
+
+<!--<h2>{{ album.title }}</h2>-->
+
+{% include "gallery/partials/image_upload_form.html" %}
+
+<div id="image_container">
+
+    {% for image in images %}
+
+        <a href="{% url 'gallery:album_image_detail' album.pk image.pk image.slug %}#image_{{ image.pk }}">
+
+            {% include "gallery/partials/thumbnail.html" %}
+
+        </a>
+
+    {% endfor %}
+
+
+    {% if not album.images.all and user.is_authenticated %}
+
+        <div id="empty_placeholder">
+            Drag images into this box to upload to the album
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

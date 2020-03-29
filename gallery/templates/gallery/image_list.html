@@ -1,0 +1,47 @@
+{% extends "gallery/gallery_base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ gallery_title }}
+{% endblock %}
+
+{% block header %}
+
+    <script type="text/javascript" src="{% static 'gallery/js/image_upload.js' %}"></script>
+    <script type="text/javascript" src="{% static 'gallery/js/infinite_scroll.js' %}"></script>
+    {% include "gallery/partials/justify_images.html" %}
+
+{% endblock %}
+
+{% block bar_title %}
+    <div id="title">{{ gallery_title }}</div>
+{% endblock %}
+
+{% block content %}
+
+{% include "gallery/partials/image_upload_form.html" %}
+
+<div id="image_container">
+
+    {% for image in image_list %}
+
+        <a href="{% url 'gallery:image_detail' image.pk image.slug %}">
+
+            {% include "gallery/partials/thumbnail.html" %}
+
+        </a>
+
+    {% endfor %}
+
+
+    {% if not image_list and user.is_authenticated %}
+
+        <div id="empty_placeholder">
+            Drag images into this box to upload to the image feed
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

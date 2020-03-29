@@ -1,0 +1,62 @@
+<!doctype html>
+{% load static %}
+
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="theme-color" content="#000">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>{% block title %}Starcross Django Gallery{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'gallery/css/gallery_template.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'gallery/css/gallery.css' %}">
+    <link rel="stylesheet" type="text/css" href="{{ theme_css_path }}">
+    <style>
+        .image_spacer {
+            margin-right: {{ image_margin }}px;
+        }
+    </style>
+    {% block header %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+<div id="top_bar">
+
+    {% if logo_path %}
+        <div id="logo">
+            <a href="/gallery"><img src="{% static logo_path %}" style="height: auto; max-width:100%;"></a>
+        </div>
+    {%  endif %}
+    <div id="detail">
+        {% block bar_detail %}
+        {%  endblock %}
+    </div>
+    {% block bar_title %}
+    <div id="title">{{ gallery_title }}</div>
+    {% endblock %}
+
+</div> <!-- top_bar -->
+
+<div id="content">
+
+    {% block content %}
+    {% endblock %}
+
+</div> <!--content-->
+
+
+<div id="footer">
+
+    <span>{{ footer_info }}</span><br>
+    <span><a href="mailto:{{ footer_email }}">{{ footer_email }}</a></span>
+
+</div> <!--footer-->
+
+</body>
+
+</html>

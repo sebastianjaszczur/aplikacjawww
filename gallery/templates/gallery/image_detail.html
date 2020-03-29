@@ -1,0 +1,109 @@
+{% extends "gallery/gallery_base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if album %}{{ album.title }} - {% endif %}{{ image.title }}
+{% endblock %}
+
+{% block header %}
+
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{% url 'gallery:image_detail' image.pk image.slug %}">
+
+    <script type="text/javascript">
+        {% if previous_image %}
+            previous_image_url = '{% url 'gallery:album_image_detail' apk previous_image.pk previous_image.slug %}#image_{{ previous_image.pk }}';
+        {% endif %}
+        {% if next_image %}
+            next_image_url = '{% url 'gallery:album_image_detail' apk next_image.pk next_image.slug %}#image_{{ next_image.pk }}';
+        {% endif %}
+    </script>
+    <script type="text/javascript" src="{% static 'gallery/js/image_navigation.js' %}"></script>
+    <style>
+    body, html {
+        height: 100%;
+        overflow: hidden;
+    }
+    #footer {
+        display: none;
+    }
+    #content {
+        padding-bottom: 0;
+        width: 100%;
+    }
+    </style>
+
+{% endblock %}
+
+{% block bar_detail %}
+    {% if image.exif.Camera %}
+        <img class="exif_icon" src="{% static 'gallery/images/camera.png' %}" title="Camera"/>
+        {{ image.exif.Camera }}
+    {% endif %}
+    {% if image.exif.LensModel %}
+        <img class="exif_icon" src="{% static 'gallery/images/lens.png' %}" title="Lens"/>
+        {{ image.exif.LensModel }}
+    {% endif %}
+    {% if image.exif.FocalLengthIn35mmFilm %}
+        <img class="exif_icon" src="{% static 'gallery/images/35mm.png' %}" title="Focal Length (35mm)"/>
+        {{ image.exif.FocalLengthIn35mmFilm }}mm
+    {% endif %}
+    {% if image.exif.Aperture %}
+        <img class="exif_icon" src="{% static 'gallery/images/aperture.png' %}" title="Aperture"/>
+        F/{{ image.exif.Aperture }}
+    {% endif %}
+    {% if image.exif.Exposure %}
+        <img class="exif_icon" src="{% static 'gallery/images/exposure.png' %}" title="Exposure"/>
+        {{ image.exif.Exposure }}s
+    {% endif %}
+    {% if image.exif.ISOSpeedRatings %}
+        <img class="exif_icon" src="{% static 'gallery/images/iso.png' %}" title="ISO"/>
+        ISO {{ image.exif.ISOSpeedRatings }}
+    {% endif %}
+{% endblock %}
+
+{% block bar_title %}
+    <div id="title">
+        {% if album %}
+            <a href="{% url 'gallery:album_detail' apk album.slug %}">
+            {{ album.title }}
+            </a>
+            -
+        {% endif %}
+        {{ image.title }}
+    </div>
+{% endblock %}
+
+{% block content %}
+
+<a href="{{ image.data.url }}">
+    <img id="image_preview" src="{{ image.data_preview.url }}" alt="{{ image.title }}"/>
+</a>
+
+<div id="album_preview">
+{% if album_images %}
+
+    {% for image in album_images %}
+        <a href="{% url 'gallery:album_image_detail' apk image.pk image.slug %}#image_{{ image.pk }}" style="display: inline-block;">
+            {% include 'gallery/partials/thumbnail_preview.html' %}
+       </a>
+    {% endfor %}
+
+{% elif albums %}
+
+    {% for album in albums %}
+
+        {% with album.display_highlight as image %}
+
+        <a href="{% url 'gallery:album_detail' album.pk album.slug  %}" style="display: inline-block;">
+            {% include 'gallery/partials/thumbnail_preview.html' %}
+        </a>
+
+        {% endwith %}
+
+    {% endfor %}
+
+
+{% endif %}
+ </div>
+
+{% endblock %}
