@@ -3,7 +3,7 @@ from django.views.generic import DetailView, ListView, FormView
 from django.urls import reverse
 from django.contrib import messages
 from django.shortcuts import redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import  PermissionRequiredMixin
 from django.templatetags.static import static
 from gallery.models import Image, Album
 from gallery.forms import ImageCreateForm
@@ -65,9 +65,10 @@ class ImageList(GallerySettingsMixin, ListView):
         return super(ImageList, self).get_queryset().order_by('-pk')
 
 
-class ImageCreate(GallerySettingsMixin, LoginRequiredMixin, FormView):
+class ImageCreate(GallerySettingsMixin, PermissionRequiredMixin, FormView):
     """ Embedded drag and drop image upload"""
     login_url = '/admin/login/'
+    permission_required = 'gallery.add_image'
     form_class = ImageCreateForm
     template_name = 'gallery/image_upload.html'
 
