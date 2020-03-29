@@ -6,7 +6,7 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-def forwards_func(apps, schema_editor):
+def check_orphaned_userinfo(apps, schema_editor):
     UserProfile = apps.get_model("wwwapp", "UserProfile")
     UserInfo = apps.get_model("wwwapp", "UserInfo")
     db_alias = schema_editor.connection.alias
@@ -15,6 +15,12 @@ def forwards_func(apps, schema_editor):
         if not UserProfile.objects.using(db_alias).filter(user_info__pk=user_info.pk).exists():
             raise Exception(
                 'Orphaned UserInfo object found (pk=%d). Please verify and remove it manually first.' % user_info.pk)
+
+
+def forwards_func(apps, schema_editor):
+    UserProfile = apps.get_model("wwwapp", "UserProfile")
+    UserInfo = apps.get_model("wwwapp", "UserInfo")
+    db_alias = schema_editor.connection.alias
 
     for user_profile in UserProfile.objects.using(db_alias).all():
         user_profile.user_info.user_profile = user_profile
@@ -38,6 +44,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(check_orphaned_userinfo, migrations.RunPython.noop),
         migrations.AddField(
             model_name='userinfo',
             name='user_profile',
