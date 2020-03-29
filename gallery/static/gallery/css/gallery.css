@@ -1,0 +1,94 @@
+/** Django Starcross gallery css */
+
+/* Main image display block */
+#image_container{
+    position: relative;
+    overflow: auto;
+}
+/* For upload - pulsing drag container on image drag */
+#image_container.highlight:before {
+    animation: pulse 0.5s linear alternate infinite;
+    border: 1px solid;
+    position: absolute;
+    content: '';
+    pointer-events: none;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: 1;
+}
+@keyframes pulse {
+    from { background: rgba(0,0,0, 0.3); }
+    to { background: rgba(32,32,32, 0.3); }
+}
+/* Hide image upload form as the drag container is used instead */
+#image_upload_form{
+    display: none;
+}
+
+/* Image thumbnail  */
+.thumbnail {
+    float: left;
+    margin-bottom: 2px;
+    position: relative;
+    display: none;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+}
+.empty {
+    border: 2px solid;
+}
+
+#empty_placeholder {
+    border: 1px solid;
+    height: 10em;
+    /* Centre */
+    line-height: 10em;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Image thumbnail overlay to add background to title */
+.overlay {
+    position: absolute;
+    top: 0; bottom: 3px; left: 0; right: 0;
+    opacity: 0;
+    transition: all .15s ease-in-out;
+}
+.overlay:hover {
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7));
+    opacity: 1;
+}
+.overlay .label {
+    position: absolute;
+    bottom: 0;
+    margin: 0 0 1.3em 1em;
+    color: #eee;
+    font-size: 1em;
+    opacity: 0;
+}
+.overlay:hover .label {
+    opacity: 1;
+}
+/* Smaller thumbnails on image detail page */
+.overlay .preview {
+    margin: 0 0 0.7em 0.7em;
+}
+
+#album_preview {
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+#album_preview img.image {
+    height: 15vh;
+
+}
+#image_preview {
+    width: 100%;
+    height: 76.5vh;
+    object-fit: contain;
+}
+.exif_icon {
+    width: 1em;
+    vertical-align: sub;
+    padding: 0 0.2em 0 0.5em;
+}
