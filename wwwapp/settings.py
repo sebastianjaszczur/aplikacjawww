@@ -74,7 +74,6 @@ INSTALLED_APPS = (
     'django_cleanup',
     'imagekit',
     'gallery',
-    'django_extensions',
 )
 
 if DEBUG:
