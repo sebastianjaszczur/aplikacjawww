@@ -1,0 +1,39 @@
+body {
+    background-color: #222;
+    color: #eee;
+}
+
+#top_bar {
+    background-color: #111;
+}
+
+#title, #title a {
+    color: white;
+}
+
+
+#detail {
+    color: #999;
+}
+
+#footer {
+    background-color: #181818;
+    color: #ddd;
+}
+
+a {
+    color: #888;
+}
+
+.exif_icon {
+    filter: brightness(70%);
+}
+
+.empty {
+    border-color: #333;
+}
+
+#empty_placeholder {
+    background: rgba(64,64,64, 0.3);
+    border-color: #666;
+}

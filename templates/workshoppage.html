@@ -7,12 +7,18 @@
     <article class="col-sm-12 maincontent">
       <h1>{{ workshop.title }}</h1>
 
-      {% if workshop.status == 'X' %}
-        <h3 style="color: red;">Te warsztaty są odwołane!</h3>
-      {% endif %}
-
       {% if has_perm_to_view_details %}
         {% include '_workshopeditheader.html' %}
+      {% endif %}
+
+      {% if not form %}
+        <h3>Prowadzący: {% for lecturer in workshop.lecturer.all %}<a href="{% url 'profile' lecturer.user.id %}">{{ lecturer }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</h3>
+      {% else %}
+        <hr>
+      {% endif %}
+
+      {% if workshop.status == 'X' %}
+        <h3 style="color: red;">Te warsztaty są odwołane!</h3>
       {% endif %}
 
       {% if workshop.page_content_is_public or has_perm_to_edit %}

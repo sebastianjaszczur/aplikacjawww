@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Wakacyjne Warsztaty Wielodyscyplinarne">
 
+    <meta name="theme-color" content="#191919">
+
     <meta property="og:image" content="http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{% static 'images/black.png' %}">
     <meta property="og:description"
           content="Wakacyjne Warsztaty Wielodyscyplinarne to coroczna impreza organizowana przez studentów,
@@ -23,8 +25,13 @@
     </title>
 
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'images/favicon-512x512.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'images/favicon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
 
-    <link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+    <link rel="stylesheet" media="screen" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap">
 
     {% compress css %}
       <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
@@ -54,7 +61,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top headroom" >
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" alt="Wakacyjne Warsztaty Wielodyscyplinarne"></a>
+          <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" srcset="{% static 'images/logo_transparent.svg' %}" width="300" alt="Wakacyjne Warsztaty Wielodyscyplinarne"></a>
           <!-- Button for smallest screens -->
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse"><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
         </div>
@@ -101,7 +108,7 @@
                 {% endfor %}
                 {% if perms.wwwapp.add_article %}
                   <li role="separator" class="divider"></li>
-                  <li><a href="{% url 'addArticle' %}">Nowy artykuł</a></li>
+                  <li><a href="{% url 'article_add' %}">Nowy artykuł</a></li>
                 {% endif %}
               </ul>
             </li>
@@ -178,6 +185,13 @@
 
       <script src="{% static 'js/ajax.requests.js' %}"></script>
       <script src="{% static 'js/warsztatywww.js' %}"></script>
+      <script>
+        const datatables_locale_url = "{% static 'datatables/Polish.json' %}";
+      </script>
+      <script src="{% static 'js/datatables_config.js' %}"></script>
+
+      <script src="{% static 'js/konami.js' %}"></script>
+      <script src="{% static 'js/thing.js' %}"></script>
     {% endcompress %}
     {% get_current_language as LANGUAGE_CODE %}
     <script>$.fn.dataTable.ext.order.intl('{{ LANGUAGE_CODE }}');</script>

@@ -25,9 +25,9 @@
 		"print": "Drukuj",
 		"copyTitle": "Skopiowano do schowka",
 		"copySuccess": {
-			"_": "Skopiowano %d kolumn",
-			"2": "Skopiowano dwie kolumny",
-			"1": "Skopiowano jedną kolumnę"
+			"_": "Skopiowano %d wierszy",
+			"2": "Skopiowano dwa wiersze",
+			"1": "Skopiowano jeden wiersz"
 		}
   	}
 }

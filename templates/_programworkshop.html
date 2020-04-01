@@ -1,26 +1,32 @@
 <div class="col-sm-2 text-center button-div">
+<<<<<<< HEAD
   {% if workshop.is_editable %}
     {% if registered %}
-    <a onclick="handle_registration_change('{{ workshop.name }}', false);">
-      <button class="btn btn-warning btn-circle btn-m" type="button"><i class="glyphicon glyphicon-minus"></i></button>
-      <br/>
-      <h4 class="text-default">Wypisz się</h4>
-    </a>
+      <div onclick="handle_registration_change('{{ workshop.name }}', false);" style="cursor: pointer;">
+        <button class="btn btn-warning btn-circle btn-m" type="button">
+          <i class="glyphicon glyphicon-minus"></i>
+        </button>
+        <br/>
+        <h4 class="text-default">Wypisz się</h4>
+      </div>
     {% else %}
-    <a onclick="handle_registration_change('{{ workshop.name }}', true);">
-      <button class="btn btn-success btn-circle btn-m" type="button">
-        <i class="glyphicon glyphicon-plus"></i>
-      </button>
-      <br/>
-      <h4 class="text-default">Zapisz się</h4>
-    </a>
+      <div onclick="handle_registration_change('{{ workshop.name }}', true);" style="cursor: pointer;">
+        <button class="btn btn-success btn-circle btn-m" type="button">
+          <i class="glyphicon glyphicon-plus"></i>
+        </button>
+        <br/>
+        <h4 class="text-default">Zapisz się</h4>
+      </div>
     {% endif %}
   {% else %}
     {% if registered %}
-      <button class="btn btn-success btn-circle btn-m" type="button" disabled="disabled">
-        <i class="glyphicon glyphicon-ok"></i>
-      </button>
-      <h4 class="text-default">Byłeś zapisany</h4>
+      <div>
+        <button class="btn btn-success btn-circle btn-m" type="button" disabled="disabled">
+          <i class="glyphicon glyphicon-ok"></i>
+        </button>
+        <br/>
+        <h4 class="text-default">Byłeś zapisany</h4>
+      </div>
     {% endif %}
   {% endif %}
 </div>

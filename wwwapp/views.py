@@ -373,6 +373,8 @@ def participants_view(request, year):
             if birth is not None:
                 is_adult = settings.WORKSHOPS_START_DATE >= birth + relativedelta(years=18)
 
+            workshop_profile = participant.participant.workshop_profile_for(year)
+
             people[p_id] = {
                 'user': participant.participant.user,
                 'birth': birth,
@@ -385,7 +387,8 @@ def participants_view(request, year):
                 'accepted_workshop_count': 0,
                 'workshop_count': 0,
                 'has_letter': bool(cover_letter and len(cover_letter) > 50),
-                'status': participant.participant.status_for(year),
+                'status': workshop_profile.status if workshop_profile else None,
+                'status_display': workshop_profile.get_status_display if workshop_profile else None,
                 'school': participant.participant.school,
                 'points': 0.0,
                 'infos': [],
@@ -504,15 +507,17 @@ def unregister_from_workshop_view(request):
 
 
 @permission_required('wwwapp.export_workshop_registration')
-def data_for_plan_view(request):
+def data_for_plan_view(request, year: int) -> HttpResponse:
+    year = int(year)
+
     data = {}
 
-    participant_profiles_raw = UserProfile.objects.filter(workshop_profile__year=settings.CURRENT_YEAR, workshop_profile__status='Z')
+    participant_profiles_raw = UserProfile.objects.filter(workshop_profile__year=year, workshop_profile__status='Z')
 
     lecturer_profiles_raw = set()
     workshop_ids = set()
     workshops = []
-    for workshop in Workshop.objects.filter(status='Z', type__year=settings.CURRENT_YEAR):
+    for workshop in Workshop.objects.filter(status='Z', type__year=year):
         workshop_data = {'wid': workshop.id,
                          'name': workshop.title,
                          'lecturers': [lect.id for lect in
@@ -527,27 +532,36 @@ def data_for_plan_view(request):
     users = []
     user_ids = set()
 
+    def clean_date(date: datetime.date or None, min: datetime.date, max: datetime.date, default: datetime.date) -> datetime.date:
+        if date is None or date < min or date > max:
+            return default
+        return date
+
     for user_type, profiles in [('Lecturer', lecturer_profiles_raw),
                                 ('Participant', participant_profiles_raw)]:
         for up in profiles:
-            users.append({
+            user = {
                 'uid': up.id,
                 'name': up.user.get_full_name(),
                 'type': user_type,
-                'start': up.user_info.start_date if up.user_info.start_date != 'no_idea' else 1,
-                'end': up.user_info.end_date if up.user_info.end_date != 'no_idea' else 30
-            })
+            }
+            if year == settings.CURRENT_YEAR:
+                # UserInfo data is valid for the current year only
+                user.update({
+                    'start': clean_date(up.user_info.start_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_START_DATE),
+                    'end': clean_date(up.user_info.end_date, settings.WORKSHOPS_START_DATE, settings.WORKSHOPS_END_DATE, settings.WORKSHOPS_END_DATE)
+                })
+            users.append(user)
             user_ids.add(up.id)
 
     data['users'] = users
 
     participation = []
-    for wp in WorkshopParticipant.objects.all():
-        if wp.workshop.id in workshop_ids and wp.participant.id in user_ids:
-            participation.append({
-                'wid': wp.workshop.id,
-                'uid': wp.participant.id,
-            })
+    for wp in WorkshopParticipant.objects.filter(workshop__id__in=workshop_ids, participant__id__in=user_ids):
+        participation.append({
+            'wid': wp.workshop.id,
+            'uid': wp.participant.id,
+        })
     data['participation'] = participation
 
     return JsonResponse(data, json_dumps_params={'indent': 4})
@@ -563,7 +577,22 @@ def qualification_problems_view(request, workshop_name):
     return response
 
 
-def article_view(request, name=None):
+def article_view(request, name):
+    context = get_context(request)
+
+    art = get_object_or_404(Article, name=name)
+    title = art.title
+    can_edit_article = request.user.has_perm('wwwapp.change_article')
+
+    context['title'] = title
+    context['article'] = art
+    context['can_edit'] = can_edit_article
+
+    return render(request, 'article.html', context)
+
+
+@login_required()
+def article_edit_view(request, name=None):
     context = get_context(request)
     new = (name is None)
     if new:
@@ -575,27 +604,26 @@ def article_view(request, name=None):
         title = art.title
         has_perm = request.user.has_perm('wwwapp.change_article')
 
-    if has_perm:
-        if request.method == 'POST':
-            form = ArticleForm(request.user, request.POST, instance=art)
-            if form.is_valid():
-                article = form.save(commit=False)
-                article.modified_by = request.user
-                article.save()
-                form.save_m2m()
-                messages.info(request, 'Zapisano.')
-                return redirect('article', form.instance.name)
-        else:
-            form = ArticleForm(request.user, instance=art)
-    else:
-        form = None
+    if not has_perm:
+        return HttpResponseForbidden()
 
-    context['addArticle'] = new
+    if request.method == 'POST':
+        form = ArticleForm(request.user, request.POST, instance=art)
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.modified_by = request.user
+            article.save()
+            form.save_m2m()
+            messages.info(request, 'Zapisano.')
+            return redirect('article', form.instance.name)
+    else:
+        form = ArticleForm(request.user, instance=art)
+
     context['title'] = title
     context['article'] = art
     context['form'] = form
 
-    return render(request, 'article.html', context)
+    return render(request, 'articleedit.html', context)
 
 
 def article_name_list_view(request):

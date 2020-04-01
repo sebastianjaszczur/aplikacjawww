@@ -1,0 +1,30 @@
+
+{% if form.non_field_errors %}
+    <div class="alert alert-warning">
+        {{ form.non_field_errors }}
+    </div>
+{% endif %}
+
+{% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="post" id="image_upload_form"
+      action="{% url 'gallery:image_upload' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <input id="data" type="file" name="data" data-url="{% url 'gallery:image_upload' %}" multiple>
+
+    <!--
+    <div id="progress">
+        <div class="progressbar"></div>
+    </div>-->
+
+   <input type="hidden" name="apk" value="{{ album.pk }}"/>
+   <input type="hidden" name="next" value="{{ request.path }}"/>
+
+</form>

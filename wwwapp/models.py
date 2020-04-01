@@ -71,9 +71,13 @@ class UserProfile(models.Model):
     def status(self):
         return self.status_for(settings.CURRENT_YEAR)
 
-    def status_for(self, year):
+    def status_for(self, year: int):
+        profile = self.workshop_profile_for(year)
+        return profile.status if profile else None
+
+    def workshop_profile_for(self, year: int):
         try:
-            return self.workshop_profile.filter(year=year).get().status
+            return self.workshop_profile.filter(year=year).get()
         except WorkshopUserProfile.DoesNotExist:
             return None
 
@@ -355,7 +359,7 @@ class WorkshopParticipant(models.Model):
         max_points = self.workshop.max_points
         if max_points is None:
             max_points = self.workshop.workshopparticipant_set.aggregate(max_points=models.Max('qualification_result'))['max_points']
-        return min(self.qualification_result / max_points * 100, settings.MAX_POINTS_PERCENT)
+        return max(min(self.qualification_result / max_points * 100, settings.MAX_POINTS_PERCENT), 0)
 
     class Meta:
         unique_together = [('workshop', 'participant')]

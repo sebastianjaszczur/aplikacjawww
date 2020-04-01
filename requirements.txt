@@ -8,9 +8,9 @@ django-cleanup
 django-debug-toolbar<2.0
 django-select2<7.0.0
 dj-static
-raven
 python-dateutil
 Pillow
 Faker
 mypy
 django-stubs
+django-imagekit

@@ -4,8 +4,9 @@ from django.contrib import admin
 from django.contrib.auth.views import logout_then_login
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic import RedirectView, TemplateView
+from django.conf import settings
 
-from . import settings, views, mail_views
+from . import views, mail_views
 from .auth import login_view, ScopedOAuthRedirect, ScopedOAuthCallback, \
     create_user_from_unmerged_access_view
 
@@ -20,6 +21,7 @@ urlpatterns = [
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^logout/$', logout_then_login, name='logout'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^gallery/', include('gallery.urls')),
     url(r'^login/$', login_view, name='login'),
     url(r'^accounts/login/(?P<provider>(\w|-)+)/$', ScopedOAuthRedirect.as_view(), name='scopedallaccess-login'),
     url(r'^accounts/callback/(?P<provider>(\w|-)+)/$', ScopedOAuthCallback.as_view(), name='scopedallaccess-callback'),
@@ -27,9 +29,10 @@ urlpatterns = [
     url(r'^profile/(?P<user_id>[0-9]+)/$', views.profile_view, name='profile'),
     url(r'^profile/$', views.my_profile_view, name='myProfile'),
     url(r'^article/(?P<name>[a-zA-Z0-9\-_]+)/$', views.article_view, name='article'),
+    url(r'^article/(?P<name>[a-zA-Z0-9\-_]+)/edit/$', views.article_edit_view, name='article_edit'),
+    url(r'^addArticle/$', views.article_edit_view, name='article_add'),
     url(r'^upload/(?P<type>article|workshop)/(?P<name>[a-zA-Z0-9\-_]+)/$', views.upload_file, name='upload'),
     url(r'^articleNameList/$', views.article_name_list_view, name='articleNameList'),
-    url(r'^addArticle/$', views.article_view, name='addArticle'),
     url(r'^workshop/(?P<name>[a-zA-Z0-9\-_]+)/$', views.workshop_page_view, name='workshop_page'),
     url(r'^workshop/(?P<name>[a-zA-Z0-9\-_]+)/priv/$', views.workshop_view, name='workshop'),
     url(r'^workshop/(?P<name>[a-zA-Z0-9\-_]+)/edit/$', views.workshop_page_edit_view, name='workshop_page_edit'),
@@ -41,7 +44,8 @@ urlpatterns = [
     url(r'^addWorkshop/$', views.workshop_view, name='addWorkshop'),
     url(r'^yourWorkshops/$', views.your_workshops_view, name='yourWorkshops'),
     url(r'^allWorkshops/$', views.all_workshops_view, name='allWorkshops'),
-    url(r'^dataForPlan/$', views.data_for_plan_view, name='dataForPlan'),
+    url(r'^dataForPlan/$', RedirectView.as_view(url='/%d/dataForPlan/' % settings.CURRENT_YEAR, permanent=False), name='dataForPlan'),
+    url(r'^([0-9]+)/dataForPlan/$', views.data_for_plan_view, name='year_dataForPlan'),
     url(r'^participants/$', RedirectView.as_view(url='/%d/participants/' % settings.CURRENT_YEAR, permanent=False), name='participants'),
     url(r'^([0-9]+)/participants/$', views.participants_view, name='year_participants'),
     url(r'^lecturers/$', RedirectView.as_view(url='/%d/lecturers/' % settings.CURRENT_YEAR, permanent=False), name='lecturers'),

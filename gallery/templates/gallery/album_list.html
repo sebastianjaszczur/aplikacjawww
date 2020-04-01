@@ -1,0 +1,39 @@
+{% extends "gallery/gallery_base.html" %}
+{% load static %}
+
+{% block title %}
+    {{ gallery_title }}
+{% endblock %}
+
+{% block header %}
+
+    <script type="text/javascript" src="{% static 'gallery/js/infinite_scroll.js' %}"></script>
+    {% include "gallery/partials/justify_images.html" %}
+
+{% endblock %}
+
+{% block bar_title %}
+    <div id="title">{{ gallery_title }}</div>
+{% endblock %}
+
+{% block content %}
+
+<div id="image_container">
+
+{% for album in object_list %}
+    <a href="{% url 'gallery:album_detail' album.pk album.slug  %}">
+
+        {% if album.display_highlight %}
+            {% with album.display_highlight as image %}
+                {% include "gallery/partials/thumbnail.html" %}
+            {% endwith %}
+        {% else %}
+            {% include "gallery/partials/thumbnail_empty.html" %}
+        {% endif %}
+
+    </a>
+{% endfor %}
+
+</div>
+
+{% endblock %}

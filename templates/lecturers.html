@@ -8,7 +8,7 @@
     <article class="col-sm-12 maincontent">
       <h1>Wszyscy prowadzący</h1>
       <div class="table-responsive">
-        <table id="participants-table" class="table" style="width:100%!important;" data-order='[[ 1, "asc" ]]'>
+        <table id="lecturers-table" class="table" style="width:100%!important;" data-order='[[ 1, "asc" ]]'>
           <thead>
             <tr>
               <th data-visible="true"  data-searchable="false" data-orderable="false"></th>
@@ -86,51 +86,7 @@
 {% block script %}
   <script>
     $(document).ready(() => {
-      const table = $('#participants-table').DataTable({
-        dom: 'Bfrtipl',
-        responsive: true,
-        colReorder: true,
-        buttons: [
-            {
-                extend: 'colvis',
-                columns: ':gt(0)'
-            },
-            {
-                extend: 'copy',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'excel',
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'pdf',
-                exportOptions: {
-                    columns: ':visible'
-                }
-           },
-           {
-                extend: 'print',
-                exportOptions: {
-                    columns: ':visible'
-                }
-           },
-        ],
-        "language": {
-          "url": "{% static 'datatables/Polish.json' %}",
-        },
-        "fnRowCallback" : function(nRow, aData, iDisplayIndex){
-          $("td:first", nRow).html(iDisplayIndex +1);
-          return nRow;
-        },
-        "pageLength": 50,
-        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-      });
-    }
-    );
+      const table = $('#lecturers-table').DataTable(gen_datatables_config({}));
+    });
   </script>
 {% endblock %}
