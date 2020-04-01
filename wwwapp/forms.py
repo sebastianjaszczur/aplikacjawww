@@ -12,7 +12,6 @@ from django.conf import settings
 
 from .models import UserProfile, Article, Workshop, WorkshopCategory, \
     WorkshopType, UserInfo, WorkshopUserProfile, WorkshopParticipant
-from .widgets import RenderHTML
 
 
 class UserProfilePageForm(ModelForm):
@@ -184,7 +183,14 @@ class WorkshopForm(ModelForm):
 
         if self.instance.status:
             self.fields['proposition_description'].disabled = True
-            self.fields['proposition_description'].widget = RenderHTML()
+
+        if not self.instance.is_workshop_editable():
+            for field in self.fields.values():
+                field.disabled = True
+
+        mce_attrs = {}
+        mce_attrs['readonly'] = self.fields['proposition_description'].disabled  # does not seem to respect the Django field settings for some reason
+        self.fields['proposition_description'].widget = TinyMCE(mce_attrs=mce_attrs)
 
     class Meta:
         model = Workshop
@@ -197,6 +203,11 @@ class WorkshopForm(ModelForm):
             'name': 'Nazwa (w URLach)',
             'proposition_description': 'Opis propozycji warsztatów',
         }
+
+    def clean(self):
+        super(WorkshopForm, self).clean()
+        if not self.instance.is_workshop_editable():
+            raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
 
 
 class WorkshopPageForm(ModelForm):
@@ -226,7 +237,18 @@ class WorkshopPageForm(ModelForm):
             mce_attrs = settings.TINYMCE_DEFAULT_CONFIG_WITH_IMAGES.copy()
             mce_attrs['automatic_uploads'] = True
             mce_attrs['images_upload_url'] = reverse('upload', kwargs={'type': 'workshop', 'name': kwargs['instance'].name})
+        if not self.instance.is_workshop_editable():
+            mce_attrs['readonly'] = True  # does not seem to respect the Django field settings for some reason
         self.fields['page_content'].widget = TinyMCE(mce_attrs=mce_attrs)
+
+        if not self.instance.is_workshop_editable():
+            for field in self.fields.values():
+                field.disabled = True
+
+    def clean(self):
+        super(WorkshopPageForm, self).clean()
+        if not self.instance.is_workshop_editable():
+            raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
 
 
 class WorkshopParticipantPointsForm(ModelForm):
@@ -237,11 +259,19 @@ class WorkshopParticipantPointsForm(ModelForm):
             field.widget.attrs.update({'class': 'form-control', 'autocomplete': 'off'})
             field.required = False
 
+        if not self.instance.workshop.is_qualification_editable():
+            for field in self.fields.values():
+                field.disabled = True
+
     class Meta:
         model = WorkshopParticipant
         fields = ['qualification_result', 'comment']
 
     def clean(self):
+        super(WorkshopParticipantPointsForm, self).clean()
+        if not self.instance.workshop.is_qualification_editable():
+            raise ValidationError('Nie można edytować warsztatów z poprzednich lat')
+
         # Only apply changes to the fields that were actually sent
         for k, v in self.cleaned_data.items():
             if k not in self.data:
