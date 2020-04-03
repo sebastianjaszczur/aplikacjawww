@@ -134,7 +134,7 @@ BLEACH_ALLOWED_TAGS = [
 # Which HTML attributes are allowed
 BLEACH_ALLOWED_ATTRIBUTES = [
     'href', 'title', 'style', 'alt', 'src', 'dir', 'class', 'border', 'cellpadding', 'cellspacing', 'id',
-    'name', 'align',
+    'name', 'align', 'width', 'height',
 ]
 
 # Which CSS properties are allowed in 'style' attributes (assuming
