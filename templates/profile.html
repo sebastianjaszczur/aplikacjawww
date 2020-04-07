@@ -93,34 +93,36 @@
                     {% endif %}
                     </span>
                   {% endfor %}
-                  {% if has_workshop_profile %}
-                    <form method="post" class="inline">
-                      {% csrf_token %}
-                      <span class="btn-group-xs" role="group">
-                        <button type="submit" class="btn btn-default"
-                                name="qualify" value="delete"
-                                onclick="return confirm('Czy na pewno chcesz usunąć kwalifikację?');">
-                          Usuń kwalifikację
-                        </button>
-                      </span>
-                    </form>
-                  {% else %}
-                    <form method="post" class="inline">
-                      {% csrf_token %}
-                      <span class="btn-group-xs" role="group">
-                        <button type="submit" class="btn btn-default"
-                                name="qualify" value="accept"
-                                onclick="return confirm('Czy na pewno chcesz zakwalifikować?');">
-                          ✔ Zakwalifikuj
-                        </button>
-                        <button type="submit" class="btn btn-default"
-                                name="qualify" value="reject"
-                                onclick="return confirm('Czy na pewno chcesz odrzucić?');">
-                          ✘ Odrzuć
-                        </button>
-                      </span>
-                    </form>
-                  {% endif %}
+                  {% if perms.wwwapp.change_workshop_user_profile %}
+                    {% if has_workshop_profile %}
+                      <form method="post" class="inline">
+                        {% csrf_token %}
+                        <span class="btn-group-xs" role="group">
+                          <button type="submit" class="btn btn-default"
+                                  name="qualify" value="delete"
+                                  onclick="return confirm('Czy na pewno chcesz usunąć kwalifikację?');">
+                            Usuń kwalifikację
+                          </button>
+                        </span>
+                      </form>
+                    {% else %}
+                      <form method="post" class="inline">
+                        {% csrf_token %}
+                        <span class="btn-group-xs" role="group">
+                          <button type="submit" class="btn btn-default"
+                                  name="qualify" value="accept"
+                                  onclick="return confirm('Czy na pewno chcesz zakwalifikować?');">
+                            ✔ Zakwalifikuj
+                          </button>
+                          <button type="submit" class="btn btn-default"
+                                  name="qualify" value="reject"
+                                  onclick="return confirm('Czy na pewno chcesz odrzucić?');">
+                            ✘ Odrzuć
+                          </button>
+                        </span>
+                      </form>
+                    {% endif %}
+                    {% endif %}
                 </td>
               </tr>
               <tr>
