@@ -6,6 +6,7 @@ import sys
 import mimetypes
 from urllib.parse import urljoin
 
+import bleach
 from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
 from typing import Dict
@@ -22,8 +23,10 @@ from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django_bleach.utils import get_bleach_default_options
 
 from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
     UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm, WorkshopParticipantPointsForm, \
@@ -590,8 +593,14 @@ def article_view(request, name):
     title = art.title
     can_edit_article = request.user.has_perm('wwwapp.change_article')
 
+    bleach_args = get_bleach_default_options().copy()
+    if art.name == 'index':
+        bleach_args['tags'] += ['iframe']  # Allow iframe on main page for Facebook embed
+    article_content_clean = mark_safe(bleach.clean(art.content, **bleach_args))
+
     context['title'] = title
     context['article'] = art
+    context['article_content_clean'] = article_content_clean
     context['can_edit'] = can_edit_article
 
     return render(request, 'article.html', context)

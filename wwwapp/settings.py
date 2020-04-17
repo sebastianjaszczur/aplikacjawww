@@ -143,7 +143,7 @@ BLEACH_ALLOWED_STYLES = [
     'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
     'margin-left', 'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
     'margin', 'padding-top', 'font-size', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color',
-    'line-height', 'border-collapse', 'border-spacing', 'empty-cells',
+    'line-height', 'border-collapse', 'border-spacing', 'empty-cells', 'border',
 ]
 
 # Strip unknown tags if True, replace with HTML escaped characters if
