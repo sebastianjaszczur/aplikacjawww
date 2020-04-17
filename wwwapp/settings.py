@@ -140,7 +140,8 @@ BLEACH_ALLOWED_ATTRIBUTES = [
 # Which CSS properties are allowed in 'style' attributes (assuming
 # style is an allowed attribute)
 BLEACH_ALLOWED_STYLES = [
-    'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width',
+    'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float',
+    'height', 'width', 'min-height', 'min-width', 'max-height', 'max-width',
     'margin', 'margin-top', 'margin-bottom', 'margin-right', 'margin-left',
     'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right',
     'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
