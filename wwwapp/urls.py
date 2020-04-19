@@ -52,7 +52,7 @@ urlpatterns = [
     url(r'^emails/$', views.emails_view, name='emails'),
     url(r'^filterEmails/(?:(?P<year>[0-9]+)/(?P<filter_id>[a-zA-Z0-9\-_]+)/)?$', mail_views.filtered_emails_view, name='filter_emails'),
     url(r'^template_for_workshop_page/$', views.template_for_workshop_page_view, name='template_for_workshop_page'),
-    url(r'^program/$', RedirectView.as_view(url='/%d/program/' % settings.CURRENT_YEAR, permanent=False), name='program'),
+    url(r'^program/$', RedirectView.as_view(url='/%d/program/' % settings.CURRENT_YEAR, permanent=False, query_string=True), name='program'),
     url(r'^([0-9]+)/program/$', views.program_view, name='year_program'),
     url(r'^resource_auth/$', views.resource_auth_view, name='resource_auth'),
     url(r'^robots\.txt/$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
