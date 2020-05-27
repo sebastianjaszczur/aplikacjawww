@@ -2,6 +2,7 @@
 
 {% load staticfiles %}
 {% load wwwtags %}
+{% load l10n %}
 
 {% block content %}
   <div class="container">
@@ -57,7 +58,7 @@
                 <td>
                   {{ person.matura_exam_year | question_mark_on_none_value }}
                 </td>
-                <td data-order="{{ person.points | floatformat }}">
+                <td data-order="{{ person.points | unlocalize }}">
                   <a tabindex="0" data-html="true" role="button" data-trigger="focus" data-toggle="popover" data-placement="bottom" title="Komentarze" data-content="<ul>{% for info in person.infos %} <li> {{ info }} </li> {% endfor %}</ul>">
                     {{ person.points | floatformat }}%
                   </a>
