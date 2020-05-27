@@ -378,6 +378,12 @@ def participants_view(request, year):
 
             workshop_profile = participant.participant.workshop_profile_for(year)
 
+            participation_data = participant.participant.all_participation_data()
+            if not request.user.has_perm('wwwapp.see_all_workshops'):
+                # If the current user can't see non-public workshops, remove them from the list
+                for participation in participation_data:
+                    participation['workshops'] = [w for w in participation['workshops'] if w.is_publicly_visible()]
+
             people[p_id] = {
                 'user': participant.participant.user,
                 'birth': birth,
@@ -392,9 +398,11 @@ def participants_view(request, year):
                 'has_letter': bool(cover_letter and len(cover_letter) > 50),
                 'status': workshop_profile.status if workshop_profile else None,
                 'status_display': workshop_profile.get_status_display if workshop_profile else None,
+                'participation_data': participation_data,
                 'school': participant.participant.school,
                 'points': 0.0,
                 'infos': [],
+                'how_do_you_know_about': participant.participant.how_do_you_know_about,
                 'comments': participant.participant.user_info.comments,
                 'start_date': participant.participant.user_info.start_date,
                 'end_date': participant.participant.user_info.end_date,
