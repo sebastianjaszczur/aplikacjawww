@@ -1,4 +1,4 @@
-Django==1.7.1
+Django==1.11.29
 Django-Select2==4.2.2
 argparse==1.2.1
 bleach==1.4.1
