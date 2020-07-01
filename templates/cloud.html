@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">
+    <article class="col-sm-12 maincontent">
+      <h1>Chmurka</h1>
+      <h3>Serwer: <a href="{{ owncloud_host }}">{{ owncloud_host }}</a></h3>
+      <p>Login: {{ owncloud_user }}</p>
+      <p>Hasło: {{ owncloud_password }}</p>
+      <hr>
+      <p>Poza dostępem webowym istnieją również klienty stacjonarne i mobilne: <a href="https://nextcloud.com/clients/">https://nextcloud.com/clients/</a></p>
+    </article>
+  </div>
+{% endblock %}
+
+{% block script %}
+  {{ block.super }}
+{% endblock %}

@@ -56,6 +56,7 @@ urlpatterns = [
     url(r'^([0-9]+)/program/$', views.program_view, name='year_program'),
     url(r'^resource_auth/$', views.resource_auth_view, name='resource_auth'),
     url(r'^robots\.txt/$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    url(r'^cloud/$', views.cloud_access_view, name='cloud_access'),
     url(r'^$', views.index_view, name='index'),
 ]
 

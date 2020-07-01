@@ -23,9 +23,17 @@ class UserProfile(models.Model):
     how_do_you_know_about = models.CharField(max_length=1000, default="", blank=True)
     profile_page = models.TextField(max_length=100000, blank=True, default="")
     cover_letter = models.TextField(max_length=100000, blank=True, default="")
+    owncloud_user = models.CharField(max_length=32, blank=True, default="")
+    owncloud_password = models.CharField(max_length=32, blank=True, default="")
 
     def is_participating_in(self, year):
-        return self.status_for(year) == 'Z' or self.lecturer_workshops.filter(type__year=year, status='Z').exists()
+        return self.is_participant_in(year) or self.is_lecturer_in(year)
+
+    def is_participant_in(self, year):
+        return self.status_for(year) == 'Z'
+
+    def is_lecturer_in(self, year):
+        return self.lecturer_workshops.filter(type__year=year, status='Z').exists()
 
     def all_participation_data(self):
         """
