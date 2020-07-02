@@ -5,6 +5,7 @@ import os
 import sys
 import mimetypes
 import unicodedata
+import requests
 from urllib.parse import urljoin
 
 import bleach
@@ -23,7 +24,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.db import OperationalError, ProgrammingError
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, HttpRequest, HttpResponseForbidden
-from django.http.response import HttpResponseBadRequest
+from django.http.response import HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.urls import reverse
@@ -832,7 +833,23 @@ def cloud_access_view(request):
             c.add_user_to_group(userprofile.owncloud_user, "WWW16Participants")
         userprofile.save()
 
+    if userprofile.k8s_user == "":
+        userprofile.k8s_user = \
+            unicodedata.normalize("NFKD", request.user.first_name+request.user.last_name)\
+                .encode('ascii','ignore').decode('ascii').lower()[:32]
+        userprofile.k8s_password = generate_nice_pass()
+
+        response = requests.post(settings.K8S_AUTH_URL, json={"api_key": settings.K8S_AUTH_TOKEN, \
+                                                              "username": userprofile.k8s_user, \
+                                                              "password": userprofile.k8s_password})
+        if response.status_code != 200 or "ok" not in response.json():
+            return HttpResponseServerError("")
+        userprofile.save()
+
     context['owncloud_host'] = settings.OWNCLOUD_HOST
     context['owncloud_user'] = userprofile.owncloud_user
     context['owncloud_password'] = userprofile.owncloud_password
+    context['k8s_domain'] = userprofile.k8s_user + "." + settings.K8S_DOMAIN
+    context['k8s_user'] = userprofile.k8s_user
+    context['k8s_password'] = userprofile.k8s_password
     return render(request, 'cloud.html', context)

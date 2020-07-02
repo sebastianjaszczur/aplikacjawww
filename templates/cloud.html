@@ -9,6 +9,12 @@
       <p>Hasło: {{ owncloud_password }}</p>
       <hr>
       <p>Poza dostępem webowym istnieją również klienty stacjonarne i mobilne: <a href="https://nextcloud.com/clients/">https://nextcloud.com/clients/</a></p>
+      <hr>
+      <h1>Kubernetes</h1>
+      <p>W tym roku każdy uczestnik ma dostęp do własnego kontenera dockerowego z publicznym ip</p>
+      <p>Twój kontener będzie widoczny na: http://{{ k8s_domain }}/ </p>
+      <h3>Aby uzyskać dostęp do niego i nim zarządzać należy skorzystać z ssh</h3>
+      <h3>ssh www16@{{ k8s_domain }} -t {{ k8s_user }} {{ k8s_password }}</h3>
     </article>
   </div>
 {% endblock %}
