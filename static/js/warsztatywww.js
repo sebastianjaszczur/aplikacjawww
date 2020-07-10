@@ -161,4 +161,21 @@ $(function () {
             enabledDates: dates,
         });
     });
+
+    // Facebook fix your sh*t (╯°□°)╯︵ ┻━┻
+    function fixBrokenUnresponsiveFacebook() {
+        $('iframe').each(function() {
+            var url = $(this).attr('src');
+            if (url.indexOf('facebook.com/plugins/page.php') === -1)
+                return;
+            if($(this).width() == 0 || $(this).height() == 0)
+                return;
+            url = url.replace(/width=([0-9]+)/, 'width=' + $(this).width());
+            url = url.replace(/height=([0-9]+)/, 'height=' + $(this).height());
+            if ($(this).attr('src') != url)
+                $(this).attr('src', url);
+        });
+    }
+    fixBrokenUnresponsiveFacebook();
+    $(window).resize(fixBrokenUnresponsiveFacebook);
 });

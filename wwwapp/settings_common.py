@@ -63,16 +63,18 @@ BLEACH_ALLOWED_TAGS = [
 # Which HTML attributes are allowed
 BLEACH_ALLOWED_ATTRIBUTES = [
     'href', 'title', 'style', 'alt', 'src', 'dir', 'class', 'border', 'cellpadding', 'cellspacing', 'id',
-    'name', 'align',
+    'name', 'align', 'width', 'height',
 ]
 
 # Which CSS properties are allowed in 'style' attributes (assuming
 # style is an allowed attribute)
 BLEACH_ALLOWED_STYLES = [
-    'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float', 'height', 'width', 'margin-right',
-    'margin-left', 'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
-    'margin', 'padding-top', 'font-size', 'border-bottom-width', 'border-bottom-style', 'border-bottom-color',
-    'line-height', 'border-collapse', 'border-spacing', 'empty-cells',
+    'font-family', 'font-weight', 'text-decoration', 'font-variant', 'float',
+    'height', 'width', 'min-height', 'min-width', 'max-height', 'max-width',
+    'margin', 'margin-top', 'margin-bottom', 'margin-right', 'margin-left',
+    'padding', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right',
+    'text-align', 'title', 'page-break-after', 'display', 'color', 'background-color',
+    'font-size', 'line-height', 'border-collapse', 'border-spacing', 'empty-cells', 'border',
 ]
 
 # Strip unknown tags if True, replace with HTML escaped characters if
