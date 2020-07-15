@@ -220,7 +220,7 @@ class WorkshopPageForm(ModelForm):
                   'page_content', 'page_content_is_public']
         labels = {
             'is_qualifying': 'Czy warsztaty są kwalifikujące (odznacz, jeśli nie zamierzasz dodawać zadań i robić kwalifikacji)',
-            'qualification_threshold': 'Minimalna liczba punktów potrzeba do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)',
+            'qualification_threshold': 'Minimalna liczba punktów potrzebna do kwalifikacji (wpisz dopiero po sprawdzeniu zadań)',
             'max_points': 'Maksymalna liczba punktów możliwa do uzyskania z obowiązkowych zadań',
             'page_content': 'Strona warsztatów',
             'page_content_is_public': 'Zaznacz, jeśli opis jest gotowy i może już być publiczny.'

@@ -6,6 +6,7 @@ import sys
 import mimetypes
 from urllib.parse import urljoin
 
+import bleach
 from dateutil.relativedelta import relativedelta
 from wsgiref.util import FileWrapper
 from typing import Dict
@@ -22,8 +23,10 @@ from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404, \
     render_to_response
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django_bleach.utils import get_bleach_default_options
 
 from .forms import ArticleForm, UserProfileForm, UserForm, WorkshopForm, \
     UserProfilePageForm, WorkshopPageForm, UserCoverLetterForm, UserInfoPageForm, WorkshopParticipantPointsForm, \
@@ -375,6 +378,12 @@ def participants_view(request, year):
 
             workshop_profile = participant.participant.workshop_profile_for(year)
 
+            participation_data = participant.participant.all_participation_data()
+            if not request.user.has_perm('wwwapp.see_all_workshops'):
+                # If the current user can't see non-public workshops, remove them from the list
+                for participation in participation_data:
+                    participation['workshops'] = [w for w in participation['workshops'] if w.is_publicly_visible()]
+
             people[p_id] = {
                 'user': participant.participant.user,
                 'birth': birth,
@@ -389,9 +398,11 @@ def participants_view(request, year):
                 'has_letter': bool(cover_letter and len(cover_letter) > 50),
                 'status': workshop_profile.status if workshop_profile else None,
                 'status_display': workshop_profile.get_status_display if workshop_profile else None,
+                'participation_data': participation_data,
                 'school': participant.participant.school,
                 'points': 0.0,
                 'infos': [],
+                'how_do_you_know_about': participant.participant.how_do_you_know_about,
                 'comments': participant.participant.user_info.comments,
                 'start_date': participant.participant.user_info.start_date,
                 'end_date': participant.participant.user_info.end_date,
@@ -584,8 +595,14 @@ def article_view(request, name):
     title = art.title
     can_edit_article = request.user.has_perm('wwwapp.change_article')
 
+    bleach_args = get_bleach_default_options().copy()
+    if art.name == 'index':
+        bleach_args['tags'] += ['iframe']  # Allow iframe on main page for Facebook embed
+    article_content_clean = mark_safe(bleach.clean(art.content, **bleach_args))
+
     context['title'] = title
     context['article'] = art
+    context['article_content_clean'] = article_content_clean
     context['can_edit'] = can_edit_article
 
     return render(request, 'article.html', context)
