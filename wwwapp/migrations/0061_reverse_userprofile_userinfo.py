@@ -40,7 +40,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wwwapp', '0058_auto_20200211_1019'),
+        ('wwwapp', '0060_auto_20200702_1629'),
     ]
 
     operations = [
