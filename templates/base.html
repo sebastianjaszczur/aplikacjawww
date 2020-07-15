@@ -84,6 +84,10 @@
               </li>
             {% endif %}
 
+            {% if is_participating_this_year %}
+              <li><a href="{% url 'cloud_access' %}">Chmura</a></li>
+            {% endif %}
+
             {% if perms.wwwapp.see_all_users %}
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin <b class="caret"></b></a>

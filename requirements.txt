@@ -14,3 +14,5 @@ Faker
 mypy
 django-stubs
 django-imagekit
+pyocclient
+xkcdpass
